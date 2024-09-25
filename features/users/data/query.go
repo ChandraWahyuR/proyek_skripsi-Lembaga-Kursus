@@ -22,14 +22,19 @@ func New(db *gorm.DB) *UserData {
 }
 
 func (u *UserData) Register(user users.User) error {
-	isEmail := u.IsEmailExist(user.Email)
+	isUsername := u.IsUsernameExist(user.Username)
+	if isUsername {
+		return errors.New("username already exist")
+	}
 
+	isEmail := u.IsEmailExist(user.Email)
 	if isEmail {
 		return errors.New("email already exist")
 	}
+
 	userData := User{
 		ID:       uuid.New().String(),
-		Name:     user.Name,
+		Username: user.Username,
 		Email:    user.Email,
 		Password: user.Password,
 		NomorHP:  user.NomorHP,
@@ -117,6 +122,14 @@ func (d *UserData) ResetPassword(change users.ResetPassword) error {
 func (u *UserData) IsEmailExist(email string) bool {
 	var userData User
 	if err := u.DB.Where("email = ?", email).First(&userData).Error; err != nil {
+		return false
+	}
+	return true
+}
+
+func (u *UserData) IsUsernameExist(username string) bool {
+	var userData User
+	if err := u.DB.Where("username = ?", username).First(&userData).Error; err != nil {
 		return false
 	}
 	return true

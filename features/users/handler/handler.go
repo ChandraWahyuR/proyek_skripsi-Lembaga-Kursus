@@ -31,7 +31,7 @@ func (h UserHandler) Register() echo.HandlerFunc {
 			return c.JSON(err, helper.FormatResponse(false, message, nil))
 		}
 		user := users.User{
-			Name:            reqRegister.Name,
+			Username:        reqRegister.Username,
 			Email:           reqRegister.Email,
 			NomorHP:         reqRegister.NomorHP,
 			Password:        reqRegister.Password,

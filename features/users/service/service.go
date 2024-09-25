@@ -26,7 +26,7 @@ func New(u users.UserDataInterface, j helper.JWTInterface, m helper.Sent) users.
 
 func (s *UserService) Register(users users.User) error {
 	switch {
-	case users.Name == "":
+	case users.Username == "":
 		return constant.ErrEmptyNameRegister
 	case users.Email == "":
 		return constant.ErrEmptyEmailRegister
@@ -34,6 +34,8 @@ func (s *UserService) Register(users users.User) error {
 		return constant.ErrEmptyPasswordRegister
 	case users.ConfirmPassword == "":
 		return errors.New("confirm password cannot be empty")
+	case users.NomorHP == "":
+		return errors.New("telephone numbber cannot be empty and must be 11 or 12 digit")
 	}
 	users.Email = strings.ToLower(users.Email)
 	isEmailValid := helper.ValidateEmail(users.Email)
@@ -43,12 +45,33 @@ func (s *UserService) Register(users users.User) error {
 	if users.Password != users.ConfirmPassword {
 		return constant.ErrPasswordNotMatch
 	}
-	hashedPassword, err := helper.HashPassword(users.Password)
+
+	// validate username
+	isUsernameValid, err := helper.ValidateUsername(users.Username)
+	if err != nil {
+		return constant.ErrInvalidUsername
+	}
+
+	// validate password
+	pass, err := helper.ValidatePassword(users.Password)
 	if err != nil {
 		return err
 	}
 
+	// hashing password
+	hashedPassword, err := helper.HashPassword(pass)
+	if err != nil {
+		return err
+	}
 	users.Password = hashedPassword
+
+	// format nomor hp
+	nomorHp, err := helper.TelephoneValidator(users.NomorHP)
+	if err != nil {
+		return err
+	}
+	users.Username = isUsernameValid
+	users.NomorHP = nomorHp
 
 	err = s.d.Register(users)
 	if err != nil {
@@ -130,7 +153,7 @@ func (s *UserService) ForgotPassword(forgot users.User) (string, error) {
 
 func (s *UserService) VerifyOTP(verifikasi users.VerifyOtp) error {
 	if verifikasi.Otp == "" {
-		return errors.New("otp cannot be empty")
+		return constant.ErrEmptyOtp
 	}
 
 	isEmailValid := helper.ValidateEmail(verifikasi.Email)
@@ -140,7 +163,7 @@ func (s *UserService) VerifyOTP(verifikasi users.VerifyOtp) error {
 
 	err := s.d.VerifyOTP(verifikasi)
 	if err != nil {
-		return err
+		return constant.ErrBadRequest
 	}
 
 	return nil
@@ -155,7 +178,12 @@ func (s *UserService) ResetPassword(reset users.ResetPassword) error {
 		return constant.ErrPasswordNotMatch
 	}
 
-	hashPass, err := helper.HashPassword(reset.Password)
+	isPasswordValid, err := helper.ValidatePassword(reset.Password)
+	if err != nil {
+		return err
+	}
+
+	hashPass, err := helper.HashPassword(isPasswordValid)
 	if err != nil {
 		return err
 	}
