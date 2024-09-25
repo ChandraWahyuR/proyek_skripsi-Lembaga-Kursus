@@ -5,6 +5,7 @@ import (
 	"skripsi/helper"
 	"skripsi/routes"
 	"skripsi/utils/database"
+	"skripsi/utils/database/seeders"
 
 	echoSwagger "github.com/swaggo/echo-swagger"
 
@@ -14,6 +15,10 @@ import (
 	UsersData "skripsi/features/users/data"
 	UsersHandler "skripsi/features/users/handler"
 	UsersService "skripsi/features/users/service"
+
+	AdminData "skripsi/features/admin/data"
+	AdminHandler "skripsi/features/admin/handler"
+	AdminService "skripsi/features/admin/service"
 )
 
 func main() {
@@ -27,7 +32,8 @@ func main() {
 	if err != nil {
 		return
 	}
-
+	seeder := seeders.NewSeeder(db)
+	seeder.Seed()
 	e := echo.New()
 
 	// JWT and Mailer
@@ -43,7 +49,12 @@ func main() {
 	usersService := UsersService.New(usersData, jwt, mailer)
 	usersHandler := UsersHandler.New(usersService, jwt)
 
+	adminData := AdminData.New(db)
+	adminService := AdminService.New(adminData, jwt)
+	adminHandler := AdminHandler.New(adminService, jwt)
+
 	routes.RouteUser(e, usersHandler, *cfg)
+	routes.RouteAdmin(e, adminHandler, *cfg)
 
 	// Swagger
 	e.Static("/", "static")

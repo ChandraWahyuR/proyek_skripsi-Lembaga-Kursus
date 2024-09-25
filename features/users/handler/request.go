@@ -1,7 +1,7 @@
 package handler
 
 type UserRegisterRequest struct {
-	Name            string `json:"name"`
+	Username        string `json:"username"`
 	Email           string `json:"email"`
 	NomorHP         string `json:"nomor_hp"`
 	Password        string `json:"password"`

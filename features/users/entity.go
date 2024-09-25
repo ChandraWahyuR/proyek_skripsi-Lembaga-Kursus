@@ -9,7 +9,7 @@ import (
 type User struct {
 	ID              string
 	Email           string
-	Name            string
+	Username        string
 	Password        string
 	ConfirmPassword string
 	NomorHP         string
@@ -78,6 +78,7 @@ type UserDataInterface interface {
 	ResetPassword(ResetPassword) error
 
 	IsEmailExist(email string) bool
+	IsUsernameExist(username string) bool
 	GetByEmail(email string) (User, error)
 
 	// Auth Email
