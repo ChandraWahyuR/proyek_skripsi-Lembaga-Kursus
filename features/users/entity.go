@@ -16,6 +16,15 @@ type User struct {
 	IsActive        bool
 }
 
+type EditUser struct {
+	ID         string
+	Username   string
+	Email      string
+	ProfileUrl string
+	Password   string
+	NomorHP    string
+}
+
 type Login struct {
 	Email    string
 	Password string

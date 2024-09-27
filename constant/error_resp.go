@@ -35,3 +35,24 @@ var ErrUserNotFound = errors.New("user not found")
 var ErrLenPassword = errors.New("password must be at least 8 characters")
 var ErrInvalidPassword = errors.New("password must contain at least 1 number, 1 uppercase letter, one punctuation symbol and 1 lowercase letter")
 var ErrEmptyPasswordLogin = errors.New("password cannot be empty")
+
+// Admin
+var ErrAdminNotFound = errors.New("data admin tidak ada")
+var ErrAdminUserNameEmpty = errors.New("username tidak boleh kosong")
+var ErrAdminPasswordEmpty = errors.New("password tidak boleh kosong")
+var ErrEmptyGender = errors.New("gender tidak boleh kosong")
+var ErrGenderChoice = errors.New("pilih gender antara laki-laki atau perempuan")
+
+// Instruktur
+var ErrInstrukturNotFound = errors.New("data instruktur tidak ada")
+var ErrGetInstruktur = errors.New("error saat mengambil data instruktur")
+var ErrInstrukturID = errors.New("error id instruktor tidak ada")
+
+// post
+
+var ErrEmptyIdInstuktor = errors.New("id cannot be empty")
+var ErrEmptyNameInstuktor = errors.New("name cannot be empty")
+var ErrEmptyEmailInstuktor = errors.New("email cannot be empty")
+var ErrEmptyAlamatInstuktor = errors.New("alamat cannot be empty")
+var ErrEmptyNumbertelponInstuktor = errors.New("number telpon cannot be empty")
+var ErrEmptyDescriptionInstuktor = errors.New("description cannot be empty")

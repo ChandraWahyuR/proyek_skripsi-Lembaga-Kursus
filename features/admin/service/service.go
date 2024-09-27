@@ -64,9 +64,9 @@ func (s *AdminService) RegisterAdmin(user admin.Admin) error {
 func (s *AdminService) LoginAdmin(user admin.Admin) (admin.Login, error) {
 	switch {
 	case user.Username == "":
-		return admin.Login{}, constant.ErrEmptyLogin
+		return admin.Login{}, constant.ErrAdminUserNameEmpty
 	case user.Password == "":
-		return admin.Login{}, constant.ErrEmptyPasswordLogin
+		return admin.Login{}, constant.ErrAdminPasswordEmpty
 	}
 
 	adminData, err := s.d.LoginAdmin(user)
@@ -77,6 +77,7 @@ func (s *AdminService) LoginAdmin(user admin.Admin) (admin.Login, error) {
 	var adminLogin helper.AdminJWT
 	adminLogin.ID = adminData.ID
 	adminLogin.Username = adminData.Username
+	adminLogin.Email = adminData.Email
 
 	token, err := s.j.GenerateAdminJWT(adminLogin)
 	if err != nil {

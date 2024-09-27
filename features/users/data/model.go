@@ -8,12 +8,13 @@ import (
 
 type User struct {
 	*gorm.Model
-	ID       string `gorm:"primary_key;type:varchar(50);not null;column:id"`
-	Username string `gorm:"type:varchar(255);not null;column:username"`
-	Email    string `gorm:"type:varchar(255);not null;column:email"`
-	Password string `gorm:"type:varchar(255);not null;column:password"`
-	NomorHP  string `gorm:"type:varchar(255);not null;column:nomor_hp"`
-	IsActive bool   `gorm:"not null;column:is_active"`
+	ID         string `gorm:"primary_key;type:varchar(50);not null;column:id"`
+	Username   string `gorm:"type:varchar(255);not null;column:username"`
+	Email      string `gorm:"type:varchar(255);not null;column:email"`
+	Password   string `gorm:"type:varchar(255);not null;column:password"`
+	NomorHP    string `gorm:"type:varchar(255);not null;column:nomor_hp"`
+	ProfileUrl string `gorm:"type:varchar(255);not null;column:profile_url"`
+	IsActive   bool   `gorm:"not null;column:is_active"`
 }
 
 type VerifyOtp struct {

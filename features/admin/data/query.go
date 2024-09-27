@@ -59,7 +59,7 @@ func (d *AdminData) RegisterAdmin(admins admin.Admin) error {
 
 func (d *AdminData) LoginAdmin(admins admin.Admin) (admin.Admin, error) {
 	var adminData admin.Admin
-	err := d.DB.Where("email = ?", admins.Email).First(&adminData).Error
+	err := d.DB.Where("username = ?", admins.Username).First(&adminData).Error
 	if err != nil {
 		return admin.Admin{}, err
 	}

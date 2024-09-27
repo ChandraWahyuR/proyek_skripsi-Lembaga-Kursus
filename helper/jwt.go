@@ -18,6 +18,7 @@ type AdminJWT struct {
 	ID       string
 	Username string
 	Role     string
+	Email    string
 }
 
 type ForgotPassJWT struct {
@@ -100,7 +101,8 @@ func (j *JWT) ExtractUserToken(token *jwt.Token) map[string]interface{} {
 func (j *JWT) GenerateAdminToken(admin AdminJWT) string {
 	var claims = jwt.MapClaims{}
 	claims[constant.JWT_ID] = admin.ID
-	claims[constant.JWT_EMAIL] = admin.Username
+	claims[constant.JWT_NAME] = admin.Username
+	claims[constant.JWT_EMAIL] = admin.Email
 	claims[constant.JWT_ROLE] = constant.RoleAdmin
 	claims[constant.JWT_IAT] = time.Now().Unix()
 	// Sengaja token masa berlaku 1 bulan

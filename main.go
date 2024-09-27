@@ -19,6 +19,10 @@ import (
 	AdminData "skripsi/features/admin/data"
 	AdminHandler "skripsi/features/admin/handler"
 	AdminService "skripsi/features/admin/service"
+
+	InstrukturData "skripsi/features/instruktur/data"
+	InstrukturHandler "skripsi/features/instruktur/handler"
+	InstrukturService "skripsi/features/instruktur/service"
 )
 
 func main() {
@@ -45,6 +49,7 @@ func main() {
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
 
+	// Feature
 	usersData := UsersData.New(db)
 	usersService := UsersService.New(usersData, jwt, mailer)
 	usersHandler := UsersHandler.New(usersService, jwt)
@@ -53,8 +58,13 @@ func main() {
 	adminService := AdminService.New(adminData, jwt)
 	adminHandler := AdminHandler.New(adminService, jwt)
 
+	instrukturData := InstrukturData.New(db)
+	instrukturService := InstrukturService.New(instrukturData, jwt)
+	instrukturHandler := InstrukturHandler.New(instrukturService, jwt)
+
 	routes.RouteUser(e, usersHandler, *cfg)
 	routes.RouteAdmin(e, adminHandler, *cfg)
+	routes.RouteInstruktor(e, instrukturHandler, *cfg)
 
 	// Swagger
 	e.Static("/", "static")
