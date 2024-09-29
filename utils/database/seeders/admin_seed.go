@@ -5,8 +5,6 @@ import (
 	"log"
 	"skripsi/features/admin/data"
 	"skripsi/helper"
-
-	"github.com/google/uuid"
 )
 
 func (s *Seeder) SeedAdmins() {
@@ -17,7 +15,7 @@ func (s *Seeder) SeedAdmins() {
 
 	admin := []data.Admin{
 		{
-			ID:       uuid.New().String(),
+			ID:       "02288709-22bc-4d7b-ac91-15d8017c7845",
 			Username: "admin",
 			Email:    "admin123@example.com",
 			Password: hashedPassword,
@@ -25,10 +23,15 @@ func (s *Seeder) SeedAdmins() {
 	}
 
 	for _, admin := range admin {
-		if err := s.db.FirstOrCreate(&admin, data.Admin{Email: admin.Email}).Error; err != nil {
-			fmt.Printf("Failed to seed admin %v: %v\n", admin.Username, err)
+		result := s.db.FirstOrCreate(&admin, data.Admin{Email: admin.Email})
+
+		// Mengecek apakah record sudah ada atau baru di-create
+		if result.Error != nil {
+			fmt.Printf("Failed to seed admin %v: %v\n", admin.Username, result.Error)
+		} else if result.RowsAffected == 0 {
+			fmt.Printf("Admin %v already exists, skipping...\n", admin.Username)
 		} else {
-			fmt.Printf("Admin %v created/exists\n", admin.Username)
+			fmt.Printf("Admin %v created successfully\n", admin.Username)
 		}
 	}
 }

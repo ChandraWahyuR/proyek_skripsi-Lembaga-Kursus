@@ -1,23 +1,30 @@
 package instruktur
 
-import "github.com/labstack/echo/v4"
+import (
+	"time"
+
+	"github.com/labstack/echo/v4"
+)
 
 type Instruktur struct {
-	ID     string
-	Name   string
-	Gender string
-	Email  string
-	Alamat string
-	NoHp   string
+	ID        string
+	Name      string
+	Gender    string
+	Email     string
+	Alamat    string
+	NoHp      string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type UpdateInstruktur struct {
-	ID     string
-	Name   string
-	Gender string
-	Email  string
-	Alamat string
-	NoHp   string
+	ID        string
+	Name      string
+	Gender    string
+	Email     string
+	Alamat    string
+	NoHp      string
+	UpdatedAt time.Time
 }
 
 type InstrukturHandlerInterface interface {

@@ -7,6 +7,7 @@ import (
 	"skripsi/helper"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -36,9 +37,9 @@ func (h InstrukturHandler) GetAllInstruktur() echo.HandlerFunc {
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
-		role := adminData[constant.JWT_ROLE]
-		if role != constant.RoleAdmin {
-			helper.UnauthorizedError(c)
+		role, ok := adminData[constant.JWT_ROLE]
+		if !ok || role != constant.RoleAdmin {
+			return helper.UnauthorizedError(c)
 		}
 
 		pageStr := c.QueryParam("page")
@@ -90,9 +91,9 @@ func (h InstrukturHandler) GetAllInstrukturByID() echo.HandlerFunc {
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
-		role := adminData[constant.JWT_ROLE]
-		if role != constant.RoleAdmin {
-			helper.UnauthorizedError(c)
+		role, ok := adminData[constant.JWT_ROLE]
+		if !ok || role != constant.RoleAdmin {
+			return helper.UnauthorizedError(c)
 		}
 
 		id := c.Param("id")
@@ -125,9 +126,9 @@ func (h InstrukturHandler) PostInstruktur() echo.HandlerFunc {
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
-		role := adminData[constant.JWT_ROLE]
-		if role != constant.RoleAdmin {
-			helper.UnauthorizedError(c)
+		role, ok := adminData[constant.JWT_ROLE]
+		if !ok || role != constant.RoleAdmin {
+			return helper.UnauthorizedError(c)
 		}
 
 		var dataRequest PostInstrukturRequest
@@ -150,12 +151,14 @@ func (h InstrukturHandler) PostInstruktur() echo.HandlerFunc {
 		}
 
 		dataInstruktur := instruktur.Instruktur{
-			ID:     uuid.New().String(),
-			Email:  dataRequest.Email,
-			Name:   dataRequest.Name,
-			Gender: dataRequest.Gender,
-			Alamat: dataRequest.Alamat,
-			NoHp:   dataRequest.NoHp,
+			ID:        uuid.New().String(),
+			Email:     dataRequest.Email,
+			Name:      dataRequest.Name,
+			Gender:    dataRequest.Gender,
+			Alamat:    dataRequest.Alamat,
+			NoHp:      dataRequest.NoHp,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
 		}
 		err = h.s.PostInstruktur(dataInstruktur)
 		if err != nil {
@@ -178,10 +181,11 @@ func (h InstrukturHandler) UpdateInstruktur() echo.HandlerFunc {
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
-		role := adminData[constant.JWT_ROLE]
-		if role != constant.RoleAdmin {
-			helper.UnauthorizedError(c)
+		role, ok := adminData[constant.JWT_ROLE]
+		if !ok || role != constant.RoleAdmin {
+			return helper.UnauthorizedError(c)
 		}
+
 		id := c.Param("id")
 		dataId, err := h.s.GetAllInstrukturByID(id)
 		if err != nil {
@@ -224,10 +228,11 @@ func (h InstrukturHandler) DeleteInstruktur() echo.HandlerFunc {
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
-		role := adminData[constant.JWT_ROLE]
-		if role != constant.RoleAdmin {
-			helper.UnauthorizedError(c)
+		role, ok := adminData[constant.JWT_ROLE]
+		if !ok || role != constant.RoleAdmin {
+			return helper.UnauthorizedError(c)
 		}
+
 		id := c.Param("id")
 		err = h.s.DeleteInstruktur(id)
 		if err != nil {
@@ -251,9 +256,9 @@ func (h InstrukturHandler) GetInstruktorByName() echo.HandlerFunc {
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
-		role := adminData[constant.JWT_ROLE]
-		if role != constant.RoleAdmin {
-			helper.UnauthorizedError(c)
+		role, ok := adminData[constant.JWT_ROLE]
+		if !ok || role != constant.RoleAdmin {
+			return helper.UnauthorizedError(c)
 		}
 
 		pageStr := c.QueryParam("page")

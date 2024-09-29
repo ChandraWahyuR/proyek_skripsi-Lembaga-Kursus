@@ -18,6 +18,9 @@ var ErrEmptyId = errors.New("id cannot be empty")
 var ErrGenerateJWT = errors.New("failed to generate jwt token")
 var ErrValidateJWT = errors.New("failed to validate jwt token")
 
+// Update
+var ErrUpdate = errors.New("update satu data minimal")
+
 // Validator
 var ErrHashPassword = errors.New("failed to hash password")
 
