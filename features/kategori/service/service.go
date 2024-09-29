@@ -18,14 +18,14 @@ func New(u kategori.KategoriDataInterface, j helper.JWTInterface) kategori.Kateg
 	}
 }
 
-func (s KategoriService) GetAllKategori() ([]kategori.Kategori, error) {
+func (s *KategoriService) GetAllKategori() ([]kategori.Kategori, error) {
 	return s.d.GetAllKategori()
 
 }
-func (s KategoriService) GetKategoriById(id string) (kategori.Kategori, error) {
+func (s *KategoriService) GetKategoriById(id string) (kategori.Kategori, error) {
 	return s.d.GetKategoriById(id)
 }
-func (s KategoriService) CreateKategori(data kategori.Kategori) error {
+func (s *KategoriService) CreateKategori(data kategori.Kategori) error {
 	switch {
 	case data.Nama == "":
 		return constant.ErrEmptyNamaKategori
@@ -37,7 +37,7 @@ func (s KategoriService) CreateKategori(data kategori.Kategori) error {
 
 	return s.d.CreateKategori(data)
 }
-func (s KategoriService) UpdateKategori(data kategori.Kategori) error {
+func (s *KategoriService) UpdateKategori(data kategori.Kategori) error {
 	if data.ID == "" {
 		return constant.ErrEmptyId
 	}
@@ -48,13 +48,13 @@ func (s KategoriService) UpdateKategori(data kategori.Kategori) error {
 
 	return s.d.UpdateKategori(data)
 }
-func (s KategoriService) DeleteKategori(id string) error {
+func (s *KategoriService) DeleteKategori(id string) error {
 	if id == "" {
 		return constant.ErrEmptyId
 	}
 
 	return s.d.DeleteKategori(id)
 }
-func (s KategoriService) GetKategoriWithPagination(page int, limit int) ([]kategori.Kategori, int, error) {
+func (s *KategoriService) GetKategoriWithPagination(page int, limit int) ([]kategori.Kategori, int, error) {
 	return s.d.GetKategoriWithPagination(page, limit)
 }

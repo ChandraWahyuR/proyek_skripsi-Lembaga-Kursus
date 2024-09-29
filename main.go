@@ -29,6 +29,7 @@ import (
 	KategoriService "skripsi/features/kategori/service"
 )
 
+// Ini logout kaya forgot juga diredis aja
 func main() {
 	cfg := config.InitConfig()
 	db, err := database.InitDB(*cfg)

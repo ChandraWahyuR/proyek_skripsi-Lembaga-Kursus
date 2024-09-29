@@ -13,7 +13,7 @@ type AdminData struct {
 	DB *gorm.DB
 }
 
-func New(db *gorm.DB) *AdminData {
+func New(db *gorm.DB) admin.AdminDataInterface {
 	return &AdminData{
 		DB: db,
 	}
