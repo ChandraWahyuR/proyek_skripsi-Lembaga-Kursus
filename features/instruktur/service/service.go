@@ -49,7 +49,7 @@ func (s InstrukturService) PostInstruktur(data instruktur.Instruktur) error {
 
 func (s InstrukturService) UpdateInstruktur(data instruktur.UpdateInstruktur) error {
 	if data.ID == "" {
-		return constant.ErrEmptyIdInstuktor
+		return constant.ErrEmptyId
 	}
 	switch {
 	case data.Name == "":
@@ -75,7 +75,7 @@ func (s InstrukturService) UpdateInstruktur(data instruktur.UpdateInstruktur) er
 
 func (s InstrukturService) DeleteInstruktur(id string) error {
 	if id == "" {
-		return constant.ErrEmptyIdInstuktor
+		return constant.ErrEmptyId
 	}
 
 	return s.d.DeleteInstruktur(id)

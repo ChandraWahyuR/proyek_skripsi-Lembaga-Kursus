@@ -4,6 +4,7 @@ import (
 	"skripsi/config"
 	"skripsi/features/admin"
 	"skripsi/features/instruktur"
+	"skripsi/features/kategori"
 	"skripsi/features/users"
 	"skripsi/helper"
 
@@ -47,4 +48,17 @@ func RouteInstruktor(e *echo.Echo, i instruktur.InstrukturHandlerInterface, cfg 
 	e.PUT("/api/v1/instruktur/:id", i.UpdateInstruktur(), echojwt.WithConfig(jwtConfig))
 	e.DELETE("/api/v1/instruktur/:id", i.DeleteInstruktur(), echojwt.WithConfig(jwtConfig))
 	e.GET("/api/v1/instruktur/search", i.GetInstruktorByName(), echojwt.WithConfig(jwtConfig))
+}
+
+func RouteKategori(e *echo.Echo, k kategori.KategoriHandlerInterface, cfg config.Config) {
+	jwtConfig := echojwt.Config{
+		SigningKey:   []byte(cfg.JWT_Secret),
+		ErrorHandler: helper.JWTErrorHandler,
+	}
+
+	e.GET("/api/v1/kategori", k.GetAllKategori(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/kategori/:id", k.GetKategoriById(), echojwt.WithConfig(jwtConfig))
+	e.POST("/api/v1/kategori", k.CreateKategori(), echojwt.WithConfig(jwtConfig))
+	e.PUT("/api/v1/kategori/:id", k.UpdateKategori(), echojwt.WithConfig(jwtConfig))
+	e.DELETE("/api/v1/kategori/:id", k.DeleteKategori(), echojwt.WithConfig(jwtConfig))
 }

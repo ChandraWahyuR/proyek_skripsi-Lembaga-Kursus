@@ -10,6 +10,9 @@ var ErrBadRequest = errors.New("bad request")
 var ErrUnauthorized = errors.New("unauthorized")
 
 var ErrEmptyOtp = errors.New("otp cannot be empty")
+var ErrDataNotfound = errors.New("data kosong")
+var ErrGetData = errors.New("gagal saat mengambil data")
+var ErrEmptyId = errors.New("id cannot be empty")
 
 // JWT
 var ErrGenerateJWT = errors.New("failed to generate jwt token")
@@ -50,9 +53,16 @@ var ErrInstrukturID = errors.New("error id instruktor tidak ada")
 
 // post
 
-var ErrEmptyIdInstuktor = errors.New("id cannot be empty")
 var ErrEmptyNameInstuktor = errors.New("name cannot be empty")
 var ErrEmptyEmailInstuktor = errors.New("email cannot be empty")
 var ErrEmptyAlamatInstuktor = errors.New("alamat cannot be empty")
 var ErrEmptyNumbertelponInstuktor = errors.New("number telpon cannot be empty")
 var ErrEmptyDescriptionInstuktor = errors.New("description cannot be empty")
+
+// Kategori
+var ErrKategoriNotFound = errors.New("kategori tidak ditemukan")
+
+// post
+var ErrEmptyNamaKategori = errors.New("nama kategori tidak boleh kosong")
+var ErrEmptyImageUrlKategori = errors.New("gambar kategori tidak boleh kosong")
+var ErrEmptyDeskripsiKategori = errors.New("deskripsi kategori tidak boleh kosong")
