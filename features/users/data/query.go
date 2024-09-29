@@ -15,7 +15,7 @@ type UserData struct {
 	DB *gorm.DB
 }
 
-func New(db *gorm.DB) *UserData {
+func New(db *gorm.DB) users.UserDataInterface {
 	return &UserData{
 		DB: db,
 	}

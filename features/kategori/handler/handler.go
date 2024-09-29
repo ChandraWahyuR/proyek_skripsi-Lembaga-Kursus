@@ -19,14 +19,14 @@ type KategoriHandler struct {
 	j helper.JWTInterface
 }
 
-func New(u kategori.KategoriServiceInterface, j helper.JWTInterface) KategoriHandler {
-	return KategoriHandler{
+func New(u kategori.KategoriServiceInterface, j helper.JWTInterface) kategori.KategoriHandlerInterface {
+	return &KategoriHandler{
 		s: u,
 		j: j,
 	}
 }
 
-func (h KategoriHandler) GetAllKategori() echo.HandlerFunc {
+func (h *KategoriHandler) GetAllKategori() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// Token
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
@@ -79,7 +79,7 @@ func (h KategoriHandler) GetAllKategori() echo.HandlerFunc {
 	}
 }
 
-func (h KategoriHandler) GetKategoriById() echo.HandlerFunc {
+func (h *KategoriHandler) GetKategoriById() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// Token
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
@@ -115,7 +115,7 @@ func (h KategoriHandler) GetKategoriById() echo.HandlerFunc {
 	}
 }
 
-func (h KategoriHandler) CreateKategori() echo.HandlerFunc {
+func (h *KategoriHandler) CreateKategori() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// Token
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
@@ -191,7 +191,7 @@ func (h KategoriHandler) CreateKategori() echo.HandlerFunc {
 		return c.JSON(http.StatusCreated, helper.FormatResponse(true, "Success", nil))
 	}
 }
-func (h KategoriHandler) UpdateKategori() echo.HandlerFunc {
+func (h *KategoriHandler) UpdateKategori() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// Token
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
@@ -259,7 +259,7 @@ func (h KategoriHandler) UpdateKategori() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, "Success", nil))
 	}
 }
-func (h KategoriHandler) DeleteKategori() echo.HandlerFunc {
+func (h *KategoriHandler) DeleteKategori() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// Token
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)

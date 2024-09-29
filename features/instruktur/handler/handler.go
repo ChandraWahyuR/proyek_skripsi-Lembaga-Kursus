@@ -18,14 +18,14 @@ type InstrukturHandler struct {
 	j helper.JWTInterface
 }
 
-func New(u instruktur.InstrukturServiceInterface, j helper.JWTInterface) InstrukturHandler {
-	return InstrukturHandler{
+func New(u instruktur.InstrukturServiceInterface, j helper.JWTInterface) instruktur.InstrukturHandlerInterface {
+	return &InstrukturHandler{
 		s: u,
 		j: j,
 	}
 }
 
-func (h InstrukturHandler) GetAllInstruktur() echo.HandlerFunc {
+func (h *InstrukturHandler) GetAllInstruktur() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
 		if tokenString == "" {
@@ -79,7 +79,7 @@ func (h InstrukturHandler) GetAllInstruktur() echo.HandlerFunc {
 	}
 }
 
-func (h InstrukturHandler) GetAllInstrukturByID() echo.HandlerFunc {
+func (h *InstrukturHandler) GetAllInstrukturByID() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
 		if tokenString == "" {
@@ -114,7 +114,7 @@ func (h InstrukturHandler) GetAllInstrukturByID() echo.HandlerFunc {
 	}
 }
 
-func (h InstrukturHandler) PostInstruktur() echo.HandlerFunc {
+func (h *InstrukturHandler) PostInstruktur() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
 		if tokenString == "" {
@@ -169,7 +169,7 @@ func (h InstrukturHandler) PostInstruktur() echo.HandlerFunc {
 	}
 }
 
-func (h InstrukturHandler) UpdateInstruktur() echo.HandlerFunc {
+func (h *InstrukturHandler) UpdateInstruktur() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
 		if tokenString == "" {
@@ -216,7 +216,7 @@ func (h InstrukturHandler) UpdateInstruktur() echo.HandlerFunc {
 	}
 }
 
-func (h InstrukturHandler) DeleteInstruktur() echo.HandlerFunc {
+func (h *InstrukturHandler) DeleteInstruktur() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
 		if tokenString == "" {
@@ -243,7 +243,7 @@ func (h InstrukturHandler) DeleteInstruktur() echo.HandlerFunc {
 	}
 }
 
-func (h InstrukturHandler) GetInstruktorByName() echo.HandlerFunc {
+func (h *InstrukturHandler) GetInstruktorByName() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		name := c.QueryParam("name") // Ambil parameter nama dari query URL
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)

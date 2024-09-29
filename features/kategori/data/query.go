@@ -11,13 +11,13 @@ type KategoriData struct {
 	DB *gorm.DB
 }
 
-func New(db *gorm.DB) *KategoriData {
+func New(db *gorm.DB) kategori.KategoriDataInterface {
 	return &KategoriData{
 		DB: db,
 	}
 }
 
-func (d KategoriData) GetKategoriWithPagination(page int, limit int) ([]kategori.Kategori, int, error) {
+func (d *KategoriData) GetKategoriWithPagination(page int, limit int) ([]kategori.Kategori, int, error) {
 	var dataKategori []kategori.Kategori
 	var total int64
 
@@ -39,7 +39,7 @@ func (d KategoriData) GetKategoriWithPagination(page int, limit int) ([]kategori
 	return dataKategori, totalPages, nil
 }
 
-func (d KategoriData) GetAllKategori() ([]kategori.Kategori, error) {
+func (d *KategoriData) GetAllKategori() ([]kategori.Kategori, error) {
 	var dataKategori []kategori.Kategori
 	if err := d.DB.Where("deleted_at IS NULL").Find(&dataKategori).Error; err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func (d KategoriData) GetAllKategori() ([]kategori.Kategori, error) {
 	return dataKategori, nil
 }
 
-func (d KategoriData) GetKategoriById(id string) (kategori.Kategori, error) {
+func (d *KategoriData) GetKategoriById(id string) (kategori.Kategori, error) {
 	var dataKategori kategori.Kategori
 	if err := d.DB.Where("deleted_at IS NULL").Where("id = ?", id).Find(&dataKategori).Error; err != nil {
 		return dataKategori, nil
@@ -55,7 +55,7 @@ func (d KategoriData) GetKategoriById(id string) (kategori.Kategori, error) {
 	return dataKategori, nil
 }
 
-func (d KategoriData) CreateKategori(data kategori.Kategori) error {
+func (d *KategoriData) CreateKategori(data kategori.Kategori) error {
 	if err := d.DB.Create(&data).Error; err != nil {
 		return err
 	}
@@ -63,7 +63,7 @@ func (d KategoriData) CreateKategori(data kategori.Kategori) error {
 	return nil
 }
 
-func (d KategoriData) UpdateKategori(data kategori.Kategori) error {
+func (d *KategoriData) UpdateKategori(data kategori.Kategori) error {
 	var existingKategori kategori.Kategori
 
 	if err := d.DB.Where("id = ?", data.ID).Where("deleted_at IS NULL").First(&existingKategori).Error; err != nil {
@@ -77,7 +77,7 @@ func (d KategoriData) UpdateKategori(data kategori.Kategori) error {
 	return nil
 }
 
-func (d KategoriData) DeleteKategori(id string) error {
+func (d *KategoriData) DeleteKategori(id string) error {
 	res := d.DB.Begin()
 
 	if err := res.Where("id = ?", id).Delete(&Kategori{}); err.Error != nil {

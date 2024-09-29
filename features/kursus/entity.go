@@ -72,6 +72,8 @@ type KursusDataInterface interface {
 	AddKursus(Kursus) error
 	UpdateKursus(Kursus) error
 	DeleteKursus(id string) error
+
+	GetKursusPagination(page, limit int) ([]Kursus, int, error)
 }
 
 type KursusServiceInterface interface {
@@ -82,4 +84,6 @@ type KursusServiceInterface interface {
 	AddKursus(Kursus) error
 	UpdateKursus(Kursus) error
 	DeleteKursus(id string) error
+
+	GetKursusPagination(page, limit int) ([]Kursus, int, error)
 }

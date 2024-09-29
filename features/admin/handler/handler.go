@@ -13,13 +13,13 @@ type AdminHandler struct {
 	j helper.JWTInterface
 }
 
-func New(u admin.AdminServiceInterface, j helper.JWTInterface) AdminHandler {
-	return AdminHandler{
+func New(u admin.AdminServiceInterface, j helper.JWTInterface) admin.AdminHandlerInterface {
+	return &AdminHandler{
 		s: u,
 		j: j,
 	}
 }
-func (h AdminHandler) RegisterAdmin() echo.HandlerFunc {
+func (h *AdminHandler) RegisterAdmin() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var reqRegister AdminRegisterRequest
 		err := c.Bind(&reqRegister)
@@ -41,7 +41,7 @@ func (h AdminHandler) RegisterAdmin() echo.HandlerFunc {
 		return c.JSON(http.StatusCreated, helper.FormatResponse(true, "Success", nil))
 	}
 }
-func (h AdminHandler) LoginAdmin() echo.HandlerFunc {
+func (h *AdminHandler) LoginAdmin() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var reqLogin AdminLoginRequest
 		err := c.Bind(&reqLogin)
