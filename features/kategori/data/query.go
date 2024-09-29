@@ -49,7 +49,7 @@ func (d KategoriData) GetAllKategori() ([]kategori.Kategori, error) {
 
 func (d KategoriData) GetKategoriById(id string) (kategori.Kategori, error) {
 	var dataKategori kategori.Kategori
-	if err := d.DB.Where("deleted_at IS NULL").Where("id = ", id).Find(&dataKategori).Error; err != nil {
+	if err := d.DB.Where("deleted_at IS NULL").Where("id = ?", id).Find(&dataKategori).Error; err != nil {
 		return dataKategori, nil
 	}
 	return dataKategori, nil
@@ -66,7 +66,7 @@ func (d KategoriData) CreateKategori(data kategori.Kategori) error {
 func (d KategoriData) UpdateKategori(data kategori.Kategori) error {
 	var existingKategori kategori.Kategori
 
-	if err := d.DB.Where("deleted_at IS NULL").Where("id = ", data.ID).Find(&existingKategori).Error; err != nil {
+	if err := d.DB.Where("id = ?", data.ID).Where("deleted_at IS NULL").First(&existingKategori).Error; err != nil {
 		return err
 	}
 

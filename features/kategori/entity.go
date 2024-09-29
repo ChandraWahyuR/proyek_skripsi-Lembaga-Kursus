@@ -1,12 +1,18 @@
 package kategori
 
-import "github.com/labstack/echo/v4"
+import (
+	"time"
+
+	"github.com/labstack/echo/v4"
+)
 
 type Kategori struct {
 	ID        string
 	Nama      string
 	Deskripsi string
 	ImageUrl  string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type KategoriHandlerInterface interface {

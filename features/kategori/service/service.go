@@ -41,13 +41,9 @@ func (s KategoriService) UpdateKategori(data kategori.Kategori) error {
 	if data.ID == "" {
 		return constant.ErrEmptyId
 	}
-	switch {
-	case data.Nama == "":
-		return constant.ErrEmptyNamaKategori
-	case data.Deskripsi == "":
-		return constant.ErrEmptyDeskripsiKategori
-	case data.ImageUrl == "":
-		return constant.ErrEmptyImageUrlKategori
+
+	if data.Nama == "" && data.Deskripsi == "" && data.ImageUrl == "" {
+		return constant.ErrUpdate
 	}
 
 	return s.d.UpdateKategori(data)

@@ -13,6 +13,11 @@ import (
 	"cloud.google.com/go/storage"
 )
 
+const (
+	UploadPathKategori = "gambar/kategori/"
+	UploadPathUser     = "gambar/users/"
+)
+
 type ClientUploader struct {
 	cl         *storage.Client
 	projectID  string
@@ -61,6 +66,5 @@ func (c *ClientUploader) UploadFile(file multipart.File, object string, uploadPa
 }
 
 func (c *ClientUploader) UploadFileGambarKategori(file multipart.File, object string) error {
-	uploadPath := "gambar/kategori/"
-	return c.UploadFile(file, object, uploadPath)
+	return c.UploadFile(file, object, UploadPathKategori)
 }

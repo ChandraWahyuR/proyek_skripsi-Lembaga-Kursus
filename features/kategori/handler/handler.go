@@ -8,6 +8,7 @@ import (
 	"skripsi/features/kategori"
 	"skripsi/helper"
 	"strconv"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -38,9 +39,9 @@ func (h KategoriHandler) GetAllKategori() echo.HandlerFunc {
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
-		role := adminData[constant.JWT_ROLE]
-		if role != constant.RoleAdmin {
-			helper.UnauthorizedError(c)
+		role, ok := adminData[constant.JWT_ROLE]
+		if !ok || role != constant.RoleAdmin {
+			return helper.UnauthorizedError(c)
 		}
 
 		// Pagination
@@ -91,9 +92,9 @@ func (h KategoriHandler) GetKategoriById() echo.HandlerFunc {
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
-		role := adminData[constant.JWT_ROLE]
-		if role != constant.RoleAdmin {
-			helper.UnauthorizedError(c)
+		role, ok := adminData[constant.JWT_ROLE]
+		if !ok || role != constant.RoleAdmin {
+			return helper.UnauthorizedError(c)
 		}
 
 		id := c.Param("id")
@@ -127,9 +128,9 @@ func (h KategoriHandler) CreateKategori() echo.HandlerFunc {
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
-		role := adminData[constant.JWT_ROLE]
-		if role != constant.RoleAdmin {
-			helper.UnauthorizedError(c)
+		role, ok := adminData[constant.JWT_ROLE]
+		if !ok || role != constant.RoleAdmin {
+			return helper.UnauthorizedError(c)
 		}
 
 		// Logic
@@ -171,13 +172,15 @@ func (h KategoriHandler) CreateKategori() echo.HandlerFunc {
 		}
 
 		// Generate image URL
-		imageUrl := fmt.Sprintf("https://storage.googleapis.com/%s/%s/%s", helper.Uploader.BucketName, helper.Uploader.UploadPath, objectName)
+		imageUrl := fmt.Sprintf("https://storage.googleapis.com/%s/%s%s", helper.Uploader.BucketName, helper.UploadPathKategori, objectName)
 
 		dataResponse := kategori.Kategori{
 			ID:        uuid.New().String(),
 			Nama:      dataRequest.Nama,
 			Deskripsi: dataRequest.Deskripsi,
 			ImageUrl:  imageUrl,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
 		}
 
 		err = h.s.CreateKategori(dataResponse)
@@ -201,9 +204,9 @@ func (h KategoriHandler) UpdateKategori() echo.HandlerFunc {
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
-		role := adminData[constant.JWT_ROLE]
-		if role != constant.RoleAdmin {
-			helper.UnauthorizedError(c)
+		role, ok := adminData[constant.JWT_ROLE]
+		if !ok || role != constant.RoleAdmin {
+			return helper.UnauthorizedError(c)
 		}
 
 		id := c.Param("id")
@@ -213,17 +216,39 @@ func (h KategoriHandler) UpdateKategori() echo.HandlerFunc {
 		}
 
 		var dataRequest RequestKategori
-		err = c.Bind(dataRequest)
+		err = c.Bind(&dataRequest)
 		if err != nil {
 			code, message := helper.HandleEchoError(err)
 			return c.JSON(code, helper.FormatResponse(false, message, nil))
 		}
 
+		file, err := c.FormFile("image")
+		var imageUrl string
+		if err == nil {
+			// Gambar Baru
+			src, err := file.Open()
+			if err != nil {
+				log.Println("Error opening file:", err)
+				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Error opening file", nil))
+			}
+			defer src.Close()
+
+			// Generate unique filename and upload path
+			objectName := fmt.Sprintf("%s_%s", uuid.New().String(), file.Filename)
+			err = helper.Uploader.UploadFileGambarKategori(src, objectName)
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Failed to upload file to GCS", nil))
+			}
+			imageUrl = fmt.Sprintf("https://storage.googleapis.com/%s/%s%s", helper.Uploader.BucketName, helper.UploadPathKategori, objectName)
+		} else {
+			// Data lama
+			imageUrl = dataId.ImageUrl
+		}
 		dataResponse := kategori.Kategori{
 			ID:        dataId.ID,
 			Nama:      dataRequest.Nama,
 			Deskripsi: dataRequest.Deskripsi,
-			ImageUrl:  dataRequest.Image,
+			ImageUrl:  imageUrl,
 		}
 
 		err = h.s.UpdateKategori(dataResponse)
@@ -247,9 +272,9 @@ func (h KategoriHandler) DeleteKategori() echo.HandlerFunc {
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
-		role := adminData[constant.JWT_ROLE]
-		if role != constant.RoleAdmin {
-			helper.UnauthorizedError(c)
+		role, ok := adminData[constant.JWT_ROLE]
+		if !ok || role != constant.RoleAdmin {
+			return helper.UnauthorizedError(c)
 		}
 
 		id := c.Param("id")

@@ -51,17 +51,11 @@ func (s InstrukturService) UpdateInstruktur(data instruktur.UpdateInstruktur) er
 	if data.ID == "" {
 		return constant.ErrEmptyId
 	}
-	switch {
-	case data.Name == "":
-		return constant.ErrEmptyNameInstuktor
-	case data.Email == "":
-		return constant.ErrEmptyEmailInstuktor
-	case data.Alamat == "":
-		return constant.ErrEmptyAlamatInstuktor
-	case data.NoHp == "":
-		return constant.ErrEmptyNumbertelponInstuktor
-	case data.Gender == "":
-		return constant.ErrEmptyGender
+	// 	&& memastikan bahwa semua field kosong sebelum mengembalikan error.
+	// || memastikan bahwa hanya salah satu field yang kosong untuk mengembalikan error.
+	// && and kan wajib terpenuhi semua jika return err. jika tidak, aman
+	if data.Name == "" && data.Email == "" && data.Alamat == "" && data.Gender == "" && data.NoHp == "" {
+		return constant.ErrUpdate
 	}
 
 	nomorHp, err := helper.TelephoneValidator(data.NoHp)
