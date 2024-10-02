@@ -1,32 +1,34 @@
 package handler
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 	"skripsi/constant"
-	"skripsi/features/instruktur"
+	"skripsi/features/kategori"
 	"skripsi/helper"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
-type InstrukturHandler struct {
-	s instruktur.InstrukturServiceInterface
+type KategoriHandler struct {
+	s kategori.KategoriServiceInterface
 	j helper.JWTInterface
 }
 
-func New(u instruktur.InstrukturServiceInterface, j helper.JWTInterface) instruktur.InstrukturHandlerInterface {
-	return &InstrukturHandler{
+func New(u kategori.KategoriServiceInterface, j helper.JWTInterface) kategori.KategoriHandlerInterface {
+	return &KategoriHandler{
 		s: u,
 		j: j,
 	}
 }
 
-func (h *InstrukturHandler) GetAllInstruktur() echo.HandlerFunc {
+func (h *KategoriHandler) GetAllKategori() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		// Token
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
@@ -42,6 +44,7 @@ func (h *InstrukturHandler) GetAllInstruktur() echo.HandlerFunc {
 			return helper.UnauthorizedError(c)
 		}
 
+		// Pagination
 		pageStr := c.QueryParam("page")
 		page, err := strconv.Atoi(pageStr)
 		if err != nil || page <= 0 {
@@ -51,26 +54,23 @@ func (h *InstrukturHandler) GetAllInstruktur() echo.HandlerFunc {
 		limitStr := c.QueryParam("limit")
 		limit, err := strconv.Atoi(limitStr)
 		if err != nil || limit <= 0 {
-			limit = 10 // Limit 10 walaupun fe minta 100
+			limit = 10
 		}
-
-		data, totalPages, err := h.s.GetInstrukturWithPagination(page, limit)
+		data, totalPages, err := h.s.GetKategoriWithPagination(page, limit)
 		metadata := MetadataResponse{
 			TotalPage: totalPages,
 			Page:      page,
 		}
-		var response []DataInsrukturResponse
-		for _, f := range data {
-			response = append(response, DataInsrukturResponse{
-				ID:     f.ID,
-				Name:   f.Name,
-				Gender: f.Gender,
-				Email:  f.Email,
-				Alamat: f.Alamat,
-				NoHp:   f.NoHp,
+
+		var response []KategoriResponse
+		for _, v := range data {
+			response = append(response, KategoriResponse{
+				ID:        v.ID,
+				Nama:      v.Nama,
+				Deskripsi: v.Deskripsi,
+				ImageUrl:  v.ImageUrl,
 			})
 		}
-
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
@@ -79,8 +79,9 @@ func (h *InstrukturHandler) GetAllInstruktur() echo.HandlerFunc {
 	}
 }
 
-func (h *InstrukturHandler) GetAllInstrukturByID() echo.HandlerFunc {
+func (h *KategoriHandler) GetKategoriById() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		// Token
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
@@ -97,25 +98,26 @@ func (h *InstrukturHandler) GetAllInstrukturByID() echo.HandlerFunc {
 		}
 
 		id := c.Param("id")
-		dataInstruktur, err := h.s.GetAllInstrukturByID(id)
+		dataKategori, err := h.s.GetKategoriById(id)
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		dataResponse := DataInsrukturResponse{
-			ID:     dataInstruktur.ID,
-			Email:  dataInstruktur.Email,
-			Name:   dataInstruktur.Name,
-			Gender: dataInstruktur.Gender,
-			Alamat: dataInstruktur.Alamat,
-			NoHp:   dataInstruktur.NoHp,
+		dataResponse := KategoriResponse{
+			ID:        dataKategori.ID,
+			Nama:      dataKategori.Nama,
+			Deskripsi: dataKategori.Deskripsi,
+			ImageUrl:  dataKategori.ImageUrl,
 		}
-		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, "sukses", dataResponse))
+
+		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, "Berhasil", dataResponse))
+
 	}
 }
 
-func (h *InstrukturHandler) PostInstruktur() echo.HandlerFunc {
+func (h *KategoriHandler) CreateKategori() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		// Token
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
@@ -131,36 +133,57 @@ func (h *InstrukturHandler) PostInstruktur() echo.HandlerFunc {
 			return helper.UnauthorizedError(c)
 		}
 
-		var dataRequest PostInstrukturRequest
+		// Logic
+		var dataRequest RequestKategori
 		err = c.Bind(&dataRequest)
 		if err != nil {
 			code, message := helper.HandleEchoError(err)
 			return c.JSON(code, helper.FormatResponse(false, message, nil))
 		}
 
-		validGender := false
-		dataRequest.Gender = strings.TrimSpace(strings.ToLower(dataRequest.Gender))
-		for _, v := range constant.ValidGenders {
-			if v == dataRequest.Gender {
-				validGender = true
-				break
-			}
+		if dataRequest.Nama == "" {
+			return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, constant.ErrEmptyNamaKategori.Error(), nil))
 		}
-		if !validGender {
-			return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, constant.ErrGenderChoice.Error(), nil))
+		if dataRequest.Deskripsi == "" {
+			return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, constant.ErrEmptyDeskripsiKategori.Error(), nil))
+		}
+		// Validate the existence of image file without uploading it
+		file, err := c.FormFile("image")
+		if err != nil {
+			log.Println("Error getting file:", err)
+			return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, "Failed to get image", nil))
 		}
 
-		dataInstruktur := instruktur.Instruktur{
+		// All validations passed, now proceed to upload the image
+		src, err := file.Open()
+		if err != nil {
+			log.Println("Error opening file:", err)
+			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Error opening file", nil))
+		}
+		defer src.Close()
+
+		// Generate unique filename
+		objectName := fmt.Sprintf("%s_%s", uuid.New().String(), file.Filename)
+
+		// Upload file to GCS
+		err = helper.Uploader.UploadFileGambarKategori(src, objectName)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Failed to upload file to GCS", nil))
+		}
+
+		// Generate image URL
+		imageUrl := fmt.Sprintf("https://storage.googleapis.com/%s/%s%s", helper.Uploader.BucketName, helper.UploadPathKategori, objectName)
+
+		dataResponse := kategori.Kategori{
 			ID:        uuid.New().String(),
-			Email:     dataRequest.Email,
-			Name:      dataRequest.Name,
-			Gender:    dataRequest.Gender,
-			Alamat:    dataRequest.Alamat,
-			NoHp:      dataRequest.NoHp,
+			Nama:      dataRequest.Nama,
+			Deskripsi: dataRequest.Deskripsi,
+			ImageUrl:  imageUrl,
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		}
-		err = h.s.PostInstruktur(dataInstruktur)
+
+		err = h.s.CreateKategori(dataResponse)
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
@@ -168,9 +191,9 @@ func (h *InstrukturHandler) PostInstruktur() echo.HandlerFunc {
 		return c.JSON(http.StatusCreated, helper.FormatResponse(true, "Success", nil))
 	}
 }
-
-func (h *InstrukturHandler) UpdateInstruktur() echo.HandlerFunc {
+func (h *KategoriHandler) UpdateKategori() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		// Token
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
@@ -187,37 +210,58 @@ func (h *InstrukturHandler) UpdateInstruktur() echo.HandlerFunc {
 		}
 
 		id := c.Param("id")
-		dataId, err := h.s.GetAllInstrukturByID(id)
+		dataId, err := h.s.GetKategoriById(id)
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		var updataRequest UpdateInstrukturRequest
-		err = c.Bind(&updataRequest)
+		var dataRequest RequestKategori
+		err = c.Bind(&dataRequest)
 		if err != nil {
 			code, message := helper.HandleEchoError(err)
 			return c.JSON(code, helper.FormatResponse(false, message, nil))
 		}
 
-		dataResponse := instruktur.UpdateInstruktur{
-			ID:     dataId.ID,
-			Name:   updataRequest.Name,
-			Gender: updataRequest.Gender,
-			Email:  updataRequest.Email,
-			Alamat: updataRequest.Alamat,
-			NoHp:   updataRequest.NoHp,
+		file, err := c.FormFile("image")
+		var imageUrl string
+		if err == nil {
+			// Gambar Baru
+			src, err := file.Open()
+			if err != nil {
+				log.Println("Error opening file:", err)
+				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Error opening file", nil))
+			}
+			defer src.Close()
+
+			// Generate unique filename and upload path
+			objectName := fmt.Sprintf("%s_%s", uuid.New().String(), file.Filename)
+			err = helper.Uploader.UploadFileGambarKategori(src, objectName)
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Failed to upload file to GCS", nil))
+			}
+			imageUrl = fmt.Sprintf("https://storage.googleapis.com/%s/%s%s", helper.Uploader.BucketName, helper.UploadPathKategori, objectName)
+		} else {
+			// Data lama
+			imageUrl = dataId.ImageUrl
+		}
+		dataResponse := kategori.Kategori{
+			ID:        dataId.ID,
+			Nama:      dataRequest.Nama,
+			Deskripsi: dataRequest.Deskripsi,
+			ImageUrl:  imageUrl,
 		}
 
-		err = h.s.UpdateInstruktur(dataResponse)
+		err = h.s.UpdateKategori(dataResponse)
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
+
 		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, "Success", nil))
 	}
 }
-
-func (h *InstrukturHandler) DeleteInstruktur() echo.HandlerFunc {
+func (h *KategoriHandler) DeleteKategori() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		// Token
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
@@ -234,66 +278,11 @@ func (h *InstrukturHandler) DeleteInstruktur() echo.HandlerFunc {
 		}
 
 		id := c.Param("id")
-		err = h.s.DeleteInstruktur(id)
+		err = h.s.DeleteKategori(id)
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
 		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Success", nil))
-	}
-}
-
-func (h *InstrukturHandler) GetInstruktorByName() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		name := c.QueryParam("name") // Ambil parameter nama dari query URL
-		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
-		if tokenString == "" {
-			helper.UnauthorizedError(c)
-		}
-		token, err := h.j.ValidateToken(tokenString)
-		if err != nil {
-			helper.UnauthorizedError(c)
-		}
-
-		adminData := h.j.ExtractAdminToken(token)
-		role, ok := adminData[constant.JWT_ROLE]
-		if !ok || role != constant.RoleAdmin {
-			return helper.UnauthorizedError(c)
-		}
-
-		pageStr := c.QueryParam("page")
-		page, err := strconv.Atoi(pageStr)
-		if err != nil || page <= 0 {
-			page = 1
-		}
-
-		limitStr := c.QueryParam("limit")
-		limit, err := strconv.Atoi(limitStr)
-		if err != nil || limit <= 0 {
-			limit = 10 // Limit 10 walaupun fe minta 100
-		}
-
-		result, totalPages, err := h.s.GetInstruktorByName(name, page, limit)
-		metadata := MetadataResponse{
-			TotalPage: totalPages,
-			Page:      page,
-		}
-
-		var response []DataInsrukturResponse
-		for _, f := range result {
-			response = append(response, DataInsrukturResponse{
-				ID:     f.ID,
-				Name:   f.Name,
-				Gender: f.Gender,
-				Email:  f.Email,
-				Alamat: f.Alamat,
-				NoHp:   f.NoHp,
-			})
-		}
-		if err != nil {
-			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
-		}
-
-		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, "Berhasil", metadata, response))
 	}
 }

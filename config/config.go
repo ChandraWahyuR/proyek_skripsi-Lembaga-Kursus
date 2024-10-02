@@ -16,6 +16,10 @@ type Config struct {
 
 	JWT_Secret string
 	SMTP       SMTPConfig
+
+	GoogleCredentials string
+	GCP_ProjectID     string
+	GCP_BucketName    string
 }
 
 type SMTPConfig struct {
@@ -41,6 +45,11 @@ func InitConfig() *Config {
 	res.SMTP.SMTPPORT = os.Getenv("SMTP_PORT")
 	res.SMTP.SMTPUSER = os.Getenv("SMTP_USER")
 	res.SMTP.SMTPPASS = os.Getenv("SMTP_PASSWORD")
+
+	// Google Cloud Config
+	res.GoogleCredentials = os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
+	res.GCP_ProjectID = os.Getenv("GCP_PROJECT_ID")
+	res.GCP_BucketName = os.Getenv("GCP_BUCKET_NAME")
 
 	return res
 }

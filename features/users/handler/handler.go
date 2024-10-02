@@ -14,14 +14,14 @@ type UserHandler struct {
 	j helper.JWTInterface
 }
 
-func New(u users.UserServiceInterface, j helper.JWTInterface) UserHandler {
-	return UserHandler{
+func New(u users.UserServiceInterface, j helper.JWTInterface) users.UserHandlerInterface {
+	return &UserHandler{
 		s: u,
 		j: j,
 	}
 }
 
-func (h UserHandler) Register() echo.HandlerFunc {
+func (h *UserHandler) Register() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var reqRegister UserRegisterRequest
 
@@ -45,7 +45,7 @@ func (h UserHandler) Register() echo.HandlerFunc {
 	}
 }
 
-func (h UserHandler) Login() echo.HandlerFunc {
+func (h *UserHandler) Login() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var reqLogin UserLoginRequest
 
@@ -72,7 +72,7 @@ func (h UserHandler) Login() echo.HandlerFunc {
 	}
 }
 
-func (h UserHandler) ForgotPassword() echo.HandlerFunc {
+func (h *UserHandler) ForgotPassword() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var reqForgotPassword ForgotPasswordRequest
 
@@ -95,7 +95,7 @@ func (h UserHandler) ForgotPassword() echo.HandlerFunc {
 	}
 }
 
-func (h UserHandler) VerifyOTP() echo.HandlerFunc {
+func (h *UserHandler) VerifyOTP() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var reqVerifyOTP VerifyOtpRequest
 
@@ -131,7 +131,7 @@ func (h UserHandler) VerifyOTP() echo.HandlerFunc {
 	}
 }
 
-func (h UserHandler) ResetPassword() echo.HandlerFunc {
+func (h *UserHandler) ResetPassword() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var reqResetPassword ResetPasswordRequest
 
