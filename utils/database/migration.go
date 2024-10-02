@@ -4,6 +4,7 @@ import (
 	Admin "skripsi/features/admin/data"
 	Instruktor "skripsi/features/instruktur/data"
 	Kategori "skripsi/features/kategori/data"
+	Kursus "skripsi/features/kursus/data"
 	Users "skripsi/features/users/data"
 
 	"gorm.io/gorm"
@@ -15,5 +16,13 @@ func Migrate(db *gorm.DB) error {
 	db.AutoMigrate(&Admin.Admin{})
 	db.AutoMigrate(&Instruktor.Instruktur{})
 	db.AutoMigrate(&Kategori.Kategori{})
+	// Kursus
+	db.AutoMigrate(&Kursus.Kursus{})
+	db.AutoMigrate(&Kursus.ImageKursus{})
+	db.AutoMigrate(&Kursus.KategoriKursus{})
+	// db.AutoMigrate(&Kursus.InstrukturKursus{})
+	db.AutoMigrate(&Kursus.Materi{})
+	db.AutoMigrate(&Kursus.MateriPembelajaran{})
+
 	return nil
 }

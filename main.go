@@ -27,6 +27,10 @@ import (
 	KategoriData "skripsi/features/kategori/data"
 	KategoriHandler "skripsi/features/kategori/handler"
 	KategoriService "skripsi/features/kategori/service"
+
+	KursusData "skripsi/features/kursus/data"
+	KursusHandler "skripsi/features/kursus/handler"
+	KursusService "skripsi/features/kursus/service"
 )
 
 // Ini logout kaya forgot juga diredis aja
@@ -72,10 +76,15 @@ func main() {
 	kategoriService := KategoriService.New(kategoriData, jwt)
 	KategoriHandler := KategoriHandler.New(kategoriService, jwt)
 
+	kursusData := KursusData.New(db)
+	kursusService := KursusService.New(kursusData, jwt)
+	kursusHandler := KursusHandler.New(kursusService, jwt)
+
 	routes.RouteUser(e, usersHandler, *cfg)
 	routes.RouteAdmin(e, adminHandler, *cfg)
 	routes.RouteInstruktor(e, instrukturHandler, *cfg)
 	routes.RouteKategori(e, KategoriHandler, *cfg)
+	routes.RouteKursus(e, kursusHandler, *cfg)
 
 	// Swagger
 	e.Static("/", "static")

@@ -15,6 +15,7 @@ import (
 
 const (
 	UploadPathKategori = "gambar/kategori/"
+	UploadPathKursus   = "gambar/kursus/"
 	UploadPathUser     = "gambar/users/"
 )
 
@@ -67,4 +68,8 @@ func (c *ClientUploader) UploadFile(file multipart.File, object string, uploadPa
 
 func (c *ClientUploader) UploadFileGambarKategori(file multipart.File, object string) error {
 	return c.UploadFile(file, object, UploadPathKategori)
+}
+
+func (c *ClientUploader) UploadFileGambarKursus(file multipart.File, object string) error {
+	return c.UploadFile(file, object, UploadPathKursus)
 }
