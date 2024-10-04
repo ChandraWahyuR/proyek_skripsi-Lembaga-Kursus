@@ -73,3 +73,19 @@ func (c *ClientUploader) UploadFileGambarKategori(file multipart.File, object st
 func (c *ClientUploader) UploadFileGambarKursus(file multipart.File, object string) error {
 	return c.UploadFile(file, object, UploadPathKursus)
 }
+
+// func (c *ClientUploader) DeleteFileGambarKursus(objectUrl string) error {
+// 	// Parsing the object name from the full URL
+// 	objectName := strings.Replace(objectUrl, fmt.Sprintf("https://storage.googleapis.com/%s/%s", c.BucketName, UploadPathKursus), "", 1)
+
+// 	ctx := context.Background()
+// 	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
+// 	defer cancel()
+
+// 	// Delete the object in GCS
+// 	err := c.cl.Bucket(c.BucketName).Object(UploadPathKursus + objectName).Delete(ctx)
+// 	if err != nil {
+// 		return fmt.Errorf("Object(%q).Delete: %v", objectName, err)
+// 	}
+// 	return nil
+// }

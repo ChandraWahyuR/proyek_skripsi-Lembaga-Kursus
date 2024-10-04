@@ -20,8 +20,6 @@ func Migrate(db *gorm.DB) error {
 	db.AutoMigrate(&Kursus.Kursus{})
 	db.AutoMigrate(&Kursus.ImageKursus{})
 	db.AutoMigrate(&Kursus.KategoriKursus{})
-	// db.AutoMigrate(&Kursus.InstrukturKursus{})
-	db.AutoMigrate(&Kursus.Materi{})
 	db.AutoMigrate(&Kursus.MateriPembelajaran{})
 
 	return nil

@@ -11,6 +11,6 @@ type KursusRequest struct {
 	Kategori           []string  `json:"kategori" form:"kategori"`
 	Jadwal             time.Time `json:"jadwal" form:"jadwal"`
 	Harga              int       `json:"harga" form:"harga"`
-	InstruktorID       string    `json:"instruktur_id" form:"instruktor_id"`
+	InstrukturID       string    `json:"instruktur_id" form:"instruktur_id"`
 	MateriPembelajaran []string  `json:"materi_pembelajaran" form:"materi"`
 }
