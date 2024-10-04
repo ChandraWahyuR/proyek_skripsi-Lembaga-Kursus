@@ -69,3 +69,9 @@ var ErrKategoriNotFound = errors.New("kategori tidak ditemukan")
 var ErrEmptyNamaKategori = errors.New("nama kategori tidak boleh kosong")
 var ErrEmptyImageUrlKategori = errors.New("gambar kategori tidak boleh kosong")
 var ErrEmptyDeskripsiKategori = errors.New("deskripsi kategori tidak boleh kosong")
+
+// Kursus
+var ErrKursusNotFound = errors.New("data kursus tidak ada")
+var ErrImageKursusNotFound = errors.New("gambar kursus tidak ada")
+var ErrKategoriKursusNotFound = errors.New("kategori kursus tidak ada")
+var ErrMateriKursusNotFound = errors.New("materi kursus tidak ada")

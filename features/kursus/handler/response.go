@@ -41,11 +41,11 @@ type KategoriKursus struct {
 }
 
 type Instruktur struct {
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
 type MateriPembelajaran struct {
-	Name      string `json:"name"`
 	Deskripsi string `json:"deskripsi"`
 }
 

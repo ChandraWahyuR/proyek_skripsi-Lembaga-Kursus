@@ -32,3 +32,23 @@ func (s *KursusService) AddKursus(data kursus.Kursus) error {
 func (s *KursusService) GetKursusPagination(page int, limit int) ([]kursus.Kursus, int, error) {
 	return s.d.GetKursusPagination(page, limit)
 }
+
+func (s *KursusService) UpdateKursus(data kursus.Kursus) error {
+	return s.d.UpdateKursus(data)
+}
+
+func (s *KursusService) DeleteKursus(id string) error {
+	return s.d.DeleteKursus(id)
+}
+
+func (s *KursusService) DeleteImageKursus(id string) error {
+	return s.d.DeleteImageKursus(id)
+}
+
+func (s *KursusService) DeleteMateriKursus(id string) error {
+	return s.d.DeleteMateriKursus(id)
+}
+
+func (s *KursusService) DeleteKategoriKursus(id string) error {
+	return s.d.DeleteMateriKursus(id)
+}

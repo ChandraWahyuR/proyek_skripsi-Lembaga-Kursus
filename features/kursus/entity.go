@@ -1,6 +1,7 @@
 package kursus
 
 import (
+	"skripsi/features/instruktur"
 	"skripsi/features/kategori"
 	"time"
 
@@ -10,12 +11,13 @@ import (
 type Kursus struct {
 	ID                 string
 	Nama               string
-	Image              []ImageKursus
 	Deskripsi          string
-	Kategori           []KategoriKursus
 	Jadwal             time.Time
 	Harga              int
-	InstruktorID       string
+	InstrukturID       string
+	Instruktur         instruktur.Instruktur
+	Kategori           []KategoriKursus
+	Image              []ImageKursus
 	MateriPembelajaran []MateriPembelajaran
 }
 
@@ -27,16 +29,9 @@ type KategoriKursus struct {
 }
 
 type MateriPembelajaran struct {
-	ID       string
-	KursusID string
-	MateriID string
-	Materi   Materi
-	Position int
-}
-
-type Materi struct {
 	ID        string
-	Name      string
+	KursusID  string
+	Position  int
 	Deskripsi string
 }
 
@@ -54,8 +49,8 @@ type KursusHandlerInterface interface {
 	// GetAllKursusByName() echo.HandlerFunc
 
 	AddKursus() echo.HandlerFunc
-	// UpdateKursus() echo.HandlerFunc
-	// DeleteKursus() echo.HandlerFunc
+	UpdateKursus() echo.HandlerFunc
+	DeleteKursus() echo.HandlerFunc
 }
 type KursusDataInterface interface {
 	GetAllKursus() ([]Kursus, error)
@@ -63,10 +58,14 @@ type KursusDataInterface interface {
 	// GetAllKursusByName(name string, page int, limit int) ([]Kursus, int, error)
 
 	AddKursus(Kursus) error
-	// UpdateKursus(Kursus) error
-	// DeleteKursus(id string) error
+	UpdateKursus(Kursus) error
+	DeleteKursus(id string) error
 
 	GetKursusPagination(page, limit int) ([]Kursus, int, error)
+	//
+	DeleteImageKursus(id string) error
+	DeleteMateriKursus(id string) error
+	DeleteKategoriKursus(id string) error
 }
 
 type KursusServiceInterface interface {
@@ -75,8 +74,12 @@ type KursusServiceInterface interface {
 	// GetAllKursusByName(name string, page int, limit int) ([]Kursus, int, error)
 
 	AddKursus(Kursus) error
-	// UpdateKursus(Kursus) error
-	// DeleteKursus(id string) error
+	UpdateKursus(Kursus) error
+	DeleteKursus(id string) error
 
 	GetKursusPagination(page, limit int) ([]Kursus, int, error)
+	//
+	DeleteImageKursus(id string) error
+	DeleteMateriKursus(id string) error
+	DeleteKategoriKursus(id string) error
 }
