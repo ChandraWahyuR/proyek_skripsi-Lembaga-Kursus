@@ -13,10 +13,10 @@ type Kursus struct {
 	ID                 string                `gorm:"type:varchar(50);primaryKey;not null;column:id"`
 	Nama               string                `gorm:"type:varchar(255);not null;column:nama"`
 	Deskripsi          string                `gorm:"type:text;not null;column:deskripsi"`
-	Jadwal             time.Time             `gorm:"not null;column:jadwal"`
 	Harga              int                   `gorm:"type:int;not null;column:harga"`
 	InstrukturID       string                `gorm:"type:varchar(50);not null;column:instruktur_id"`
 	Instruktur         instruktur.Instruktur `gorm:"foreignKey:InstrukturID;references:ID"`
+	Jadwal             []JadwalKursus        `gorm:"foreignKey:KursusID"`
 	Image              []ImageKursus         `gorm:"foreignKey:KursusID"`
 	Kategori           []KategoriKursus      `gorm:"foreignKey:KursusID"`
 	MateriPembelajaran []MateriPembelajaran  `gorm:"foreignKey:KursusID"`
@@ -50,6 +50,16 @@ type MateriPembelajaran struct {
 	Deskripsi string `gorm:"type:text;not null;column:deskripsi"`
 }
 
+type JadwalKursus struct {
+	*gorm.Model
+	ID         string    `gorm:"type:varchar(50);primaryKey;not null;column:id"`
+	KursusID   string    `gorm:"type:varchar(50);not null;column:kursus_id"`
+	Kursus     Kursus    `gorm:"foreignKey:KursusID;references:ID"`
+	Hari       string    `gorm:"type:varchar(20);not null;column:hari"`
+	JamMulai   time.Time `gorm:"not null;column:jam_mulai"`
+	JamSelesai time.Time `gorm:"not null;column:jam_selesai"`
+}
+
 func (Kursus) TableName() string {
 	return "kursus"
 }
@@ -64,4 +74,8 @@ func (KategoriKursus) TableName() string {
 
 func (MateriPembelajaran) TableName() string {
 	return "materi_pembelajarans"
+}
+
+func (JadwalKursus) TableName() string {
+	return "jadwal_kursus"
 }

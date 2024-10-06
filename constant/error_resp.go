@@ -75,3 +75,16 @@ var ErrKursusNotFound = errors.New("data kursus tidak ada")
 var ErrImageKursusNotFound = errors.New("gambar kursus tidak ada")
 var ErrKategoriKursusNotFound = errors.New("kategori kursus tidak ada")
 var ErrMateriKursusNotFound = errors.New("materi kursus tidak ada")
+var ErrJadwal = errors.New("jadwal harus diisi")
+var ErrJadwalFormat = errors.New("format jadwal salah")
+var ErrGambarKursus = errors.New("gambar tidak boleh kosong")
+var ErrKategoriKursus = errors.New("kategori tidak boleh kosong")
+var ErrMateriPembelajaran = errors.New("materi tidak boleh kosong")
+var ErrKursusNotfound = errors.New("kursus tidak ditemukan")
+
+// GCS
+var ErrOpeningFile = errors.New("gagal membuka file")
+var ErrUploadGCS = errors.New("gagal upload gambar")
+
+// ID
+var ErrGetID = errors.New("id tidak ditemukan")

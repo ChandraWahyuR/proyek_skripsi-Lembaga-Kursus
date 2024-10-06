@@ -2,8 +2,10 @@ package helper
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"skripsi/constant"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -78,4 +80,21 @@ func ValidateUsername(username string) (string, error) {
 		return "", errors.New("invalid username")
 	}
 	return username, nil
+}
+func ValidateTime(times string) (time.Time, error) {
+	currentDate := time.Now().Format("2006-01-02")
+	jamComplete := fmt.Sprintf("%s %s", currentDate, times)
+
+	// Parse ke wib
+	loc, err := time.LoadLocation("Asia/Jakarta")
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	jamParsed, err := time.ParseInLocation("2006-01-02 15:04", jamComplete, loc)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	return jamParsed, nil
 }

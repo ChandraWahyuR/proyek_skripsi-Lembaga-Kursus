@@ -2,12 +2,12 @@ package handler
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"skripsi/constant"
 	"skripsi/features/kursus"
 	"skripsi/helper"
 	"strconv"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -78,7 +78,7 @@ func (h *KursusHandler) GetAllKursus() echo.HandlerFunc {
 				Deskripsi: responseData.Deskripsi,
 				Image:     imageResponse,
 				Harga:     responseData.Harga,
-				Jadwal:    responseData.Jadwal,
+				Jadwal:    mapJadwal(responseData.Jadwal),
 			})
 		}
 		if err != nil {
@@ -117,7 +117,7 @@ func (h *KursusHandler) GetAllKursusById() echo.HandlerFunc {
 			ID:        dataKursus.ID,
 			Nama:      dataKursus.Nama,
 			Deskripsi: dataKursus.Deskripsi,
-			Jadwal:    dataKursus.Jadwal,
+			Jadwal:    mapJadwal(dataKursus.Jadwal),
 			Harga:     dataKursus.Harga,
 			Instruktur: Instruktur{
 				ID:   dataKursus.Instruktur.ID,
@@ -151,7 +151,7 @@ func (h *KursusHandler) AddKursus() echo.HandlerFunc {
 
 		var kursusRequest KursusRequest
 		if err := c.Bind(&kursusRequest); err != nil {
-			return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, "Invalid request", nil))
+			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
 		form, err := c.MultipartForm()
@@ -164,17 +164,16 @@ func (h *KursusHandler) AddKursus() echo.HandlerFunc {
 			ID:           uuid.New().String(), // UUID unik untuk kursus
 			Nama:         kursusRequest.Nama,
 			Deskripsi:    kursusRequest.Deskripsi,
-			Jadwal:       kursusRequest.Jadwal,
 			Harga:        kursusRequest.Harga,
 			InstrukturID: kursusRequest.InstrukturID,
 		}
 
 		// Upload multiple image files
-		files := form.File["image"] // "image" adalah key untuk semua file yang diupload
+		files := form.File["image"]
 		for i, file := range files {
 			src, err := file.Open()
 			if err != nil {
-				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Error opening file", nil))
+				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, constant.ErrOpeningFile.Error(), nil))
 			}
 			defer src.Close()
 
@@ -184,7 +183,7 @@ func (h *KursusHandler) AddKursus() echo.HandlerFunc {
 			// Upload file to GCS
 			err = helper.Uploader.UploadFileGambarKursus(src, objectName)
 			if err != nil {
-				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Failed to upload file to GCS", nil))
+				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, constant.ErrUploadGCS.Error(), nil))
 			}
 
 			// Generate image URL
@@ -217,11 +216,42 @@ func (h *KursusHandler) AddKursus() echo.HandlerFunc {
 			})
 		}
 
+		//
+		i := 0
+		for {
+			hari := c.FormValue(fmt.Sprintf("jadwal[%d][hari]", i))
+			jamMulai := c.FormValue(fmt.Sprintf("jadwal[%d][jam_mulai]", i))
+			jamSelesai := c.FormValue(fmt.Sprintf("jadwal[%d][jam_selesai]", i))
+
+			if hari == "" || jamMulai == "" || jamSelesai == "" {
+				break
+			}
+
+			// Conver waktu
+			jamMulaiParsed, err := helper.ValidateTime(jamMulai)
+			if err != nil {
+				return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, "Invalid jam_mulai format", nil))
+			}
+
+			jamSelesaiParsed, err := helper.ValidateTime(jamSelesai)
+			if err != nil {
+				return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, "Invalid jam_selesai format", nil))
+			}
+
+			kursusData.Jadwal = append(kursusData.Jadwal, kursus.JadwalKursus{
+				ID:         uuid.New().String(),
+				KursusID:   kursusData.ID,
+				Hari:       hari,
+				JamMulai:   jamMulaiParsed,
+				JamSelesai: jamSelesaiParsed,
+			})
+
+			i++
+		}
+
 		// Simpan kursus ke database
 		err = h.s.AddKursus(kursusData)
 		if err != nil {
-			// Tambahkan log error untuk tracking
-			log.Println("Error inserting kursus data: ", err)
 			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, err.Error(), nil))
 		}
 
@@ -248,8 +278,6 @@ func (h *KursusHandler) UpdateKursus() echo.HandlerFunc {
 		}
 
 		id := c.Param("id")
-		log.Println("ID dari URL: ", id)
-
 		dataKursus, err := h.s.GetAllKursusById(id)
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
@@ -272,9 +300,9 @@ func (h *KursusHandler) UpdateKursus() echo.HandlerFunc {
 			ID:           dataKursus.ID,
 			Nama:         kursusRequest.Nama,
 			Deskripsi:    kursusRequest.Deskripsi,
-			Jadwal:       kursusRequest.Jadwal,
 			InstrukturID: kursusRequest.InstrukturID,
 			Harga:        kursusRequest.Harga,
+			UpdatedAt:    time.Now(),
 		}
 
 		// Add new materials
@@ -285,6 +313,38 @@ func (h *KursusHandler) UpdateKursus() echo.HandlerFunc {
 				KursusID:  dataKursus.ID,
 				Position:  i + 1,
 			})
+		}
+
+		i := 0
+		for {
+			hari := c.FormValue(fmt.Sprintf("jadwal[%d][hari]", i))
+			jamMulai := c.FormValue(fmt.Sprintf("jadwal[%d][jam_mulai]", i))
+			jamSelesai := c.FormValue(fmt.Sprintf("jadwal[%d][jam_selesai]", i))
+
+			if hari == "" || jamMulai == "" || jamSelesai == "" {
+				break
+			}
+
+			// Conver waktu
+			jamMulaiParsed, err := helper.ValidateTime(jamMulai)
+			if err != nil {
+				return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, "Invalid jam_mulai format", nil))
+			}
+
+			jamSelesaiParsed, err := helper.ValidateTime(jamSelesai)
+			if err != nil {
+				return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, "Invalid jam_selesai format", nil))
+			}
+
+			responseData.Jadwal = append(responseData.Jadwal, kursus.JadwalKursus{
+				ID:         uuid.New().String(),
+				KursusID:   responseData.ID,
+				Hari:       hari,
+				JamMulai:   jamMulaiParsed,
+				JamSelesai: jamSelesaiParsed,
+			})
+
+			i++
 		}
 
 		// Add new categories
@@ -301,14 +361,14 @@ func (h *KursusHandler) UpdateKursus() echo.HandlerFunc {
 		for i, file := range files {
 			src, err := file.Open()
 			if err != nil {
-				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Error opening file", nil))
+				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, constant.ErrOpeningFile.Error(), nil))
 			}
 			defer src.Close()
 
 			objectName := fmt.Sprintf("%s_%s", uuid.New().String(), file.Filename)
 			err = helper.Uploader.UploadFileGambarKursus(src, objectName)
 			if err != nil {
-				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Failed to upload file to GCS", nil))
+				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, constant.ErrUploadGCS.Error(), nil))
 			}
 
 			imageUrl := fmt.Sprintf("https://storage.googleapis.com/%s/%s%s", helper.Uploader.BucketName, helper.UploadPathKursus, objectName)
@@ -324,7 +384,6 @@ func (h *KursusHandler) UpdateKursus() echo.HandlerFunc {
 		// Update kursus data
 		err = h.s.UpdateKursus(responseData)
 		if err != nil {
-			log.Println("Data kursus yang akan diupdate:", responseData)
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Kursus updated successfully", nil))
@@ -351,10 +410,65 @@ func (h *KursusHandler) DeleteKursus() echo.HandlerFunc {
 		id := c.Param("id")
 		err = h.s.DeleteKursus(id)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Kursus not found", nil))
+			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
 		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Kursus delete successfully", nil))
+	}
+}
+
+func (h *KursusHandler) GetAllKursusByName() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		namaKursus := c.QueryParam("name")
+		// Token
+		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
+		if tokenString == "" {
+			helper.UnauthorizedError(c)
+		}
+		token, err := h.j.ValidateToken(tokenString)
+		if err != nil {
+			helper.UnauthorizedError(c)
+		}
+
+		tokenData := h.j.ExtractUserToken(token)
+		role, ok := tokenData[constant.JWT_ROLE]
+		if !ok || (role != constant.RoleAdmin && role != constant.RoleUser) {
+			return helper.UnauthorizedError(c)
+		}
+
+		// Pagination
+		pageStr := c.QueryParam("page")
+		page, err := strconv.Atoi(pageStr)
+		if err != nil || page <= 0 {
+			page = 1
+		}
+
+		limitStr := c.QueryParam("limit")
+		limit, err := strconv.Atoi(limitStr)
+		if err != nil || limit <= 0 {
+			limit = 10
+		}
+		result, totalpage, err := h.s.GetAllKursusByName(namaKursus, page, limit)
+		metaData := MetadataResponse{
+			Page:      page,
+			TotalPage: totalpage,
+		}
+		var response []ResponseGetAllKursus
+		for _, data := range result {
+			response = append(response, ResponseGetAllKursus{
+				ID:        data.ID,
+				Nama:      data.Nama,
+				Deskripsi: data.Deskripsi,
+				Image:     mapImages(data.Image),
+				Jadwal:    mapJadwal(data.Jadwal),
+				Harga:     data.Harga,
+			})
+		}
+		if err != nil {
+			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
+		}
+
+		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, "berhasil", metaData, response))
 	}
 }
 
@@ -389,6 +503,18 @@ func mapMateri(materi []kursus.MateriPembelajaran) []MateriPembelajaran {
 	for _, mat := range materi {
 		result = append(result, MateriPembelajaran{
 			Deskripsi: mat.Deskripsi,
+		})
+	}
+	return result
+}
+
+func mapJadwal(jadwal []kursus.JadwalKursus) []JadwalKursus {
+	var result []JadwalKursus
+	for _, j := range jadwal {
+		result = append(result, JadwalKursus{
+			Hari:       j.Hari,
+			JamMulai:   j.JamMulai.Format("15:04"),
+			JamSelesai: j.JamSelesai.Format("15:04"),
 		})
 	}
 	return result

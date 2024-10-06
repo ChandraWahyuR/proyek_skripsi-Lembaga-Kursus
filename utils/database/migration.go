@@ -21,6 +21,7 @@ func Migrate(db *gorm.DB) error {
 	db.AutoMigrate(&Kursus.ImageKursus{})
 	db.AutoMigrate(&Kursus.KategoriKursus{})
 	db.AutoMigrate(&Kursus.MateriPembelajaran{})
+	db.AutoMigrate(&Kursus.JadwalKursus{})
 
 	return nil
 }

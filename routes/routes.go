@@ -75,4 +75,6 @@ func RouteKursus(e *echo.Echo, kr kursus.KursusHandlerInterface, cfg config.Conf
 	e.PUT("/api/v1/kursus/:id", kr.UpdateKursus(), echojwt.WithConfig(jwtConfig))
 	e.DELETE("/api/v1/kursus/:id", kr.DeleteKursus(), echojwt.WithConfig(jwtConfig))
 	e.POST("/api/v1/kursus", kr.AddKursus(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/kursus/search", kr.GetAllKursusByName(), echojwt.WithConfig(jwtConfig))
+
 }
