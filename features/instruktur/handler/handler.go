@@ -1,13 +1,13 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"skripsi/constant"
 	"skripsi/features/instruktur"
 	"skripsi/helper"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -59,15 +59,15 @@ func (h *InstrukturHandler) GetAllInstruktur() echo.HandlerFunc {
 			TotalPage: totalPages,
 			Page:      page,
 		}
-		var response []DataInsrukturResponse
+		var response []DataInsrukturResponseAll
 		for _, f := range data {
-			response = append(response, DataInsrukturResponse{
-				ID:     f.ID,
-				Name:   f.Name,
-				Gender: f.Gender,
-				Email:  f.Email,
-				Alamat: f.Alamat,
-				NoHp:   f.NoHp,
+			response = append(response, DataInsrukturResponseAll{
+				ID:    f.ID,
+				NIK:   f.NIK,
+				NIP:   f.NomorIndukPendidikan,
+				Name:  f.Name,
+				Email: f.Email,
+				NoHp:  f.NoHp,
 			})
 		}
 
@@ -102,8 +102,11 @@ func (h *InstrukturHandler) GetAllInstrukturByID() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		dataResponse := DataInsrukturResponse{
+		dataResponse := DataInsrukturResponseID{
 			ID:     dataInstruktur.ID,
+			NIK:    dataInstruktur.NIK,
+			NIP:    dataInstruktur.NomorIndukPendidikan,
+			Image:  dataInstruktur.UrlImage,
 			Email:  dataInstruktur.Email,
 			Name:   dataInstruktur.Name,
 			Gender: dataInstruktur.Gender,
@@ -151,15 +154,35 @@ func (h *InstrukturHandler) PostInstruktur() echo.HandlerFunc {
 		}
 
 		dataInstruktur := instruktur.Instruktur{
-			ID:        uuid.New().String(),
-			Email:     dataRequest.Email,
-			Name:      dataRequest.Name,
-			Gender:    dataRequest.Gender,
-			Alamat:    dataRequest.Alamat,
-			NoHp:      dataRequest.NoHp,
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
+			ID:                   uuid.New().String(),
+			Email:                dataRequest.Email,
+			Name:                 dataRequest.Name,
+			Gender:               dataRequest.Gender,
+			Alamat:               dataRequest.Alamat,
+			NIK:                  dataRequest.NIK,
+			NomorIndukPendidikan: dataRequest.NIP,
+			NoHp:                 dataRequest.NoHp,
 		}
+
+		file, err := c.FormFile("image")
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, "Failed to get image", nil))
+		}
+		// Upload
+		src, err := file.Open()
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Error opening file", nil))
+		}
+		defer src.Close()
+		objectName := fmt.Sprintf("%s_%s", uuid.New().String(), file.Filename)
+
+		err = helper.Uploader.UploadFileGambarInstruktur(src, objectName)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, constant.ErrUploadGCS.Error(), nil))
+		}
+
+		imageUrl := fmt.Sprintf("https://storage.googleapis.com/%s/%s%s", helper.Uploader.BucketName, helper.UploadPathKursus, objectName)
+		dataInstruktur.UrlImage = imageUrl
 		err = h.s.PostInstruktur(dataInstruktur)
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
@@ -199,13 +222,54 @@ func (h *InstrukturHandler) UpdateInstruktur() echo.HandlerFunc {
 			return c.JSON(code, helper.FormatResponse(false, message, nil))
 		}
 
+		file, err := c.FormFile("image")
+		var newImageUrl string
+		if err == nil {
+			src, err := file.Open()
+			if err != nil {
+				return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
+			}
+			defer src.Close()
+
+			objectName := fmt.Sprintf("%s_%s", uuid.New().String(), file.Filename)
+			err = helper.Uploader.UploadFileGambarInstruktur(src, objectName)
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, constant.ErrUploadGCS.Error(), nil))
+			}
+
+			// Update image
+			newImageUrl = fmt.Sprintf("https://storage.googleapis.com/%s/%s%s", helper.Uploader.BucketName, helper.UploadPathInstruktur, objectName)
+		} else {
+			// Data lama
+			newImageUrl = dataId.UrlImage
+		}
+
+		// Gender
+		validGender := false
+		if strings.TrimSpace(updataRequest.Gender) == "" {
+			updataRequest.Gender = dataId.Gender
+		} else {
+			updataRequest.Gender = strings.TrimSpace(strings.ToLower(updataRequest.Gender))
+			for _, v := range constant.ValidGenders {
+				if v == updataRequest.Gender {
+					validGender = true
+					break
+				}
+			}
+			if !validGender {
+				return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, constant.ErrGenderChoice.Error(), nil))
+			}
+		}
 		dataResponse := instruktur.UpdateInstruktur{
-			ID:     dataId.ID,
-			Name:   updataRequest.Name,
-			Gender: updataRequest.Gender,
-			Email:  updataRequest.Email,
-			Alamat: updataRequest.Alamat,
-			NoHp:   updataRequest.NoHp,
+			ID:                   dataId.ID,
+			Name:                 updataRequest.Name,
+			Gender:               updataRequest.Gender,
+			Email:                updataRequest.Email,
+			Alamat:               updataRequest.Alamat,
+			NoHp:                 updataRequest.NoHp,
+			NIK:                  updataRequest.NIK,
+			NomorIndukPendidikan: updataRequest.NIP,
+			UrlImage:             newImageUrl,
 		}
 
 		err = h.s.UpdateInstruktur(dataResponse)
@@ -279,15 +343,15 @@ func (h *InstrukturHandler) GetInstruktorByName() echo.HandlerFunc {
 			Page:      page,
 		}
 
-		var response []DataInsrukturResponse
+		var response []DataInsrukturResponseAll
 		for _, f := range result {
-			response = append(response, DataInsrukturResponse{
-				ID:     f.ID,
-				Name:   f.Name,
-				Gender: f.Gender,
-				Email:  f.Email,
-				Alamat: f.Alamat,
-				NoHp:   f.NoHp,
+			response = append(response, DataInsrukturResponseAll{
+				ID:    f.ID,
+				Name:  f.Name,
+				Email: f.Email,
+				NoHp:  f.NoHp,
+				NIK:   f.NIK,
+				NIP:   f.NomorIndukPendidikan,
 			})
 		}
 		if err != nil {

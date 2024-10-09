@@ -7,24 +7,30 @@ import (
 )
 
 type Instruktur struct {
-	ID        string
-	Name      string
-	Gender    string
-	Email     string
-	Alamat    string
-	NoHp      string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID                   string
+	NomorIndukPendidikan string
+	NIK                  string
+	UrlImage             string
+	Name                 string
+	Gender               string
+	Email                string
+	Alamat               string
+	NoHp                 string
+	CreatedAt            time.Time
+	UpdatedAt            time.Time
 }
 
 type UpdateInstruktur struct {
-	ID        string
-	Name      string
-	Gender    string
-	Email     string
-	Alamat    string
-	NoHp      string
-	UpdatedAt time.Time
+	ID                   string
+	NomorIndukPendidikan string
+	NIK                  string
+	UrlImage             string
+	Name                 string
+	Gender               string
+	Email                string
+	Alamat               string
+	NoHp                 string
+	UpdatedAt            time.Time
 }
 
 type InstrukturHandlerInterface interface {

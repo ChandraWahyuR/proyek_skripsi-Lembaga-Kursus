@@ -7,6 +7,7 @@ import (
 	"skripsi/features/kategori"
 	"skripsi/features/kursus"
 	"skripsi/features/users"
+	"skripsi/features/voucher"
 	"skripsi/helper"
 
 	echojwt "github.com/labstack/echo-jwt/v4"
@@ -76,5 +77,17 @@ func RouteKursus(e *echo.Echo, kr kursus.KursusHandlerInterface, cfg config.Conf
 	e.DELETE("/api/v1/kursus/:id", kr.DeleteKursus(), echojwt.WithConfig(jwtConfig))
 	e.POST("/api/v1/kursus", kr.AddKursus(), echojwt.WithConfig(jwtConfig))
 	e.GET("/api/v1/kursus/search", kr.GetAllKursusByName(), echojwt.WithConfig(jwtConfig))
+}
 
+func RouteVoucher(e *echo.Echo, vc voucher.VoucherHandlerInterface, cfg config.Config) {
+	jwtConfig := echojwt.Config{
+		SigningKey:   []byte(cfg.JWT_Secret),
+		ErrorHandler: helper.JWTErrorHandler,
+	}
+
+	e.GET("/api/v1/voucher", vc.GetAllVoucher(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/voucher/:id", vc.GetByIDVoucher(), echojwt.WithConfig(jwtConfig))
+	e.POST("/api/v1/voucher", vc.CreateVoucher(), echojwt.WithConfig(jwtConfig))
+	e.PUT("/api/v1/voucher/:id", vc.UpdateVoucher(), echojwt.WithConfig(jwtConfig))
+	e.DELETE("/api/v1/voucher/:id", vc.DeleteVoucher(), echojwt.WithConfig(jwtConfig))
 }

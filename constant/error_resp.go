@@ -53,6 +53,9 @@ var ErrGenderChoice = errors.New("pilih gender antara laki-laki atau perempuan")
 var ErrInstrukturNotFound = errors.New("data instruktur tidak ada")
 var ErrGetInstruktur = errors.New("error saat mengambil data instruktur")
 var ErrInstrukturID = errors.New("error id instruktor tidak ada")
+var ErrInstrukturNIKEmpty = errors.New("error NIK tidak boleh kosong")
+var ErrInstrukturNIPEmpty = errors.New("error NIP tidak boleh kosong")
+var ErrInstrukturImageEmpty = errors.New("error image instruktor tidak boleh kosong")
 
 // post
 
@@ -88,3 +91,10 @@ var ErrUploadGCS = errors.New("gagal upload gambar")
 
 // ID
 var ErrGetID = errors.New("id tidak ditemukan")
+
+// Voucher
+var ErrVoucherNotFound = errors.New("data voucher tidak ada")
+var ErrVoucherIDNotFound = errors.New("id voucher tidak ditemukan")
+
+// Voucher data
+var ErrVoucherFailedCreate = errors.New("data voucher gagal dibuat")

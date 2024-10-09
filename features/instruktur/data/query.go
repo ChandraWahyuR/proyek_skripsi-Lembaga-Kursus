@@ -69,9 +69,11 @@ func (d *InstrukturData) GetAllInstrukturByID(id string) (instruktur.Instruktur,
 }
 
 func (d *InstrukturData) PostInstruktur(data instruktur.Instruktur) error {
-	if err := d.DB.Create(&data).Error; err != nil {
+	err := d.DB.Create(&data).Error
+	if err != nil {
 		return err
 	}
+
 	return nil
 }
 

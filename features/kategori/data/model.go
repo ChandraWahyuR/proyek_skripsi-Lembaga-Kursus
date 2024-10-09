@@ -7,7 +7,7 @@ type Kategori struct {
 	ID        string `gorm:"type:varchar(50);primaryKey;not null;column:id"`
 	Nama      string `gorm:"type:varchar(255);not null;column:nama"`
 	Deskripsi string `gorm:"type:text;not null;column:deskripsi"`
-	ImageUrl  string `gorm:"type:text;not null;column:image_url"`
+	ImageUrl  string `gorm:"type:varchar(255);not null;column:image_url"`
 }
 
 func (Kategori) TableName() string {

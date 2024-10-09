@@ -26,7 +26,7 @@ type ImageKursus struct {
 	*gorm.Model
 	ID       string `gorm:"type:varchar(50);not null;column:id"`
 	Name     string `gorm:"type:varchar(255);not null;column:name"`
-	Url      string `gorm:"type:text;not null;column:url"`
+	Url      string `gorm:"type:varchar(255);not null;column:url"`
 	Position int    `gorm:"type:int;not null;column:position"`
 	KursusID string `gorm:"type:varchar(50);not null;column:kursus_id"`
 	Kursus   Kursus `gorm:"foreignKey:KursusID;references:ID"`

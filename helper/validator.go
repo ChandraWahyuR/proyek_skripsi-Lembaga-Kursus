@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 	"skripsi/constant"
+	"strings"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -61,11 +62,20 @@ func ValidatePassword(password string) (string, error) {
 }
 
 func TelephoneValidator(phone string) (string, error) {
-	phoneRegexCode := regexp.MustCompile(`^[+]{1}[0-9]{10,12}$`)
-
-	if !phoneRegexCode.MatchString(phone) {
-		phone = phoneRegexCode.ReplaceAllString(phone, "0"+phone[2:])
+	if len(phone) < 10 {
+		return "", errors.New("invalid phone number format")
 	}
+
+	// No international
+	phoneRegexCode := regexp.MustCompile(`^[+]{1}[0-9]{10,12}$`)
+	if phoneRegexCode.MatchString(phone) {
+		return phone, nil
+	}
+
+	if strings.HasPrefix(phone, "+62") {
+		phone = "0" + phone[3:]
+	}
+
 	var phoneRegex = regexp.MustCompile(`^[0-9]{10,12}$`)
 	if !phoneRegex.MatchString(phone) {
 		return "", errors.New("invalid phone number")
@@ -97,4 +107,12 @@ func ValidateTime(times string) (time.Time, error) {
 	}
 
 	return jamParsed, nil
+}
+
+func CodeVoucherValidator(code string) (string, error) {
+	var codeVoucher = regexp.MustCompile(`^[a-zA-Z0-9._-]{10}$`)
+	if !codeVoucher.MatchString(code) {
+		return "", errors.New("invalid username")
+	}
+	return code, nil
 }
