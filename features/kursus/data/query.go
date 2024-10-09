@@ -30,7 +30,7 @@ func (d *KursusData) GetKursusPagination(page int, limit int) ([]kursus.Kursus, 
 
 	// ini menampilkan data didalam array nya misal di satu page nya itu limit 10, contoh (1-1)*10 = 10,  maka ada 10 data yang ditampilkan
 	totalPages := int((total + int64(limit) - 1) / int64(limit))
-	tx := d.DB.Preload("Image").Where("deleted_at IS NULL").
+	tx := d.DB.Preload("Image", "deleted_at IS NULL").Preload("Jadwal", "deleted_at IS NULL").Where("deleted_at IS NULL").
 		Offset((page - 1) * limit).
 		Limit(limit).
 		Find(&dataKursus)
@@ -43,7 +43,7 @@ func (d *KursusData) GetKursusPagination(page int, limit int) ([]kursus.Kursus, 
 
 func (d *KursusData) GetAllKursus() ([]kursus.Kursus, error) {
 	var data []kursus.Kursus
-	if err := d.DB.Preload("Image").Preload("Kategori.Kategori").Preload("Instruktur").Preload("MateriPembelajaran.Materi").Find(&data).Error; err != nil {
+	if err := d.DB.Preload("Image").Preload("Kategori.Kategori").Preload("Instruktur").Preload("MateriPembelajaran.Materi").Preload("Jadwal").Find(&data).Error; err != nil {
 		return nil, err
 	}
 	return data, nil
@@ -51,7 +51,7 @@ func (d *KursusData) GetAllKursus() ([]kursus.Kursus, error) {
 
 func (d *KursusData) GetAllKursusById(id string) (kursus.Kursus, error) {
 	var dataKursus kursus.Kursus
-	if err := d.DB.Model(&kursus.Kursus{}).Preload("Image", "deleted_at IS NULL").Preload("Instruktur", "deleted_at IS NULL").Preload("Kategori.Kategori", "deleted_at IS NULL").Preload("MateriPembelajaran", "deleted_at IS NULL").Where("id = ? AND deleted_at IS NULL", id).First(&dataKursus).Error; err != nil {
+	if err := d.DB.Model(&kursus.Kursus{}).Preload("Image", "deleted_at IS NULL").Preload("Jadwal", "deleted_at IS NULL").Preload("Instruktur", "deleted_at IS NULL").Preload("Kategori.Kategori", "deleted_at IS NULL").Preload("MateriPembelajaran", "deleted_at IS NULL").Where("id = ? AND deleted_at IS NULL", id).First(&dataKursus).Error; err != nil {
 		return kursus.Kursus{}, err
 	}
 	return dataKursus, nil
@@ -97,6 +97,11 @@ func (d *KursusData) UpdateKursus(data kursus.Kursus) error {
 	}
 
 	if err := d.DeleteKategoriKursus(dataKursus.ID); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := d.DeleteJadwalKurusus(dataKursus.ID); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -164,7 +169,7 @@ func (d *KursusData) GetAllKursusByName(name string, page int, limit int) ([]kur
 	// lalu simpan hasil perhitungannya ke variabel `total` dalam bentuk integer.
 	// Jika ada error selama proses, kembalikan error tersebut.
 	count := d.DB.Model(&kursus.Kursus{}).
-		Where("name LIKE ?", "%"+name+"%").
+		Where("nama LIKE ?", "%"+name+"%").
 		Count(&total)
 	if count.Error != nil {
 		return nil, 0, count.Error
@@ -172,7 +177,7 @@ func (d *KursusData) GetAllKursusByName(name string, page int, limit int) ([]kur
 	totalPages := int((total + int64(limit) - 1) / int64(limit))
 
 	// Query dengan pagination
-	tx := d.DB.Where("name LIKE ?", "%"+name+"%").
+	tx := d.DB.Where("nama LIKE ?", "%"+name+"%").Preload("Image", "deleted_at IS NULL").Preload("Jadwal", "deleted_at IS NULL").Where("deleted_at IS NULL").
 		Offset((page - 1) * limit).
 		Limit(limit).
 		Find(&dataKursus)
@@ -206,6 +211,16 @@ func (d *KursusData) DeleteMateriKursus(id string) error {
 func (d *KursusData) DeleteKategoriKursus(id string) error {
 	res := d.DB.Begin()
 	if err := res.Where("kursus_id = ?", id).Delete(&KategoriKursus{}); err.Error != nil {
+		res.Rollback()
+		return constant.ErrKategoriKursusNotFound
+	}
+
+	return res.Commit().Error
+}
+
+func (d *KursusData) DeleteJadwalKurusus(id string) error {
+	res := d.DB.Begin()
+	if err := res.Where("kursus_id = ?", id).Delete(&JadwalKursus{}); err.Error != nil {
 		res.Rollback()
 		return constant.ErrKategoriKursusNotFound
 	}

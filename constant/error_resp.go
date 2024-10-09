@@ -53,6 +53,9 @@ var ErrGenderChoice = errors.New("pilih gender antara laki-laki atau perempuan")
 var ErrInstrukturNotFound = errors.New("data instruktur tidak ada")
 var ErrGetInstruktur = errors.New("error saat mengambil data instruktur")
 var ErrInstrukturID = errors.New("error id instruktor tidak ada")
+var ErrInstrukturNIKEmpty = errors.New("error NIK tidak boleh kosong")
+var ErrInstrukturNIPEmpty = errors.New("error NIP tidak boleh kosong")
+var ErrInstrukturImageEmpty = errors.New("error image instruktor tidak boleh kosong")
 
 // post
 
@@ -75,3 +78,23 @@ var ErrKursusNotFound = errors.New("data kursus tidak ada")
 var ErrImageKursusNotFound = errors.New("gambar kursus tidak ada")
 var ErrKategoriKursusNotFound = errors.New("kategori kursus tidak ada")
 var ErrMateriKursusNotFound = errors.New("materi kursus tidak ada")
+var ErrJadwal = errors.New("jadwal harus diisi")
+var ErrJadwalFormat = errors.New("format jadwal salah")
+var ErrGambarKursus = errors.New("gambar tidak boleh kosong")
+var ErrKategoriKursus = errors.New("kategori tidak boleh kosong")
+var ErrMateriPembelajaran = errors.New("materi tidak boleh kosong")
+var ErrKursusNotfound = errors.New("kursus tidak ditemukan")
+
+// GCS
+var ErrOpeningFile = errors.New("gagal membuka file")
+var ErrUploadGCS = errors.New("gagal upload gambar")
+
+// ID
+var ErrGetID = errors.New("id tidak ditemukan")
+
+// Voucher
+var ErrVoucherNotFound = errors.New("data voucher tidak ada")
+var ErrVoucherIDNotFound = errors.New("id voucher tidak ditemukan")
+
+// Voucher data
+var ErrVoucherFailedCreate = errors.New("data voucher gagal dibuat")

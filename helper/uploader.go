@@ -14,9 +14,10 @@ import (
 )
 
 const (
-	UploadPathKategori = "gambar/kategori/"
-	UploadPathKursus   = "gambar/kursus/"
-	UploadPathUser     = "gambar/users/"
+	UploadPathKategori   = "gambar/kategori/"
+	UploadPathKursus     = "gambar/kursus/"
+	UploadPathUser       = "gambar/users/"
+	UploadPathInstruktur = "gambar/instruktur/"
 )
 
 type ClientUploader struct {
@@ -72,6 +73,10 @@ func (c *ClientUploader) UploadFileGambarKategori(file multipart.File, object st
 
 func (c *ClientUploader) UploadFileGambarKursus(file multipart.File, object string) error {
 	return c.UploadFile(file, object, UploadPathKursus)
+}
+
+func (c *ClientUploader) UploadFileGambarInstruktur(file multipart.File, object string) error {
+	return c.UploadFile(file, object, UploadPathInstruktur)
 }
 
 // func (c *ClientUploader) DeleteFileGambarKursus(objectUrl string) error {

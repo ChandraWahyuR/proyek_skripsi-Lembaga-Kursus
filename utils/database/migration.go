@@ -6,6 +6,7 @@ import (
 	Kategori "skripsi/features/kategori/data"
 	Kursus "skripsi/features/kursus/data"
 	Users "skripsi/features/users/data"
+	Voucher "skripsi/features/voucher/data"
 
 	"gorm.io/gorm"
 )
@@ -21,6 +22,9 @@ func Migrate(db *gorm.DB) error {
 	db.AutoMigrate(&Kursus.ImageKursus{})
 	db.AutoMigrate(&Kursus.KategoriKursus{})
 	db.AutoMigrate(&Kursus.MateriPembelajaran{})
+	db.AutoMigrate(&Kursus.JadwalKursus{})
+	// Voucher
+	db.AutoMigrate(&Voucher.Voucher{})
 
 	return nil
 }

@@ -42,7 +42,18 @@ func (s *InstrukturService) PostInstruktur(data instruktur.Instruktur) error {
 		return constant.ErrEmptyNumbertelponInstuktor
 	case data.Gender == "":
 		return constant.ErrEmptyDescriptionInstuktor
+	case data.NIK == "":
+		return constant.ErrInstrukturNIKEmpty
+	case data.NomorIndukPendidikan == "":
+		return constant.ErrInstrukturNIPEmpty
+	case data.UrlImage == "":
+		return constant.ErrInstrukturImageEmpty
 	}
+	nomorHp, err := helper.TelephoneValidator(data.NoHp)
+	if err != nil {
+		return err
+	}
+	data.NoHp = nomorHp
 
 	return s.d.PostInstruktur(data)
 }
@@ -54,7 +65,7 @@ func (s *InstrukturService) UpdateInstruktur(data instruktur.UpdateInstruktur) e
 	// 	&& memastikan bahwa semua field kosong sebelum mengembalikan error.
 	// || memastikan bahwa hanya salah satu field yang kosong untuk mengembalikan error.
 	// && and kan wajib terpenuhi semua jika return err. jika tidak, aman
-	if data.Name == "" && data.Email == "" && data.Alamat == "" && data.Gender == "" && data.NoHp == "" {
+	if data.Name == "" && data.Email == "" && data.Alamat == "" && data.Gender == "" && data.NoHp == "" && data.NIK == "" && data.NomorIndukPendidikan == "" && data.UrlImage == "" {
 		return constant.ErrUpdate
 	}
 

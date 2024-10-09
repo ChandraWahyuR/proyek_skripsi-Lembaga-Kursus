@@ -12,20 +12,33 @@ type Kursus struct {
 	ID                 string
 	Nama               string
 	Deskripsi          string
-	Jadwal             time.Time
 	Harga              int
 	InstrukturID       string
 	Instruktur         instruktur.Instruktur
+	Jadwal             []JadwalKursus
 	Kategori           []KategoriKursus
 	Image              []ImageKursus
 	MateriPembelajaran []MateriPembelajaran
+	CreatedAt          time.Time
+	UpdatedAt          time.Time
 }
-
+type JadwalKursus struct {
+	ID         string
+	KursusID   string
+	Kursus     Kursus
+	Hari       string
+	JamMulai   time.Time
+	JamSelesai time.Time
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+}
 type KategoriKursus struct {
 	ID         string
 	KursusID   string
 	KategoriID string
 	Kategori   kategori.Kategori
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
 
 type MateriPembelajaran struct {
@@ -33,20 +46,24 @@ type MateriPembelajaran struct {
 	KursusID  string
 	Position  int
 	Deskripsi string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type ImageKursus struct {
-	ID       string
-	Name     string
-	Url      string
-	Position int
-	KursusID string
+	ID        string
+	Name      string
+	Url       string
+	Position  int
+	KursusID  string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type KursusHandlerInterface interface {
 	GetAllKursus() echo.HandlerFunc
 	GetAllKursusById() echo.HandlerFunc
-	// GetAllKursusByName() echo.HandlerFunc
+	GetAllKursusByName() echo.HandlerFunc
 
 	AddKursus() echo.HandlerFunc
 	UpdateKursus() echo.HandlerFunc
@@ -55,7 +72,7 @@ type KursusHandlerInterface interface {
 type KursusDataInterface interface {
 	GetAllKursus() ([]Kursus, error)
 	GetAllKursusById(id string) (Kursus, error)
-	// GetAllKursusByName(name string, page int, limit int) ([]Kursus, int, error)
+	GetAllKursusByName(name string, page int, limit int) ([]Kursus, int, error)
 
 	AddKursus(Kursus) error
 	UpdateKursus(Kursus) error
@@ -71,7 +88,7 @@ type KursusDataInterface interface {
 type KursusServiceInterface interface {
 	GetAllKursus() ([]Kursus, error)
 	GetAllKursusById(id string) (Kursus, error)
-	// GetAllKursusByName(name string, page int, limit int) ([]Kursus, int, error)
+	GetAllKursusByName(name string, page int, limit int) ([]Kursus, int, error)
 
 	AddKursus(Kursus) error
 	UpdateKursus(Kursus) error
