@@ -12,7 +12,7 @@ type Voucher struct {
 	Nama      string    `gorm:"type:varchar(255);not null;column:nama"`
 	Deskripsi string    `gorm:"type:text;not null;column:deskripsi"`
 	Code      string    `gorm:"type:varchar(255);not null;column:code"`
-	Discount  float64   `gorm:"type:varchar(255);not null;column:discount"`
+	Discount  float64   `gorm:"type:decimal(10,2);not null;column:discount"`
 	ExpiredAt time.Time `gorm:"type:datetime;not null;column:expired_at"`
 }
 

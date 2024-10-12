@@ -4,6 +4,7 @@ import (
 	"skripsi/config"
 	"skripsi/helper"
 	"skripsi/routes"
+	"skripsi/utils"
 	"skripsi/utils/database"
 	"skripsi/utils/database/seeders"
 
@@ -35,6 +36,10 @@ import (
 	VoucherData "skripsi/features/voucher/data"
 	VoucherHandler "skripsi/features/voucher/handler"
 	VoucherService "skripsi/features/voucher/service"
+
+	TransaksiData "skripsi/features/transaksi/data"
+	TransaksiHandler "skripsi/features/transaksi/handler"
+	TransaksiService "skripsi/features/transaksi/service"
 )
 
 // Ini logout kaya forgot juga diredis aja
@@ -57,6 +62,7 @@ func main() {
 	jwt := helper.NewJWT(cfg.JWT_Secret)
 	mailer := helper.NewMailer(cfg.SMTP)
 	helper.InitGCP()
+	midtransClient := utils.NewMidtransClient(cfg.Midtrans.ServerKey, cfg.Midtrans.ClientKey)
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
@@ -88,12 +94,17 @@ func main() {
 	voucherService := VoucherService.New(voucherData, jwt)
 	voucherHandler := VoucherHandler.New(voucherService, jwt)
 
+	transaksiData := TransaksiData.New(db)
+	transaksiService := TransaksiService.New(transaksiData, jwt, midtransClient)
+	transaksiHandler := TransaksiHandler.New(transaksiService, jwt)
+
 	routes.RouteUser(e, usersHandler, *cfg)
 	routes.RouteAdmin(e, adminHandler, *cfg)
 	routes.RouteInstruktor(e, instrukturHandler, *cfg)
 	routes.RouteKategori(e, KategoriHandler, *cfg)
 	routes.RouteKursus(e, kursusHandler, *cfg)
 	routes.RouteVoucher(e, voucherHandler, *cfg)
+	routes.RouteTransaksi(e, transaksiHandler, *cfg)
 
 	// Swagger
 	e.Static("/", "static")

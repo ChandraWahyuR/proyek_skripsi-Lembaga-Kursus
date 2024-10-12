@@ -20,6 +20,8 @@ type Config struct {
 	GoogleCredentials string
 	GCP_ProjectID     string
 	GCP_BucketName    string
+
+	Midtrans MidtransConfig
 }
 
 type SMTPConfig struct {
@@ -27,6 +29,11 @@ type SMTPConfig struct {
 	SMTPPORT string
 	SMTPUSER string
 	SMTPPASS string
+}
+
+type MidtransConfig struct {
+	ServerKey string
+	ClientKey string
 }
 
 func InitConfig() *Config {
@@ -50,6 +57,10 @@ func InitConfig() *Config {
 	res.GoogleCredentials = os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
 	res.GCP_ProjectID = os.Getenv("GCP_PROJECT_ID")
 	res.GCP_BucketName = os.Getenv("GCP_BUCKET_NAME")
+
+	// Midtrans
+	res.Midtrans.ServerKey = os.Getenv("MIDTRANS_SERVER_KEY")
+	res.Midtrans.ClientKey = os.Getenv("MIDTRANS_CLIENT_KEY")
 
 	return res
 }

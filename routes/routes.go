@@ -6,6 +6,7 @@ import (
 	"skripsi/features/instruktur"
 	"skripsi/features/kategori"
 	"skripsi/features/kursus"
+	"skripsi/features/transaksi"
 	"skripsi/features/users"
 	"skripsi/features/voucher"
 	"skripsi/helper"
@@ -90,4 +91,13 @@ func RouteVoucher(e *echo.Echo, vc voucher.VoucherHandlerInterface, cfg config.C
 	e.POST("/api/v1/voucher", vc.CreateVoucher(), echojwt.WithConfig(jwtConfig))
 	e.PUT("/api/v1/voucher/:id", vc.UpdateVoucher(), echojwt.WithConfig(jwtConfig))
 	e.DELETE("/api/v1/voucher/:id", vc.DeleteVoucher(), echojwt.WithConfig(jwtConfig))
+}
+
+func RouteTransaksi(e *echo.Echo, tr transaksi.TransaksiHandlerInterface, cfg config.Config) {
+	jwtConfig := echojwt.Config{
+		SigningKey:   []byte(cfg.JWT_Secret),
+		ErrorHandler: helper.JWTErrorHandler,
+	}
+
+	e.POST("/api/v1/transaksi", tr.CreateTransaksi(), echojwt.WithConfig(jwtConfig))
 }
