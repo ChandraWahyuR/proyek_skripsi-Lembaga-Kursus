@@ -41,6 +41,20 @@ func (h *UserHandler) Register() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
+
+		token, err := h.j.GenerateVerifikasiEmailJWT(helper.UserJWT{
+			Email: user.Email,
+		})
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Failed to generate verification token", nil))
+		}
+
+		link := "http://your-domain.com/verify?token=" + token
+		err = h.s.SendVerificationEmail(user.Email, link)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Failed to send verification email", nil))
+		}
+
 		return c.JSON(http.StatusCreated, helper.FormatResponse(true, "Success", nil))
 	}
 }
@@ -170,5 +184,29 @@ func (h *UserHandler) ResetPassword() echo.HandlerFunc {
 		}
 
 		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Success", nil))
+	}
+}
+
+func (h *UserHandler) VerifyAccount() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		tokenString := c.QueryParam("token")
+
+		token, err := h.j.ValidateToken(tokenString)
+		if err != nil {
+			return c.JSON(http.StatusUnauthorized, helper.FormatResponse(false, "Invalid or expired token", nil))
+		}
+
+		extract := h.j.ExtractUserToken(token)
+		email, ok := extract[constant.JWT_EMAIL].(string)
+		if !ok || email == "" {
+			return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, "Invalid token: Email not found", nil))
+		}
+
+		err = h.s.ActivateAccount(email)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Failed to activate account", nil))
+		}
+
+		return c.Redirect(http.StatusFound, "/verification-success")
 	}
 }

@@ -75,7 +75,8 @@ type UserServiceInterface interface {
 	ResetPassword(ResetPassword) error
 
 	// Auth Email
-	// VerifyEmail(User) error
+	ActivateAccount(email string) error
+	SendVerificationEmail(email, link string) error
 }
 
 type UserDataInterface interface {
@@ -92,4 +93,5 @@ type UserDataInterface interface {
 
 	// Auth Email
 	// VerifyEmail(email string, otp string) error
+	VerifyEmail(email string, isValid bool) error
 }

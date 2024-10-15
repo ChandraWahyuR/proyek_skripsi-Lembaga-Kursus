@@ -106,6 +106,13 @@ func main() {
 	routes.RouteVoucher(e, voucherHandler, *cfg)
 	routes.RouteTransaksi(e, transaksiHandler, *cfg)
 
+	// Redirect
+	// http://localhost:8080/halaman/example.html
+	e.Static("/redirect", "assets")
+
+	e.File("/verification-success", "assets/verifikasi_berhasil.html.html")
+	// e.File("/verification-failed", "assets/verifikasi_gagal.html")
+
 	// Swagger
 	e.Static("/", "static")
 	e.GET("/swagger/*", echoSwagger.WrapHandler)

@@ -8,7 +8,7 @@ import (
 )
 
 type Sent interface {
-	SendEmail(to, HTMLbody string) error
+	SendEmail(to, subject, HTMLbody string) error
 }
 
 type Mailer struct {
@@ -21,7 +21,7 @@ func NewMailer(config config.SMTPConfig) Sent {
 	}
 }
 
-func (m *Mailer) SendEmail(to, HTMLbody string) error {
+func (m *Mailer) SendEmail(to, subject, HTMLbody string) error {
 	from := m.config.SMTPUSER
 	pass := m.config.SMTPPASS
 	host := m.config.SMTPHOST
@@ -35,7 +35,7 @@ func (m *Mailer) SendEmail(to, HTMLbody string) error {
 	message := []byte("MIME-Version: 1.0\r\n" +
 		"Content-Type: text/html; charset=\"UTF-8\";\r\n" +
 		"To: " + to + "\r\n" +
-		"Subject: " + "subject" + "\r\n\r\n" +
+		"Subject: " + subject + "\r\n\r\n" +
 		HTMLbody)
 
 	// Send the email.

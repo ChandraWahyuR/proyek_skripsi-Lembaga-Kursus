@@ -45,6 +45,10 @@ type JWTInterface interface {
 	GenerateForgotPassJWT(user ForgotPassJWT) (string, error)
 
 	ValidateToken(token string) (*jwt.Token, error)
+
+	//
+	GenerateVerifikasiEmailToken(user UserJWT) string
+	GenerateVerifikasiEmailJWT(user UserJWT) (string, error)
 }
 
 func NewJWT(signKey string) JWTInterface {
@@ -190,4 +194,29 @@ func (j *JWT) ValidateToken(token string) (*jwt.Token, error) {
 		return nil, constant.ErrValidateJWT
 	}
 	return parsedToken, nil
+}
+
+func (j *JWT) GenerateVerifikasiEmailToken(user UserJWT) string {
+	var claims = jwt.MapClaims{}
+	claims[constant.JWT_EMAIL] = user.Email
+	claims[constant.JWT_IAT] = time.Now().Unix()
+	claims[constant.JWT_EXP] = time.Now().Add(time.Hour * 24 * 1).Unix()
+
+	var sign = jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	validToken, err := sign.SignedString([]byte(j.signKey))
+
+	if err != nil {
+		return ""
+	}
+
+	return validToken
+}
+
+func (j *JWT) GenerateVerifikasiEmailJWT(user UserJWT) (string, error) {
+	var accessToken = j.GenerateVerifikasiEmailToken(user)
+	if accessToken == "" {
+		return "", constant.ErrGenerateJWT
+	}
+
+	return accessToken, nil
 }

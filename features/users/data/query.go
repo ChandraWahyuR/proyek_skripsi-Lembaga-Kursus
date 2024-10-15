@@ -144,9 +144,8 @@ func (d *UserData) GetByEmail(email string) (users.User, error) {
 	return user, nil
 }
 
-func (d *UserData) VerifyEmail(email string) error {
-	var user users.User
-	err := d.DB.Where("email = ? AND is_active = ?", email, false).First(&user).Error
+func (d *UserData) VerifyEmail(email string, isValid bool) error {
+	err := d.DB.Model(&User{}).Where("email = ?", email).Update("is_active", isValid).Error
 	if err != nil {
 		return err
 	}

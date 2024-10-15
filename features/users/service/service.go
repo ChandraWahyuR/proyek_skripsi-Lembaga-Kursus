@@ -127,12 +127,13 @@ func (s *UserService) ForgotPassword(forgot users.User) (string, error) {
 
 	dataOtp.Email = forgot.Email
 	dataOtp.Otp = fmt.Sprintf("%05d", rand.Intn(100000))
+	subject := "Reset Password"
 
 	if err := s.d.ForgotPassword(dataOtp); err != nil {
 		return "", err
 	}
 
-	if err := s.m.SendEmail(forgot.Email, dataOtp.Otp); err != nil {
+	if err := s.m.SendEmail(forgot.Email, subject, dataOtp.Otp); err != nil {
 		return "", err
 	}
 
@@ -197,4 +198,16 @@ func (s *UserService) ResetPassword(reset users.ResetPassword) error {
 	return nil
 }
 
-//
+func (s *UserService) ActivateAccount(email string) error {
+	err := s.d.VerifyEmail(email, true)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *UserService) SendVerificationEmail(email, link string) error {
+	subject := "Verifikasi Email"
+	body := fmt.Sprintf("<p>Klik email dibawah Untuk memverifikasi email:</p><a href='%s'>Verify</a>", link)
+	return s.m.SendEmail(email, subject, body)
+}
