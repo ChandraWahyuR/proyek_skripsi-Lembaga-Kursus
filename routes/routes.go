@@ -100,4 +100,10 @@ func RouteTransaksi(e *echo.Echo, tr transaksi.TransaksiHandlerInterface, cfg co
 	}
 
 	e.POST("/api/v1/transaksi", tr.CreateTransaksi(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/admin/list-transaksi", tr.GetAllStatusTransaksi(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/admin/list-transaksi/:id", tr.GetStatusTransaksiByID(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/admin/history-transaksi/:id", tr.GetAllTransaksiHistory(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/list-transaksi", tr.GetStatusTransaksiForUser(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/history-transaksi", tr.GetAllTransaksiHistoryForUser(), echojwt.WithConfig(jwtConfig))
+
 }

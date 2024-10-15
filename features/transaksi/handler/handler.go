@@ -5,6 +5,7 @@ import (
 	"skripsi/constant"
 	"skripsi/features/transaksi"
 	"skripsi/helper"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -64,5 +65,266 @@ func (h *TransaksiHanlder) CreateTransaksi() echo.HandlerFunc {
 			SnapURL: transaksiResponse.SnapURL,
 		}
 		return c.JSON(http.StatusCreated, helper.FormatResponse(true, "Kursus added successfully", paymentResponse))
+	}
+}
+
+func (h *TransaksiHanlder) GetAllStatusTransaksi() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
+		if tokenString == "" {
+			return helper.UnauthorizedError(c)
+		}
+		token, err := h.j.ValidateToken(tokenString)
+		if err != nil {
+			return helper.UnauthorizedError(c)
+		}
+		tokenData := h.j.ExtractAdminToken(token)
+		role, ok := tokenData[constant.JWT_ROLE]
+		if !ok || role != constant.RoleAdmin {
+			return helper.UnauthorizedError(c)
+		}
+
+		// Pagination
+		pageStr := c.QueryParam("page")
+		page, err := strconv.Atoi(pageStr)
+		if err != nil || page <= 0 {
+			page = 1
+		}
+
+		limitStr := c.QueryParam("limit")
+		limit, err := strconv.Atoi(limitStr)
+		if err != nil || limit <= 0 {
+			limit = 10
+		}
+
+		data, totalPages, err := h.s.GetAllTransaksiPagination(page, limit)
+		metadata := MetadataResponse{
+			TotalPage: totalPages,
+			Page:      page,
+		}
+
+		var response []GetAllTransaksiAdminResponse
+		for _, dataResponse := range data {
+			response = append(response, GetAllTransaksiAdminResponse{
+				ID: dataResponse.ID,
+				User: User{
+					ID:       dataResponse.UserID,
+					Username: dataResponse.User.Username,
+					Email:    dataResponse.User.Email,
+				},
+				Kursus: Kursus{
+					ID:   dataResponse.KursusID,
+					Nama: dataResponse.Kursus.Nama,
+				},
+				TotalHarga: dataResponse.TotalHarga,
+				Status:     dataResponse.Status,
+			})
+		}
+		if err != nil {
+			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
+		}
+		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, "Succses", metadata, response))
+	}
+}
+
+func (h *TransaksiHanlder) GetStatusTransaksiForUser() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
+		if tokenString == "" {
+			return helper.UnauthorizedError(c)
+		}
+		token, err := h.j.ValidateToken(tokenString)
+		if err != nil {
+			return helper.UnauthorizedError(c)
+		}
+		tokenData := h.j.ExtractUserToken(token)
+		role, ok := tokenData[constant.JWT_ROLE]
+		userId := tokenData[constant.JWT_ID].(string)
+		if !ok || role != constant.RoleUser {
+			return helper.UnauthorizedError(c)
+		}
+
+		// Pagination
+		pageStr := c.QueryParam("page")
+		page, err := strconv.Atoi(pageStr)
+		if err != nil || page <= 0 {
+			page = 1
+		}
+
+		limitStr := c.QueryParam("limit")
+		limit, err := strconv.Atoi(limitStr)
+		if err != nil || limit <= 0 {
+			limit = 10
+		}
+
+		data, totalPages, err := h.s.GetStatusTransaksiForUser(userId, page, limit)
+		metadata := MetadataResponse{
+			TotalPage: totalPages,
+			Page:      page,
+		}
+
+		var response []GetAllTransaksiUserResponse
+		for _, dataResponse := range data {
+			response = append(response, GetAllTransaksiUserResponse{
+				ID: dataResponse.ID,
+				Kursus: Kursus{
+					ID:   dataResponse.KursusID,
+					Nama: dataResponse.Kursus.Nama,
+				},
+				TotalHarga: dataResponse.TotalHarga,
+				Status:     dataResponse.Status,
+			})
+		}
+		if err != nil {
+			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
+		}
+		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, "Succses", metadata, response))
+	}
+}
+
+func (h *TransaksiHanlder) GetStatusTransaksiByID() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
+		if tokenString == "" {
+			return helper.UnauthorizedError(c)
+		}
+		token, err := h.j.ValidateToken(tokenString)
+		if err != nil {
+			return helper.UnauthorizedError(c)
+		}
+		tokenData := h.j.ExtractAdminToken(token)
+		role, ok := tokenData[constant.JWT_ROLE]
+		if !ok || role != constant.RoleAdmin {
+			return helper.UnauthorizedError(c)
+		}
+
+		id := c.Param("id")
+		dataTransaksi, err := h.s.GetStatusTransaksiByID(id)
+		if err != nil {
+			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
+		}
+		responseData := GetAllTransaksiByIDAdminResponse{
+			ID: dataTransaksi.ID,
+			User: User{
+				ID:       dataTransaksi.UserID,
+				Username: dataTransaksi.User.Username,
+				Email:    dataTransaksi.User.Email,
+			},
+			Kursus: Kursus{
+				ID:   dataTransaksi.KursusID,
+				Nama: dataTransaksi.Kursus.Nama,
+			},
+			VoucherID:  dataTransaksi.VoucherID,
+			TotalHarga: dataTransaksi.TotalHarga,
+			Status:     dataTransaksi.Status,
+		}
+
+		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Success", responseData))
+	}
+}
+
+func (h *TransaksiHanlder) GetAllTransaksiHistory() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
+		if tokenString == "" {
+			return helper.UnauthorizedError(c)
+		}
+		token, err := h.j.ValidateToken(tokenString)
+		if err != nil {
+			return helper.UnauthorizedError(c)
+		}
+		tokenData := h.j.ExtractAdminToken(token)
+		role, ok := tokenData[constant.JWT_ROLE]
+		if !ok || role != constant.RoleAdmin {
+			return helper.UnauthorizedError(c)
+		}
+		pageStr := c.QueryParam("page")
+		page, err := strconv.Atoi(pageStr)
+		if err != nil || page <= 0 {
+			page = 1
+		}
+
+		limitStr := c.QueryParam("limit")
+		limit, err := strconv.Atoi(limitStr)
+		if err != nil || limit <= 0 {
+			limit = 10
+		}
+		data, totalPages, err := h.s.GetAllHistoryTransaksiPagination(page, limit)
+		metadata := MetadataResponse{
+			TotalPage: totalPages,
+			Page:      page,
+		}
+
+		var response []GetAllHistoryAdminResponse
+		for _, dataResponse := range data {
+			response = append(response, GetAllHistoryAdminResponse{
+				ID: dataResponse.ID,
+				Transaksi: Transaksi{
+					ID:         dataResponse.TransaksiID,
+					TotalHarga: dataResponse.Transaksi.TotalHarga,
+				},
+				KursusID:   dataResponse.KursusID,
+				UserID:     dataResponse.UserID,
+				Status:     dataResponse.Status,
+				ValidUntil: dataResponse.ValidUntil,
+			})
+		}
+		if err != nil {
+			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
+		}
+		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, "Success", metadata, response))
+	}
+}
+
+func (h *TransaksiHanlder) GetAllTransaksiHistoryForUser() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
+		if tokenString == "" {
+			return helper.UnauthorizedError(c)
+		}
+		token, err := h.j.ValidateToken(tokenString)
+		if err != nil {
+			return helper.UnauthorizedError(c)
+		}
+		tokenData := h.j.ExtractAdminToken(token)
+		role, ok := tokenData[constant.JWT_ROLE]
+		userId := tokenData[constant.JWT_ID].(string)
+		if !ok || role != constant.RoleAdmin {
+			return helper.UnauthorizedError(c)
+		}
+		pageStr := c.QueryParam("page")
+		page, err := strconv.Atoi(pageStr)
+		if err != nil || page <= 0 {
+			page = 1
+		}
+
+		limitStr := c.QueryParam("limit")
+		limit, err := strconv.Atoi(limitStr)
+		if err != nil || limit <= 0 {
+			limit = 10
+		}
+		data, totalPages, err := h.s.GetAllTransaksiHistoryForUser(userId, page, limit)
+		metadata := MetadataResponse{
+			TotalPage: totalPages,
+			Page:      page,
+		}
+		if err != nil {
+			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
+		}
+
+		var response []GetAllHistoryUserResponse
+		for _, responseData := range data {
+			response = append(response, GetAllHistoryUserResponse{
+				ID: responseData.ID,
+				Transaksi: Transaksi{
+					ID:         responseData.TransaksiID,
+					TotalHarga: responseData.Transaksi.TotalHarga,
+				},
+				KursusID:   responseData.KursusID,
+				UserID:     responseData.UserID,
+				ValidUntil: responseData.ValidUntil,
+			})
+		}
+		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, "Success", metadata, response))
 	}
 }

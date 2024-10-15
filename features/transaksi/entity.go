@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// Belum kelar yang get
 type Transaksi struct {
 	ID         string
 	TotalHarga float64
@@ -19,6 +20,8 @@ type Transaksi struct {
 	User       users.User
 	SnapURL    string
 	Status     string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
 
 type TransaksiHistory struct {
@@ -31,9 +34,10 @@ type TransaksiHistory struct {
 	User        users.User
 	VoucherID   string
 	Voucher     voucher.Voucher
-	TotalHarga  float64
 	Status      string
 	ValidUntil  time.Time
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 type UpdateTransaksiStatus struct {
@@ -43,12 +47,12 @@ type UpdateTransaksiStatus struct {
 
 type TransaksiHandlerInterface interface {
 	CreateTransaksi() echo.HandlerFunc
-	// GetAllStatusTransaksi() echo.HandlerFunc
-	// GetStatusTransaksiForUser() echo.HandlerFunc
-	// GetStatusTransaksiByID() echo.HandlerFunc
+	GetAllStatusTransaksi() echo.HandlerFunc
+	GetStatusTransaksiForUser() echo.HandlerFunc
+	GetStatusTransaksiByID() echo.HandlerFunc
 	// Tansaksi History
-	// GetAllTransaksiHistory() echo.HandlerFunc
-	// GetAllTransaksiHistoryForUser() echo.HandlerFunc
+	GetAllTransaksiHistory() echo.HandlerFunc
+	GetAllTransaksiHistoryForUser() echo.HandlerFunc
 	// GetTransaksiHistoryByID() echo.HandlerFunc
 }
 
@@ -57,12 +61,12 @@ type TransaksiDataInterface interface {
 	GetTotalTransaksiWithDiscount(total float64, voucherId string) (float64, error)
 
 	GetAllStatusTransaksi() ([]Transaksi, error)
-	GetStatusTransaksiForUser(userID string) ([]Transaksi, error)
+	GetStatusTransaksiForUser(userID string, page int, limit int) ([]Transaksi, int, error)
 	GetStatusTransaksiByID(id string) (Transaksi, error)
 	// Tansaksi History
 	GetAllTransaksiHistory() ([]TransaksiHistory, error)
-	GetAllTransaksiHistoryForUser(userID string) ([]TransaksiHistory, error)
-	GetTransaksiHistoryByID(id string) (TransaksiHistory, error)
+	GetAllTransaksiHistoryForUser(userID string, page, limit int) ([]TransaksiHistory, int, error)
+	GetTransaksiHistoryByID(id string) (TransaksiHistory, error) // Belum kepakai
 	// Pagination
 	GetAllTransaksiPagination(page, limit int) ([]Transaksi, int, error)
 	GetAllHistoryTransaksiPagination(page, limit int) ([]TransaksiHistory, int, error)
@@ -74,16 +78,12 @@ type TransaksiDataInterface interface {
 
 type TransaksiServiceInterface interface {
 	CreateTransaksi(Transaksi) (Transaksi, error)
-	// GetAllStatusTransaksi() ([]Transaksi, error)
-	// GetTotalTransaksiWithDiscount(total float64, voucherId string) (float64, error)
-	// GetStatusTransaksiForUser(userID string) ([]Transaksi, error)
-	// GetStatusTransaksiByID(id string) (Transaksi, error)
+	GetStatusTransaksiForUser(userID string, page int, limit int) ([]Transaksi, int, error)
+	GetStatusTransaksiByID(id string) (Transaksi, error)
 	// // Tansaksi History
-	// GetAllTransaksiHistory() ([]TransaksiHistory, error)
-	// GetAllTransaksiHistoryForUser(userID string) ([]TransaksiHistory, error)
+	GetAllTransaksiHistoryForUser(userID string, page, limit int) ([]TransaksiHistory, int, error)
 	// GetTransaksiHistoryByID(id string) (TransaksiHistory, error)
 	// // Pagination
-	// GetAllTransaksiPagination(page, limit int) ([]Transaksi, int, error)
-	// GetAllHistoryTransaksiPagination(page, limit int) ([]TransaksiHistory, int, error)
-
+	GetAllTransaksiPagination(page, limit int) ([]Transaksi, int, error)
+	GetAllHistoryTransaksiPagination(page, limit int) ([]TransaksiHistory, int, error)
 }

@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"log"
+	"skripsi/constant"
 	"skripsi/features/transaksi"
 	"skripsi/helper"
 
@@ -75,6 +76,33 @@ func (s *TransaksiService) CreateTransaksi(transaksiData transaksi.Transaksi) (t
 	return savedTransaksi, nil
 }
 
+func (s *TransaksiService) GetAllTransaksiPagination(page, limit int) ([]transaksi.Transaksi, int, error) {
+	return s.d.GetAllTransaksiPagination(page, limit)
+}
+
+func (s *TransaksiService) GetStatusTransaksiForUser(userID string, page int, limit int) ([]transaksi.Transaksi, int, error) {
+	if userID == "" {
+		return nil, 0, constant.ErrUnauthorized
+	}
+	return s.d.GetStatusTransaksiForUser(userID, page, limit)
+}
+
+func (s *TransaksiService) GetStatusTransaksiByID(id string) (transaksi.Transaksi, error) {
+	if id == "" {
+		return transaksi.Transaksi{}, constant.ErrGetID
+	}
+	return s.d.GetStatusTransaksiByID(id)
+}
+
+func (s *TransaksiService) GetAllHistoryTransaksiPagination(page, limit int) ([]transaksi.TransaksiHistory, int, error) {
+	return s.d.GetAllHistoryTransaksiPagination(page, limit)
+}
+
+func (s *TransaksiService) GetAllTransaksiHistoryForUser(userID string, page, limit int) ([]transaksi.TransaksiHistory, int, error) {
+	return s.d.GetAllTransaksiHistoryForUser(userID, page, limit)
+}
+
+// =============================================================================================
 func (s *TransaksiService) createMidtransPayment(transaksi transaksi.Transaksi) (string, error) {
 	snapGateway := midtrans.SnapGateway{
 		Client: s.midtransClient,

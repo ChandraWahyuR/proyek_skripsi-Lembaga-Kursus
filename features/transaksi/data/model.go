@@ -33,7 +33,6 @@ type TransaksiHistory struct {
 	User        Users.User      `gorm:"foreignKey:UserID;references:ID"`
 	VoucherID   string          `gorm:"type:varchar(50);column:voucher_id"`
 	Voucher     Voucher.Voucher `gorm:"foreignKey:VoucherID;references:ID"`
-	TotalHarga  float64         `gorm:"type:decimal(10,2);not null;column:total_harga"`
 	Status      string          `gorm:"type:varchar(50);not null;column:status"`
 	ValidUntil  time.Time       `gorm:"not null;column:valid_until"`
 }

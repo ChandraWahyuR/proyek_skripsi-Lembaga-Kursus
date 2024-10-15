@@ -98,3 +98,6 @@ var ErrVoucherIDNotFound = errors.New("id voucher tidak ditemukan")
 
 // Voucher data
 var ErrVoucherFailedCreate = errors.New("data voucher gagal dibuat")
+
+// Transaksi
+var ErrTransaksiNotFound = errors.New("data transaksi belum ada")
