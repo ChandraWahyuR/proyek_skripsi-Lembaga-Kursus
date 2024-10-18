@@ -15,6 +15,18 @@ type User struct {
 	NomorHP    string `gorm:"type:varchar(255);not null;column:nomor_hp"`
 	ProfileUrl string `gorm:"type:varchar(255);not null;column:profile_url"`
 	IsActive   bool   `gorm:"not null;column:is_active"`
+	//
+	Nama          string    `gorm:"type:varchar(255);not null;column:nama"`
+	NIS           string    `gorm:"type:varchar(255);not null;column:nis"`
+	Agama         string    `gorm:"type:varchar(255);not null;column:agama"`
+	Gender        string    `gorm:"type:varchar(255);not null;column:gender"`
+	TempatLahir   string    `gorm:"type:varchar(255);not null;column:tempat_lahir"`
+	TanggalLahir  time.Time `gorm:"type:varchar(255);not null;column:tanggal_lahir"`
+	OrangTua      string    `gorm:"type:varchar(255);not null;column:orang_tua"`
+	Profesi       string    `gorm:"type:varchar(255);not null;column:profesi"`
+	Ijazah        string    `gorm:"type:varchar(255);not null;column:ijazah"`
+	KTP           string    `gorm:"type:varchar(255);not null;column:ktp"`
+	KartuKeluarga string    `gorm:"type:varchar(255);not null;column:kartu_keluarga"`
 }
 
 type VerifyOtp struct {

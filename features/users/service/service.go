@@ -211,3 +211,32 @@ func (s *UserService) SendVerificationEmail(email, link string) error {
 	body := fmt.Sprintf("<p>Klik email dibawah Untuk memverifikasi email:</p><a href='%s'>Verify</a>", link)
 	return s.m.SendEmail(email, subject, body)
 }
+
+func (s *UserService) GetAllUserPagination(page, limit int) ([]users.GetUser, int, error) {
+	return s.d.GetAllUserPagination(page, limit)
+}
+
+func (s *UserService) GetUserByID(id string) (users.GetUser, error) {
+	if id == "" {
+		return users.GetUser{}, constant.ErrGetID
+	}
+	return s.d.GetUserByID(id)
+}
+
+func (s *UserService) UpdateUser(data users.EditUser) error {
+	if data.ID == "" {
+		return constant.ErrEmptyId
+	}
+	if data.Nama == "" && data.Username == "" && data.ProfileUrl == "" && data.Password == "" && data.NomorHP == "" && data.Agama == "" && data.Gender == "" && data.TempatLahir == "" && data.TanggalLahir.IsZero() && data.OrangTua == "" && data.Profesi == "" && data.KTP == "" && data.KartuKeluarga == "" {
+		return constant.ErrUpdate
+	}
+
+	return s.d.UpdateUser(data)
+}
+
+func (s *UserService) DeleteUser(userId string) error {
+	if userId == "" {
+		return constant.ErrEmptyId
+	}
+	return s.d.DeleteUser(userId)
+}

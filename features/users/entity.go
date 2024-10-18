@@ -14,15 +14,46 @@ type User struct {
 	ConfirmPassword string
 	NomorHP         string
 	IsActive        bool
+	NIS             string
+}
+
+type GetUser struct {
+	ID            string
+	Username      string
+	Email         string
+	Password      string
+	NomorHP       string
+	ProfileUrl    string
+	IsActive      bool
+	Nama          string
+	NIS           string
+	Agama         string
+	Gender        string
+	TempatLahir   string
+	TanggalLahir  time.Time
+	OrangTua      string
+	Profesi       string
+	Ijazah        string
+	KTP           string
+	KartuKeluarga string
 }
 
 type EditUser struct {
-	ID         string
-	Username   string
-	Email      string
-	ProfileUrl string
-	Password   string
-	NomorHP    string
+	ID            string
+	Username      string
+	ProfileUrl    string
+	Password      string
+	NomorHP       string
+	Nama          string
+	Agama         string
+	Gender        string
+	TempatLahir   string
+	TanggalLahir  time.Time
+	OrangTua      string
+	Profesi       string
+	Ijazah        string
+	KTP           string
+	KartuKeluarga string
 }
 
 type Login struct {
@@ -61,6 +92,14 @@ type UserHandlerInterface interface {
 	VerifyOTP() echo.HandlerFunc
 	ResetPassword() echo.HandlerFunc
 
+	// User
+	// GetAllUser() echo.HandlerFunc
+	// GetUserByID() echo.HandlerFunc
+	// GetUserByUser() echo.HandlerFunc
+	// UpdateUser() echo.HandlerFunc
+	// DeleteUser() echo.HandlerFunc
+	// Logout() echo.HandlerFunc
+
 	// Auth Email
 	// AuthEmail() echo.HandlerFunc
 	// ConfirmValidatateUser() echo.HandlerFunc
@@ -77,6 +116,12 @@ type UserServiceInterface interface {
 	// Auth Email
 	ActivateAccount(email string) error
 	SendVerificationEmail(email, link string) error
+
+	//
+	GetAllUserPagination(page, limit int) ([]GetUser, int, error)
+	GetUserByID(id string) (GetUser, error)
+	UpdateUser(EditUser) error
+	DeleteUser(userId string) error
 }
 
 type UserDataInterface interface {
@@ -94,4 +139,10 @@ type UserDataInterface interface {
 	// Auth Email
 	// VerifyEmail(email string, otp string) error
 	VerifyEmail(email string, isValid bool) error
+
+	//
+	GetAllUserPagination(page, limit int) ([]GetUser, int, error)
+	GetUserByID(id string) (GetUser, error)
+	UpdateUser(EditUser) error
+	DeleteUser(userId string) error
 }

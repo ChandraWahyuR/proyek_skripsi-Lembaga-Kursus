@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"skripsi/constant"
 	"skripsi/features/users"
 	"skripsi/helper"
 
@@ -150,4 +151,61 @@ func (d *UserData) VerifyEmail(email string, isValid bool) error {
 		return err
 	}
 	return nil
+}
+
+func (d *UserData) GetAllUserPagination(page, limit int) ([]users.GetUser, int, error) {
+	var data []users.GetUser
+	var total int64
+
+	count := d.DB.Model(&users.GetUser{}).Where("deleted_at IS NULL").Count(&total)
+	if count.Error != nil {
+		return nil, 0, constant.ErrDataNotfound
+	}
+	totalPages := int((total + int64(limit) - 1) / int64(limit))
+
+	tx := d.DB.
+		Offset((page - 1) * limit).
+		Limit(limit).
+		Find(&data)
+
+	if tx.Error != nil {
+		return nil, 0, constant.ErrGetData
+	}
+	return data, totalPages, nil
+}
+
+func (d *UserData) GetUserByID(userId string) (users.GetUser, error) {
+	var dataUser users.GetUser
+	err := d.DB.Where("id = ?", userId).First(&dataUser).Error
+	if err != nil {
+		return users.GetUser{}, constant.ErrGetID
+	}
+	return dataUser, nil
+}
+
+func (d *UserData) UpdateUser(data users.EditUser) error {
+	tx := d.DB.Begin()
+
+	var dataUsers users.EditUser
+	if err := tx.Where("id = ?", data.ID).Where("deleted_at IS NULL").First(&dataUsers).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := tx.Model(&dataUsers).Updates(data).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit().Error
+}
+
+func (d *UserData) DeleteUser(userId string) error {
+	res := d.DB.Begin()
+	if err := res.Where("deleted_at IS NULL").Where("id = ?", userId).Delete(&User{}); err.Error != nil {
+		res.Rollback()
+		return constant.ErrUserNotFound
+	} else if err.RowsAffected == 0 {
+		res.Rollback()
+		return constant.ErrFailedDelete
+	}
+	return res.Commit().Error
 }

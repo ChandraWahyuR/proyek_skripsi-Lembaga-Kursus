@@ -1,5 +1,7 @@
 package handler
 
+import "time"
+
 type UserRegisterRequest struct {
 	Username        string `json:"username"`
 	Email           string `json:"email"`
@@ -26,4 +28,20 @@ type ResetPasswordRequest struct {
 	Email                string `json:"email"`
 	Password             string `json:"password"`
 	ConfirmationPassword string `json:"confirmation_password"`
+}
+
+type EditUserRequest struct {
+	ProfileUrl    string    `json:"profile_url" form:"profile_url"`
+	Password      string    `json:"password" form:"password"`
+	NomorHP       string    `json:"nomor_hp" form:"nomor_hp"`
+	Nama          string    `json:"nama" form:"nama"`
+	Agama         string    `json:"agama" form:"agama"`
+	Gender        string    `json:"gender" form:"gender"`
+	TempatLahir   string    `json:"tempat_lahir" form:"tempat_lahir"`
+	TanggalLahir  time.Time `json:"tanggal_lahir" form:"tanggal_lahir"`
+	OrangTua      string    `json:"orangtua" form:"orang_tua"`
+	Profesi       string    `json:"profesi" form:"profesi"`
+	Ijazah        string    `json:"ijazah" form:"ijazah"`
+	KTP           string    `json:"ktp" form:"ktp"`
+	KartuKeluarga string    `json:"kartu_keluarga" form:"kartu_keluarga"`
 }

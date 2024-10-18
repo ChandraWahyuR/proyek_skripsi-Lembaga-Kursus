@@ -13,6 +13,7 @@ var ErrEmptyOtp = errors.New("otp cannot be empty")
 var ErrDataNotfound = errors.New("data kosong")
 var ErrGetData = errors.New("gagal saat mengambil data")
 var ErrEmptyId = errors.New("id cannot be empty")
+var ErrFailedDelete = errors.New("tidak ada data yang terhapus")
 
 // JWT
 var ErrGenerateJWT = errors.New("failed to generate jwt token")
