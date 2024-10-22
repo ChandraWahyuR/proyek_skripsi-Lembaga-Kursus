@@ -110,7 +110,7 @@ type UserHandlerInterface interface {
 	UpdateUser() echo.HandlerFunc
 	DeleteUser() echo.HandlerFunc
 	Logout() echo.HandlerFunc
-
+	VerifyAccount() echo.HandlerFunc
 	// Auth Email
 	// AuthEmail() echo.HandlerFunc
 	// ConfirmValidatateUser() echo.HandlerFunc

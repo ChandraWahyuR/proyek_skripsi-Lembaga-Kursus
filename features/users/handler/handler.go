@@ -7,25 +7,22 @@ import (
 	"skripsi/features/users"
 	"skripsi/helper"
 	"strconv"
-	"time"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"github.com/redis/go-redis/v9"
 )
 
 type UserHandler struct {
-	s     users.UserServiceInterface
-	j     helper.JWTInterface
-	redis *redis.Client
+	s users.UserServiceInterface
+	j helper.JWTInterface
+	// redis *redis.Client
 }
 
-func New(u users.UserServiceInterface, j helper.JWTInterface, redis *redis.Client) users.UserHandlerInterface {
+func New(u users.UserServiceInterface, j helper.JWTInterface) users.UserHandlerInterface {
 	return &UserHandler{
-		s:     u,
-		j:     j,
-		redis: redis,
+		s: u,
+		j: j,
+		// redis: redis,
 	}
 }
 
@@ -201,25 +198,36 @@ func (h *UserHandler) ResetPassword() echo.HandlerFunc {
 func (h *UserHandler) VerifyAccount() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		tokenString := c.QueryParam("token")
-
-		ctx := c.Request().Context()
-		token, err := h.j.ValidateToken(ctx, tokenString)
-		if err != nil {
-			helper.UnauthorizedError(c)
+		if tokenString == "" {
+			fmt.Println("Token is empty")
+			return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, "Token is missing", nil))
 		}
+
+		fmt.Println("Received token:", tokenString)
+
+		token, err := h.j.ValidateEmailToken(tokenString)
+		if err != nil {
+			fmt.Println("Failed to validate token:", err)
+			return helper.UnauthorizedError(c)
+		}
+
+		fmt.Println("Token validated successfully")
 
 		extract := h.j.ExtractUserToken(token)
 		email, ok := extract[constant.JWT_EMAIL].(string)
 		if !ok || email == "" {
 			return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, "Invalid token: Email not found", nil))
 		}
-
+		fmt.Println("Email extracted from token:", email)
 		err = h.s.ActivateAccount(email)
 		if err != nil {
+			fmt.Println("Failed to activate account:", err)
 			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Failed to activate account", nil))
 		}
+		fmt.Println("Redirecting to verification success page...")
+		// return c.Redirect(http.StatusTemporaryRedirect, "assets/verification-success")
+		return c.Redirect(http.StatusTemporaryRedirect, "https://skripsi-245802795341.asia-southeast2.run.app/assets/verifikasi_berhasil.html")
 
-		return c.Redirect(http.StatusFound, "/verification-success")
 	}
 }
 
@@ -475,6 +483,51 @@ func (h *UserHandler) DeleteUser() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Success", nil))
 	}
 }
+
+// redis ini bayar tambahan, buat ada ada aja sih
+// func (h *UserHandler) Logout() echo.HandlerFunc {
+// 	return func(c echo.Context) error {
+// 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
+// 		if tokenString == "" {
+// 			return helper.UnauthorizedError(c)
+// 		}
+
+// 		// Validasi token
+// 		ctx := c.Request().Context()
+// 		token, err := h.j.ValidateToken(ctx, tokenString)
+// 		if err != nil {
+// 			return helper.UnauthorizedError(c)
+// 		}
+
+// 		userData := h.j.ExtractUserToken(token)
+// 		role, ok := userData[constant.JWT_ROLE]
+// 		if !ok || role != constant.RoleUser {
+// 			return helper.UnauthorizedError(c)
+// 		}
+
+// 		claims, ok := token.Claims.(jwt.MapClaims)
+// 		if !ok || !token.Valid {
+// 			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Token tidak valid", nil))
+// 		}
+
+// 		exp, ok := claims["exp"].(float64)
+// 		if !ok {
+// 			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Token tidak memiliki waktu kedaluwarsa", nil))
+// 		}
+
+// 		expiresAt := time.Unix(int64(exp), 0)
+
+// 		err = h.redis.Set(ctx, tokenString, "blacklisted", time.Until(expiresAt)).Err()
+// 		if err != nil {
+// 			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Gagal logout", nil))
+// 		}
+
+// 		// Berhasil logout
+// 		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Berhasil logout", nil))
+// 	}
+// }
+
+// Tanpa redis hemat, kalau lokal tah aman
 func (h *UserHandler) Logout() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
@@ -495,24 +548,6 @@ func (h *UserHandler) Logout() echo.HandlerFunc {
 			return helper.UnauthorizedError(c)
 		}
 
-		claims, ok := token.Claims.(jwt.MapClaims)
-		if !ok || !token.Valid {
-			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Token tidak valid", nil))
-		}
-
-		exp, ok := claims["exp"].(float64)
-		if !ok {
-			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Token tidak memiliki waktu kedaluwarsa", nil))
-		}
-
-		expiresAt := time.Unix(int64(exp), 0)
-
-		err = h.redis.Set(ctx, tokenString, "blacklisted", time.Until(expiresAt)).Err()
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Gagal logout", nil))
-		}
-
-		// Berhasil logout
-		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Berhasil logout", nil))
+		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Berhasil logout. Token telah dihapus pada client side.", nil))
 	}
 }

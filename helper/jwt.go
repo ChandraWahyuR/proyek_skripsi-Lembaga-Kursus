@@ -29,7 +29,7 @@ type ForgotPassJWT struct {
 
 type JWT struct {
 	signKey string
-	redis   *RedisHelper
+	// redis   *RedisHelper
 }
 
 type JWTInterface interface {
@@ -51,14 +51,21 @@ type JWTInterface interface {
 	//
 	GenerateVerifikasiEmailToken(user UserJWT) string
 	GenerateVerifikasiEmailJWT(user UserJWT) (string, error)
+	ValidateEmailToken(tokenString string) (*jwt.Token, error)
 }
 
-func NewJWT(signKey string, redis *RedisHelper) JWTInterface {
+func NewJWT(signKey string) JWTInterface {
 	return &JWT{
 		signKey: signKey,
-		redis:   redis,
 	}
 }
+
+// func NewJWT(signKey string, redis *RedisHelper) JWTInterface {
+// 	return &JWT{
+// 		signKey: signKey,
+// 		redis:   redis,
+// 	}
+// }
 
 func (j *JWT) GenerateUserToken(user UserJWT) string {
 	var claims = jwt.MapClaims{}
@@ -185,14 +192,14 @@ func (j *JWT) ValidateToken(ctx context.Context, token string) (*jwt.Token, erro
 	if len(token) < 7 {
 		return nil, constant.ErrValidateJWT
 	}
-	// Cek apakah token ada di Redis (blacklisted)
-	blacklisted, err := j.redis.IsTokenBlacklisted(ctx, token)
-	if err != nil {
-		return nil, err
-	}
-	if blacklisted {
-		return nil, fmt.Errorf("token has been blacklisted")
-	}
+	// // Cek apakah token ada di Redis (blacklisted)
+	// blacklisted, err := j.redis.IsTokenBlacklisted(ctx, token)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// if blacklisted {
+	// 	return nil, fmt.Errorf("token has been blacklisted")
+	// }
 
 	var authHeader = token[7:]
 	parsedToken, err := jwt.Parse(authHeader, func(t *jwt.Token) (interface{}, error) {
@@ -230,4 +237,24 @@ func (j *JWT) GenerateVerifikasiEmailJWT(user UserJWT) (string, error) {
 	}
 
 	return accessToken, nil
+}
+
+func (j *JWT) ValidateEmailToken(tokenString string) (*jwt.Token, error) {
+	if tokenString == "" {
+		return nil, constant.ErrValidateJWT
+	}
+
+	// Parse token tanpa memotong karena langsung dari query param
+	parsedToken, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+		}
+		return []byte(j.signKey), nil
+	})
+
+	if err != nil {
+		return nil, constant.ErrValidateJWT
+	}
+
+	return parsedToken, nil
 }

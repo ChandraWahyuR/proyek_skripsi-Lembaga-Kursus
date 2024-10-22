@@ -25,6 +25,8 @@ COPY .env .env
 COPY Keys_GCS-Image.json Keys_GCS-Image.json  
 # Salin file credentials JSON
 
+# Assets html
+COPY --from=build-stage /app/assets /assets
 # Expose the application port
 EXPOSE 8080
 

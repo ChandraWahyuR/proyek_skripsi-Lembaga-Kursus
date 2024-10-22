@@ -65,10 +65,11 @@ func main() {
 	e := echo.New()
 
 	// Redis
-	redisClient := helper.InitRedis(cfg)
-	redisHelper := helper.NewRedisHelper(redisClient)
+	// redisClient := helper.InitRedis(cfg)
+	// redisHelper := helper.NewRedisHelper(redisClient)
+	// jwt := helper.NewJWT(cfg.JWT_Secret, redisHelper)
 	// JWT and Mailer
-	jwt := helper.NewJWT(cfg.JWT_Secret, redisHelper)
+	jwt := helper.NewJWT(cfg.JWT_Secret)
 	mailer := helper.NewMailer(cfg.SMTP)
 	helper.InitGCP()
 	midtransClient := utils.NewMidtransClient(cfg.Midtrans.ServerKey, cfg.Midtrans.ClientKey)
@@ -81,7 +82,7 @@ func main() {
 	// Feature
 	usersData := UsersData.New(db)
 	usersService := UsersService.New(usersData, jwt, mailer)
-	usersHandler := UsersHandler.New(usersService, jwt, redisClient)
+	usersHandler := UsersHandler.New(usersService, jwt)
 
 	adminData := AdminData.New(db)
 	adminService := AdminService.New(adminData, jwt)
@@ -122,13 +123,13 @@ func main() {
 
 	// Redirect
 	// http://localhost:8080/halaman/example.html
-	e.Static("/redirect", "assets")
+	e.Static("/assets", "assets")
 
-	e.File("/verification-success", "assets/verifikasi_berhasil.html.html")
+	e.File("/verification-success", "assets/verifikasi_berhasil.html")
 	// e.File("/verification-failed", "assets/verifikasi_gagal.html")
 
 	// Swagger
-	e.Static("/", "static")
+	e.Static("/", "public")
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	e.GET("/swagger.yaml", func(c echo.Context) error {

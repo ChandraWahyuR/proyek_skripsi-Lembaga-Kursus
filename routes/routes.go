@@ -36,6 +36,7 @@ func RouteUser(e *echo.Echo, u users.UserHandlerInterface, cfg config.Config) {
 	e.GET("/api/v1/users", u.GetAllUser(), echojwt.WithConfig(jwtConfig))
 	e.GET("/api/v1/users", u.GetUserByID(), echojwt.WithConfig(jwtConfig))
 	e.POST("/api/v1/logout", u.Logout(), echojwt.WithConfig(jwtConfig))
+	e.GET("/verify", u.VerifyAccount()) // handler untuk memverifikasi token
 }
 
 func RouteAdmin(e *echo.Echo, a admin.AdminHandlerInterface, cfg config.Config) {
