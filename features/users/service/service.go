@@ -216,9 +216,9 @@ func (s *UserService) GetAllUserPagination(page, limit int) ([]users.GetUser, in
 	return s.d.GetAllUserPagination(page, limit)
 }
 
-func (s *UserService) GetUserByID(id string) (users.GetUser, error) {
+func (s *UserService) GetUserByID(id string) (users.User, error) {
 	if id == "" {
-		return users.GetUser{}, constant.ErrGetID
+		return users.User{}, constant.ErrGetID
 	}
 	return s.d.GetUserByID(id)
 }

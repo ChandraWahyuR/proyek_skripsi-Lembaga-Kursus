@@ -20,13 +20,13 @@ WORKDIR /
 
 # Copy executable and environment file
 COPY --from=build-stage /goapp /goapp
-COPY .env .env
+COPY .env .env 
+ # Salin file .env ke dalam container
+COPY Keys_GCS-Image.json Keys_GCS-Image.json  
+# Salin file credentials JSON
 
 # Expose the application port
 EXPOSE 8080
-
-# Run as non-root user
-USER nonroot:nonroot
 
 # Start the application
 CMD [ "./goapp" ]

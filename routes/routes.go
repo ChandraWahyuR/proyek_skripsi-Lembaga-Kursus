@@ -9,6 +9,7 @@ import (
 	"skripsi/features/transaksi"
 	"skripsi/features/users"
 	"skripsi/features/voucher"
+	"skripsi/features/webhook"
 	"skripsi/helper"
 
 	echojwt "github.com/labstack/echo-jwt/v4"
@@ -27,6 +28,14 @@ func RouteUser(e *echo.Echo, u users.UserHandlerInterface, cfg config.Config) {
 	e.POST("/api/v1/forgot", u.ForgotPassword())
 	e.POST("/api/v1/otp", u.VerifyOTP(), echojwt.WithConfig(jwtConfig))
 	e.POST("/api/v1/reset", u.ResetPassword(), echojwt.WithConfig(jwtConfig))
+
+	// Edit
+	e.GET("/api/v1/profile", u.GetUserByUser(), echojwt.WithConfig(jwtConfig))
+	e.POST("/api/v1/profile", u.UpdateUser(), echojwt.WithConfig(jwtConfig))
+	// Admin
+	e.GET("/api/v1/users", u.GetAllUser(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/users", u.GetUserByID(), echojwt.WithConfig(jwtConfig))
+	e.POST("/api/v1/logout", u.Logout(), echojwt.WithConfig(jwtConfig))
 }
 
 func RouteAdmin(e *echo.Echo, a admin.AdminHandlerInterface, cfg config.Config) {
@@ -106,4 +115,8 @@ func RouteTransaksi(e *echo.Echo, tr transaksi.TransaksiHandlerInterface, cfg co
 	e.GET("/api/v1/list-transaksi", tr.GetStatusTransaksiForUser(), echojwt.WithConfig(jwtConfig))
 	e.GET("/api/v1/history-transaksi", tr.GetAllTransaksiHistoryForUser(), echojwt.WithConfig(jwtConfig))
 
+}
+
+func RouteWebhook(e *echo.Echo, w webhook.MidtransNotificationHandler, cfg config.Config) {
+	e.POST("/notifikasi-midtrans", w.HandleNotification())
 }

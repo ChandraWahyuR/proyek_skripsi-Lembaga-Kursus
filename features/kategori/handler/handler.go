@@ -33,9 +33,10 @@ func (h *KategoriHandler) GetAllKategori() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
@@ -86,11 +87,11 @@ func (h *KategoriHandler) GetKategoriById() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
-
 		adminData := h.j.ExtractAdminToken(token)
 		role, ok := adminData[constant.JWT_ROLE]
 		if !ok || role != constant.RoleAdmin {
@@ -122,9 +123,10 @@ func (h *KategoriHandler) CreateKategori() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
@@ -198,9 +200,10 @@ func (h *KategoriHandler) UpdateKategori() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
@@ -266,9 +269,10 @@ func (h *KategoriHandler) DeleteKategori() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
 
 		adminData := h.j.ExtractAdminToken(token)

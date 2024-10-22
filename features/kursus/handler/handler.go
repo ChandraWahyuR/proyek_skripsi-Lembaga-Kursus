@@ -32,9 +32,10 @@ func (h *KursusHandler) GetAllKursus() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
 
 		tokenData := h.j.ExtractUserToken(token)
@@ -95,9 +96,10 @@ func (h *KursusHandler) GetAllKursusById() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
 
 		tokenData := h.j.ExtractUserToken(token)
@@ -138,11 +140,11 @@ func (h *KursusHandler) AddKursus() echo.HandlerFunc {
 		if tokenString == "" {
 			return helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
 			return helper.UnauthorizedError(c)
 		}
-
 		adminData := h.j.ExtractAdminToken(token)
 		role, ok := adminData[constant.JWT_ROLE]
 		if !ok || role != constant.RoleAdmin {
@@ -266,7 +268,8 @@ func (h *KursusHandler) UpdateKursus() echo.HandlerFunc {
 		if tokenString == "" {
 			return helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
 			return helper.UnauthorizedError(c)
 		}
@@ -397,7 +400,8 @@ func (h *KursusHandler) DeleteKursus() echo.HandlerFunc {
 		if tokenString == "" {
 			return helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
 			return helper.UnauthorizedError(c)
 		}
@@ -425,9 +429,10 @@ func (h *KursusHandler) GetAllKursusByName() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
 
 		tokenData := h.j.ExtractUserToken(token)

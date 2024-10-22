@@ -174,11 +174,11 @@ func (d *UserData) GetAllUserPagination(page, limit int) ([]users.GetUser, int, 
 	return data, totalPages, nil
 }
 
-func (d *UserData) GetUserByID(userId string) (users.GetUser, error) {
-	var dataUser users.GetUser
+func (d *UserData) GetUserByID(userId string) (users.User, error) {
+	var dataUser users.User
 	err := d.DB.Where("id = ?", userId).First(&dataUser).Error
 	if err != nil {
-		return users.GetUser{}, constant.ErrGetID
+		return users.User{}, constant.ErrGetID
 	}
 	return dataUser, nil
 }

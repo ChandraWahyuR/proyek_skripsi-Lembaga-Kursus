@@ -31,9 +31,10 @@ func (h *InstrukturHandler) GetAllInstruktur() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
@@ -85,9 +86,10 @@ func (h *InstrukturHandler) GetAllInstrukturByID() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
@@ -123,9 +125,10 @@ func (h *InstrukturHandler) PostInstruktur() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
@@ -198,9 +201,10 @@ func (h *InstrukturHandler) UpdateInstruktur() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
@@ -286,9 +290,10 @@ func (h *InstrukturHandler) DeleteInstruktur() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
 
 		adminData := h.j.ExtractAdminToken(token)
@@ -314,9 +319,10 @@ func (h *InstrukturHandler) GetInstruktorByName() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
 
 		adminData := h.j.ExtractAdminToken(token)

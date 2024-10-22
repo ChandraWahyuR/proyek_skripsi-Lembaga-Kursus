@@ -14,7 +14,18 @@ type User struct {
 	ConfirmPassword string
 	NomorHP         string
 	IsActive        bool
+	Nama            string
 	NIS             string
+	Agama           string
+	Gender          string
+	TempatLahir     string
+	TanggalLahir    time.Time
+	OrangTua        string
+	Profesi         string
+	Ijazah          string
+	KTP             string
+	KartuKeluarga   string
+	ProfileUrl      string
 }
 
 type GetUser struct {
@@ -93,12 +104,12 @@ type UserHandlerInterface interface {
 	ResetPassword() echo.HandlerFunc
 
 	// User
-	// GetAllUser() echo.HandlerFunc
-	// GetUserByID() echo.HandlerFunc
-	// GetUserByUser() echo.HandlerFunc
-	// UpdateUser() echo.HandlerFunc
-	// DeleteUser() echo.HandlerFunc
-	// Logout() echo.HandlerFunc
+	GetAllUser() echo.HandlerFunc
+	GetUserByID() echo.HandlerFunc
+	GetUserByUser() echo.HandlerFunc
+	UpdateUser() echo.HandlerFunc
+	DeleteUser() echo.HandlerFunc
+	Logout() echo.HandlerFunc
 
 	// Auth Email
 	// AuthEmail() echo.HandlerFunc
@@ -119,7 +130,7 @@ type UserServiceInterface interface {
 
 	//
 	GetAllUserPagination(page, limit int) ([]GetUser, int, error)
-	GetUserByID(id string) (GetUser, error)
+	GetUserByID(id string) (User, error)
 	UpdateUser(EditUser) error
 	DeleteUser(userId string) error
 }
@@ -142,7 +153,7 @@ type UserDataInterface interface {
 
 	//
 	GetAllUserPagination(page, limit int) ([]GetUser, int, error)
-	GetUserByID(id string) (GetUser, error)
+	GetUserByID(id string) (User, error)
 	UpdateUser(EditUser) error
 	DeleteUser(userId string) error
 }

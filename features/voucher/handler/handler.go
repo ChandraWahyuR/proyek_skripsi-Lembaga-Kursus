@@ -30,9 +30,11 @@ func (h *VoucherHandler) GetAllVoucher() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
 
 		tokenData := h.j.ExtractUserToken(token)
@@ -83,10 +85,12 @@ func (h *VoucherHandler) GetByIDVoucher() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
+
 		tokenData := h.j.ExtractUserToken(token)
 		role, ok := tokenData[constant.JWT_ROLE]
 		if !ok || (role != constant.RoleAdmin && role != constant.RoleUser) {
@@ -117,14 +121,15 @@ func (h *VoucherHandler) CreateVoucher() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
 
-		tokenData := h.j.ExtractUserToken(token)
+		tokenData := h.j.ExtractAdminToken(token)
 		role, ok := tokenData[constant.JWT_ROLE]
-		if !ok || (role != constant.RoleAdmin && role != constant.RoleUser) {
+		if !ok || role != constant.RoleAdmin {
 			return helper.UnauthorizedError(c)
 		}
 
@@ -155,14 +160,15 @@ func (h *VoucherHandler) UpdateVoucher() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
 
-		tokenData := h.j.ExtractUserToken(token)
+		tokenData := h.j.ExtractAdminToken(token)
 		role, ok := tokenData[constant.JWT_ROLE]
-		if !ok || (role != constant.RoleAdmin && role != constant.RoleUser) {
+		if !ok || role != constant.RoleAdmin {
 			return helper.UnauthorizedError(c)
 		}
 
@@ -198,14 +204,15 @@ func (h *VoucherHandler) DeleteVoucher() echo.HandlerFunc {
 		if tokenString == "" {
 			helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
 
-		tokenData := h.j.ExtractUserToken(token)
+		tokenData := h.j.ExtractAdminToken(token)
 		role, ok := tokenData[constant.JWT_ROLE]
-		if !ok || (role != constant.RoleAdmin && role != constant.RoleUser) {
+		if !ok || role != constant.RoleAdmin {
 			return helper.UnauthorizedError(c)
 		}
 

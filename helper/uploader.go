@@ -67,6 +67,10 @@ func (c *ClientUploader) UploadFile(file multipart.File, object string, uploadPa
 	return nil
 }
 
+func (c *ClientUploader) UploadFileGambarUser(file multipart.File, object string) error {
+	return c.UploadFile(file, object, UploadPathUser)
+}
+
 func (c *ClientUploader) UploadFileGambarKategori(file multipart.File, object string) error {
 	return c.UploadFile(file, object, UploadPathKategori)
 }

@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"context"
 	"fmt"
 	"skripsi/constant"
 	"time"
@@ -28,6 +29,7 @@ type ForgotPassJWT struct {
 
 type JWT struct {
 	signKey string
+	redis   *RedisHelper
 }
 
 type JWTInterface interface {
@@ -44,16 +46,17 @@ type JWTInterface interface {
 	GenerateForgotPassToken(user ForgotPassJWT) string
 	GenerateForgotPassJWT(user ForgotPassJWT) (string, error)
 
-	ValidateToken(token string) (*jwt.Token, error)
+	ValidateToken(ctx context.Context, token string) (*jwt.Token, error)
 
 	//
 	GenerateVerifikasiEmailToken(user UserJWT) string
 	GenerateVerifikasiEmailJWT(user UserJWT) (string, error)
 }
 
-func NewJWT(signKey string) JWTInterface {
+func NewJWT(signKey string, redis *RedisHelper) JWTInterface {
 	return &JWT{
 		signKey: signKey,
+		redis:   redis,
 	}
 }
 
@@ -175,12 +178,20 @@ func (j *JWT) GenerateForgotPassJWT(user ForgotPassJWT) (string, error) {
 	return accessToken, nil
 }
 
-func (j *JWT) ValidateToken(token string) (*jwt.Token, error) {
+func (j *JWT) ValidateToken(ctx context.Context, token string) (*jwt.Token, error) {
 	if token == "" {
 		return nil, constant.ErrValidateJWT
 	}
 	if len(token) < 7 {
 		return nil, constant.ErrValidateJWT
+	}
+	// Cek apakah token ada di Redis (blacklisted)
+	blacklisted, err := j.redis.IsTokenBlacklisted(ctx, token)
+	if err != nil {
+		return nil, err
+	}
+	if blacklisted {
+		return nil, fmt.Errorf("token has been blacklisted")
 	}
 
 	var authHeader = token[7:]

@@ -21,7 +21,7 @@ type User struct {
 	Agama         string    `gorm:"type:varchar(255);not null;column:agama"`
 	Gender        string    `gorm:"type:varchar(255);not null;column:gender"`
 	TempatLahir   string    `gorm:"type:varchar(255);not null;column:tempat_lahir"`
-	TanggalLahir  time.Time `gorm:"type:varchar(255);not null;column:tanggal_lahir"`
+	TanggalLahir  time.Time `gorm:"type:TIMESTAMP;null;default:null"`
 	OrangTua      string    `gorm:"type:varchar(255);not null;column:orang_tua"`
 	Profesi       string    `gorm:"type:varchar(255);not null;column:profesi"`
 	Ijazah        string    `gorm:"type:varchar(255);not null;column:ijazah"`

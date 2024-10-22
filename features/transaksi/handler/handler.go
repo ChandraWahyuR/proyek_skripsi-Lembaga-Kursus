@@ -29,9 +29,10 @@ func (h *TransaksiHanlder) CreateTransaksi() echo.HandlerFunc {
 		if tokenString == "" {
 			return helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
-			helper.UnauthorizedError(c)
+			return helper.UnauthorizedError(c)
 		}
 
 		tokenData := h.j.ExtractUserToken(token)
@@ -64,7 +65,7 @@ func (h *TransaksiHanlder) CreateTransaksi() echo.HandlerFunc {
 			Amount:  int(transaksiResponse.TotalHarga),
 			SnapURL: transaksiResponse.SnapURL,
 		}
-		return c.JSON(http.StatusCreated, helper.FormatResponse(true, "Kursus added successfully", paymentResponse))
+		return c.JSON(http.StatusCreated, helper.FormatResponse(true, "Transaksi has been sent", paymentResponse))
 	}
 }
 
@@ -74,10 +75,12 @@ func (h *TransaksiHanlder) GetAllStatusTransaksi() echo.HandlerFunc {
 		if tokenString == "" {
 			return helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
 			return helper.UnauthorizedError(c)
 		}
+
 		tokenData := h.j.ExtractAdminToken(token)
 		role, ok := tokenData[constant.JWT_ROLE]
 		if !ok || role != constant.RoleAdmin {
@@ -133,7 +136,8 @@ func (h *TransaksiHanlder) GetStatusTransaksiForUser() echo.HandlerFunc {
 		if tokenString == "" {
 			return helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
 			return helper.UnauthorizedError(c)
 		}
@@ -188,7 +192,8 @@ func (h *TransaksiHanlder) GetStatusTransaksiByID() echo.HandlerFunc {
 		if tokenString == "" {
 			return helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
 			return helper.UnauthorizedError(c)
 		}
@@ -229,7 +234,8 @@ func (h *TransaksiHanlder) GetAllTransaksiHistory() echo.HandlerFunc {
 		if tokenString == "" {
 			return helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
 			return helper.UnauthorizedError(c)
 		}
@@ -282,11 +288,12 @@ func (h *TransaksiHanlder) GetAllTransaksiHistoryForUser() echo.HandlerFunc {
 		if tokenString == "" {
 			return helper.UnauthorizedError(c)
 		}
-		token, err := h.j.ValidateToken(tokenString)
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
 		if err != nil {
 			return helper.UnauthorizedError(c)
 		}
-		tokenData := h.j.ExtractAdminToken(token)
+		tokenData := h.j.ExtractUserToken(token)
 		role, ok := tokenData[constant.JWT_ROLE]
 		userId := tokenData[constant.JWT_ID].(string)
 		if !ok || role != constant.RoleAdmin {

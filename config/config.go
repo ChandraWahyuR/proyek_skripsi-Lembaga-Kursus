@@ -22,8 +22,14 @@ type Config struct {
 	GCP_BucketName    string
 
 	Midtrans MidtransConfig
-}
 
+	Redis RedisConfig
+}
+type RedisConfig struct {
+	Host     string
+	Port     int
+	Password string
+}
 type SMTPConfig struct {
 	SMTPHOST string
 	SMTPPORT string
@@ -61,6 +67,11 @@ func InitConfig() *Config {
 	// Midtrans
 	res.Midtrans.ServerKey = os.Getenv("MIDTRANS_SERVER_KEY")
 	res.Midtrans.ClientKey = os.Getenv("MIDTRANS_CLIENT_KEY")
+
+	// Redis
+	res.Redis.Host = os.Getenv("REDIS_HOST")
+	res.Redis.Port, _ = strconv.Atoi(os.Getenv("REDIS_PORT"))
+	res.Redis.Password = os.Getenv("REDIS_PASSWORD")
 
 	return res
 }
