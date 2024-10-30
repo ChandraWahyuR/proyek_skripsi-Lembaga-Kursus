@@ -80,6 +80,10 @@ func (s *TransaksiService) GetAllTransaksiPagination(page, limit int) ([]transak
 	return s.d.GetAllTransaksiPagination(page, limit)
 }
 
+func (s *TransaksiService) CreateTransaksiHistory(data transaksi.TransaksiHistory) error {
+	return s.d.CreateTransaksiHistory(data)
+}
+
 func (s *TransaksiService) GetStatusTransaksiForUser(userID string, page int, limit int) ([]transaksi.Transaksi, int, error) {
 	if userID == "" {
 		return nil, 0, constant.ErrUnauthorized

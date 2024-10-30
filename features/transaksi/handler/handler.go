@@ -65,6 +65,19 @@ func (h *TransaksiHanlder) CreateTransaksi() echo.HandlerFunc {
 			Amount:  int(transaksiResponse.TotalHarga),
 			SnapURL: transaksiResponse.SnapURL,
 		}
+
+		// Transaksi History
+		dataHistory := transaksi.TransaksiHistory{
+			ID:          uuid.New().String(),
+			KursusID:    dataTransaksi.Kursus,
+			UserID:      userId.(string),
+			TransaksiID: transaksiResponse.ID,
+			Status:      "Not Active",
+		}
+		err = h.s.CreateTransaksiHistory(dataHistory)
+		if err != nil {
+			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
+		}
 		return c.JSON(http.StatusCreated, helper.FormatResponse(true, "Transaksi has been sent", paymentResponse))
 	}
 }

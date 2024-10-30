@@ -1,7 +1,7 @@
 package webhook
 
 import (
-	"skripsi/features/transaksi"
+	transaksi "skripsi/features/transaksi/data"
 
 	"github.com/labstack/echo/v4"
 )

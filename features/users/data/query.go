@@ -39,6 +39,7 @@ func (u *UserData) Register(user users.User) error {
 		Email:    user.Email,
 		Password: user.Password,
 		NomorHP:  user.NomorHP,
+		NIS:      helper.GenerateNis(),
 		IsActive: false,
 	}
 

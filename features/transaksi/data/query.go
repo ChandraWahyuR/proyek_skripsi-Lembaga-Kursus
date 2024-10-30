@@ -178,3 +178,11 @@ func (d *TransaksiData) GetUserByID(userID string) (users.User, error) {
 	}
 	return user, nil
 }
+
+func (d *TransaksiData) CreateTransaksiHistory(data transaksi.TransaksiHistory) error {
+	if err := d.DB.Create(&data).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

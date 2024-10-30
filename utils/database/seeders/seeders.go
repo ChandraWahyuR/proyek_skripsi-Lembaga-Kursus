@@ -12,4 +12,9 @@ func NewSeeder(db *gorm.DB) *Seeder {
 
 func (s *Seeder) Seed() {
 	s.SeedAdmins()
+	s.SeedVoucher()
+	s.SeedInstruktur()
+	// s.SeedUsers()
+	s.SeedKursus()
+	s.SeedCategory()
 }

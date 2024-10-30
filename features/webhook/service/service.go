@@ -2,7 +2,7 @@ package service
 
 import (
 	"fmt"
-	"skripsi/features/transaksi"
+	transaksiData "skripsi/features/transaksi/data"
 	"skripsi/features/webhook"
 )
 
@@ -20,7 +20,7 @@ func (s *WebhookService) HandleNotification(notification webhook.PaymentNotifica
 	transactionStatus := notification.TransactionStatus
 	fraudstatus := notification.FraudStatus
 
-	transactionData := transaksi.Transaksi{
+	transactionData := transaksiData.Transaksi{
 		ID: notification.OrderID,
 	}
 

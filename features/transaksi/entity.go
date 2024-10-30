@@ -32,8 +32,6 @@ type TransaksiHistory struct {
 	Kursus      kursus.Kursus
 	UserID      string
 	User        users.User
-	VoucherID   string
-	Voucher     voucher.Voucher
 	Status      string
 	ValidUntil  time.Time
 	CreatedAt   time.Time
@@ -43,6 +41,12 @@ type TransaksiHistory struct {
 type UpdateTransaksiStatus struct {
 	ID     string
 	Status string
+}
+
+type UpdateHistoryStatus struct {
+	ID         string
+	Status     string
+	ValidUntil time.Time
 }
 
 type TransaksiHandlerInterface interface {
@@ -64,6 +68,7 @@ type TransaksiDataInterface interface {
 	GetStatusTransaksiForUser(userID string, page int, limit int) ([]Transaksi, int, error)
 	GetStatusTransaksiByID(id string) (Transaksi, error)
 	// Tansaksi History
+	CreateTransaksiHistory(TransaksiHistory) error
 	GetAllTransaksiHistory() ([]TransaksiHistory, error)
 	GetAllTransaksiHistoryForUser(userID string, page, limit int) ([]TransaksiHistory, int, error)
 	GetTransaksiHistoryByID(id string) (TransaksiHistory, error) // Belum kepakai
@@ -81,6 +86,7 @@ type TransaksiServiceInterface interface {
 	GetStatusTransaksiForUser(userID string, page int, limit int) ([]Transaksi, int, error)
 	GetStatusTransaksiByID(id string) (Transaksi, error)
 	// // Tansaksi History
+	CreateTransaksiHistory(TransaksiHistory) error
 	GetAllTransaksiHistoryForUser(userID string, page, limit int) ([]TransaksiHistory, int, error)
 	// GetTransaksiHistoryByID(id string) (TransaksiHistory, error)
 	// // Pagination
