@@ -231,6 +231,34 @@ func (s *UserService) UpdateUser(data users.EditUser) error {
 		return constant.ErrUpdate
 	}
 
+	if data.Password != "" {
+		hashedPassword, err := helper.HashPassword(data.Password)
+		if err != nil {
+			return err
+		}
+		data.Password = hashedPassword
+	} else {
+		oldUserData, err := s.d.GetUserByID(data.ID)
+		if err != nil {
+			return err
+		}
+		data.Password = oldUserData.Password
+	}
+
+	if data.NomorHP != "" {
+		nomorHp, err := helper.TelephoneValidator(data.NomorHP)
+		if err != nil {
+			return err
+		}
+		data.NomorHP = nomorHp
+	} else {
+		oldUserData, err := s.d.GetUserByID(data.ID)
+		if err != nil {
+			return err
+		}
+		data.NomorHP = oldUserData.NomorHP
+	}
+
 	return s.d.UpdateUser(data)
 }
 

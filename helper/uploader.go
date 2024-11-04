@@ -17,6 +17,9 @@ const (
 	UploadPathKategori   = "gambar/kategori/"
 	UploadPathKursus     = "gambar/kursus/"
 	UploadPathUser       = "gambar/users/"
+	UploadPathUserKTP    = "gambar/users/ktp"
+	UploadPathUserKK     = "gambar/users/kk"
+	UploadPathIjazah     = "gambar/users/ijazah"
 	UploadPathInstruktur = "gambar/instruktur/"
 )
 
@@ -81,6 +84,17 @@ func (c *ClientUploader) UploadFileGambarKursus(file multipart.File, object stri
 
 func (c *ClientUploader) UploadFileGambarInstruktur(file multipart.File, object string) error {
 	return c.UploadFile(file, object, UploadPathInstruktur)
+}
+
+func (c *ClientUploader) UploadFileGambarKTP(file multipart.File, object string) error {
+	return c.UploadFile(file, object, UploadPathUserKTP)
+}
+
+func (c *ClientUploader) UploadFileGambarKK(file multipart.File, object string) error {
+	return c.UploadFile(file, object, UploadPathUserKK)
+}
+func (c *ClientUploader) UploadFileIjazah(file multipart.File, object string) error {
+	return c.UploadFile(file, object, UploadPathUserKK)
 }
 
 // func (c *ClientUploader) DeleteFileGambarKursus(objectUrl string) error {

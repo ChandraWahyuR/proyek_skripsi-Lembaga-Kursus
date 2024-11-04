@@ -31,7 +31,7 @@ func RouteUser(e *echo.Echo, u users.UserHandlerInterface, cfg config.Config) {
 
 	// Edit
 	e.GET("/api/v1/profile", u.GetUserByUser(), echojwt.WithConfig(jwtConfig))
-	e.POST("/api/v1/profile", u.UpdateUser(), echojwt.WithConfig(jwtConfig))
+	e.PUT("/api/v1/profile", u.UpdateUser(), echojwt.WithConfig(jwtConfig))
 	// Admin
 	e.GET("/api/v1/users", u.GetAllUser(), echojwt.WithConfig(jwtConfig))
 	e.GET("/api/v1/users", u.GetUserByID(), echojwt.WithConfig(jwtConfig))

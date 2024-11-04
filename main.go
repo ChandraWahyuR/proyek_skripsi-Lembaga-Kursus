@@ -76,7 +76,7 @@ func main() {
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
-		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 	}))
 
 	// Feature
@@ -133,7 +133,7 @@ func main() {
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	e.GET("/swagger.yaml", func(c echo.Context) error {
-		return c.File("docs/user.yaml")
+		return c.File("docs/users.yaml")
 	})
 
 	// e.Logger.Fatal(e.Start(":8080"))

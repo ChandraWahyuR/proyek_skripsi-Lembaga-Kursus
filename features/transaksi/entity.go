@@ -79,6 +79,7 @@ type TransaksiDataInterface interface {
 	GetByIDVoucher(id string) (voucher.Voucher, error)
 	GetKursusByID(kursusID string) (kursus.Kursus, error)
 	GetUserByID(userID string) (users.User, error)
+	ValidateUserDokumentation(userId string) bool
 }
 
 type TransaksiServiceInterface interface {

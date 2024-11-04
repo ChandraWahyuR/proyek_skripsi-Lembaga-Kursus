@@ -309,7 +309,7 @@ func (h *TransaksiHanlder) GetAllTransaksiHistoryForUser() echo.HandlerFunc {
 		tokenData := h.j.ExtractUserToken(token)
 		role, ok := tokenData[constant.JWT_ROLE]
 		userId := tokenData[constant.JWT_ID].(string)
-		if !ok || role != constant.RoleAdmin {
+		if !ok || role != constant.RoleUser {
 			return helper.UnauthorizedError(c)
 		}
 		pageStr := c.QueryParam("page")

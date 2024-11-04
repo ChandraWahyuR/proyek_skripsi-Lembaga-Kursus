@@ -102,3 +102,4 @@ var ErrVoucherFailedCreate = errors.New("data voucher gagal dibuat")
 
 // Transaksi
 var ErrTransaksiNotFound = errors.New("data transaksi belum ada")
+var ErrValidateDokumenUser = errors.New("user belum mengisi seluruh dokumen penting")

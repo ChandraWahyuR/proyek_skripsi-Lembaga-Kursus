@@ -186,3 +186,17 @@ func (d *TransaksiData) CreateTransaksiHistory(data transaksi.TransaksiHistory) 
 
 	return nil
 }
+
+func (d *TransaksiData) ValidateUserDokumentation(userId string) bool {
+	var user users.User
+	err := d.DB.Where("id = ?", userId).First(&user).Error
+	if err != nil {
+		return false
+	}
+
+	if user.KTP == "" || user.KartuKeluarga == "" || user.Ijazah == "" {
+		return false
+	}
+
+	return true
+}

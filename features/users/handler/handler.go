@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"mime/multipart"
 	"net/http"
 	"skripsi/constant"
 	"skripsi/features/users"
@@ -411,26 +412,48 @@ func (h *UserHandler) UpdateUser() echo.HandlerFunc {
 			return c.JSON(code, helper.FormatResponse(false, message, nil))
 		}
 
-		file, err := c.FormFile("image")
-		var imageUrl string
-		if err == nil {
-			// Gambar Baru
-			src, err := file.Open()
-			if err != nil {
-				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Error opening file", nil))
-			}
-			defer src.Close()
+		var profileUrl, ktpUrl, kkUrl, ijazahUrl string
 
-			objectName := fmt.Sprintf("%s_%s", uuid.New().String(), file.Filename)
-			err = helper.Uploader.UploadFileGambarUser(src, objectName)
+		// Handle Profile Image
+		if file, err := c.FormFile("profile_url"); err == nil {
+			profileUrl, err = handleImageUpload(file, helper.UploadPathUser)
 			if err != nil {
-				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Failed to upload file to GCS", nil))
+				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, err.Error(), nil))
 			}
-			imageUrl = fmt.Sprintf("https://storage.googleapis.com/%s/%s%s", helper.Uploader.BucketName, helper.UploadPathKategori, objectName)
 		} else {
-			// Data lama
-			imageUrl = data.ProfileUrl
+			profileUrl = data.ProfileUrl
 		}
+
+		// KTP
+		if file, err := c.FormFile("ktp"); err == nil {
+			ktpUrl, err = handleImageUpload(file, helper.UploadPathUser+"ktp/")
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, err.Error(), nil))
+			}
+		} else {
+			ktpUrl = data.KTP
+		}
+
+		// KK
+		if file, err := c.FormFile("kartu_keluarga"); err == nil {
+			kkUrl, err = handleImageUpload(file, helper.UploadPathUser+"kk/")
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, err.Error(), nil))
+			}
+		} else {
+			kkUrl = data.KartuKeluarga
+		}
+
+		// Ijazah
+		if file, err := c.FormFile("ijazah"); err == nil {
+			ijazahUrl, err = handleImageUpload(file, helper.UploadPathUser+"ijazah/")
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, err.Error(), nil))
+			}
+		} else {
+			ijazahUrl = data.Ijazah
+		}
+
 		responseData := users.EditUser{
 			ID:            data.ID,
 			Nama:          dataRequest.Nama,
@@ -441,10 +464,10 @@ func (h *UserHandler) UpdateUser() echo.HandlerFunc {
 			TanggalLahir:  dataRequest.TanggalLahir,
 			OrangTua:      dataRequest.OrangTua,
 			Profesi:       dataRequest.Profesi,
-			Ijazah:        dataRequest.Ijazah,
-			KTP:           dataRequest.KTP,
-			KartuKeluarga: dataRequest.KartuKeluarga,
-			ProfileUrl:    imageUrl,
+			Ijazah:        ijazahUrl,
+			KTP:           ktpUrl,
+			KartuKeluarga: kkUrl,
+			ProfileUrl:    profileUrl,
 		}
 		err = h.s.UpdateUser(responseData)
 		if err != nil {
@@ -550,4 +573,19 @@ func (h *UserHandler) Logout() echo.HandlerFunc {
 
 		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Berhasil logout. Token telah dihapus pada client side.", nil))
 	}
+}
+
+func handleImageUpload(file *multipart.FileHeader, uploadPath string) (string, error) {
+	src, err := file.Open()
+	if err != nil {
+		return "", fmt.Errorf("error opening file: %w", err)
+	}
+	defer src.Close()
+
+	objectName := fmt.Sprintf("%s_%s", uuid.New().String(), file.Filename)
+	if err := helper.Uploader.UploadFile(src, objectName, uploadPath); err != nil {
+		return "", fmt.Errorf("failed to upload file: %w", err)
+	}
+
+	return fmt.Sprintf("https://storage.googleapis.com/%s/%s%s", helper.Uploader.BucketName, uploadPath, objectName), nil
 }

@@ -25,8 +25,12 @@ func New(u transaksi.TransaksiDataInterface, j helper.JWTInterface, midtransClie
 }
 
 func (s *TransaksiService) CreateTransaksi(transaksiData transaksi.Transaksi) (transaksi.Transaksi, error) {
-	var finalPrice float64
+	// Validator
+	if !s.d.ValidateUserDokumentation(transaksiData.UserID) {
+		return transaksi.Transaksi{}, constant.ErrValidateDokumenUser
+	}
 
+	var finalPrice float64
 	kursusData, err := s.d.GetKursusByID(transaksiData.KursusID)
 	if err != nil {
 		// log.Printf("Error fetching Kursus for ID: %s, Error: %v", transaksiData.KursusID, err)

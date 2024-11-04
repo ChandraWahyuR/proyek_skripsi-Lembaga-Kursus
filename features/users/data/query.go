@@ -187,7 +187,7 @@ func (d *UserData) GetUserByID(userId string) (users.User, error) {
 func (d *UserData) UpdateUser(data users.EditUser) error {
 	tx := d.DB.Begin()
 
-	var dataUsers users.EditUser
+	var dataUsers users.User
 	if err := tx.Where("id = ?", data.ID).Where("deleted_at IS NULL").First(&dataUsers).Error; err != nil {
 		tx.Rollback()
 		return err

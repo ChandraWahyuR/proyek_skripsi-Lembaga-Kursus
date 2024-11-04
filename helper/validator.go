@@ -78,7 +78,7 @@ func TelephoneValidator(phone string) (string, error) {
 
 	var phoneRegex = regexp.MustCompile(`^[0-9]{10,12}$`)
 	if !phoneRegex.MatchString(phone) {
-		return "", errors.New("invalid phone number")
+		return "", errors.New("nomor 10 sampai 12 digit ")
 	}
 
 	return phone, nil

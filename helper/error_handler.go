@@ -59,6 +59,13 @@ func ConverResponse(err error) int {
 	case constant.ErrOpeningFile, constant.ErrUploadGCS:
 		return http.StatusInternalServerError
 
+	// Voucher errors
+	case constant.ErrVoucherNotFound, constant.ErrVoucherIDNotFound, constant.ErrVoucherFailedCreate:
+		return http.StatusBadRequest
+
+	// Transaksi errors
+	case constant.ErrTransaksiNotFound, constant.ErrValidateDokumenUser:
+		return http.StatusBadRequest
 	// Default case for internal server errors
 	default:
 		return http.StatusInternalServerError
