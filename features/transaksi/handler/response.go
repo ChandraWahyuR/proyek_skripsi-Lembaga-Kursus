@@ -70,7 +70,7 @@ type GetAllHistoryAdminResponse struct {
 type GetHistoryAdminByIDResponse struct {
 	ID         string    `json:"id"`
 	Transaksi  Transaksi `json:"transaksi"`
-	KursusID   string    `json:"kursus_id"`
+	Kursus     Kursus    `json:"kursus"`
 	User       User      `json:"user"`
 	VoucherID  string    `json:"voucher_id"`
 	TotalHarga float64   `json:"total_harga"`

@@ -18,6 +18,18 @@ type GetAllUserResponse struct {
 	Nama     string `json:"nama"`
 	Email    string `json:"email"`
 	NomorHP  string `json:"nomor_hp"`
+	//
+	ProfileUrl    string    `json:"profile_url"`
+	IsActive      bool      `json:"is_active"`
+	Agama         string    `json:"agama"`
+	Gender        string    `json:"gender"`
+	TempatLahir   string    `json:"tempat_lahir"`
+	TanggalLahir  time.Time `json:"tanggal_lahir"`
+	OrangTua      string    `json:"orangtua"`
+	Profesi       string    `json:"profesi"`
+	Ijazah        string    `json:"ijazah"`
+	KTP           string    `json:"ktp"`
+	KartuKeluarga string    `json:"kartu_keluarga"`
 }
 
 type GetUserIDResponse struct {

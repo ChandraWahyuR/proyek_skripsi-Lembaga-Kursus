@@ -129,7 +129,7 @@ type UserServiceInterface interface {
 	SendVerificationEmail(email, link string) error
 
 	//
-	GetAllUserPagination(page, limit int) ([]GetUser, int, error)
+	GetAllUserPagination(page, limit int) ([]User, int, error)
 	GetUserByID(id string) (User, error)
 	UpdateUser(EditUser) error
 	DeleteUser(userId string) error
@@ -152,7 +152,7 @@ type UserDataInterface interface {
 	VerifyEmail(email string, isValid bool) error
 
 	//
-	GetAllUserPagination(page, limit int) ([]GetUser, int, error)
+	GetAllUserPagination(page, limit int) ([]User, int, error)
 	GetUserByID(id string) (User, error)
 	UpdateUser(EditUser) error
 	DeleteUser(userId string) error

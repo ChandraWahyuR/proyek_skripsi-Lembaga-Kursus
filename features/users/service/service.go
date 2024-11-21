@@ -72,6 +72,7 @@ func (s *UserService) Register(users users.User) error {
 	}
 	users.Username = isUsernameValid
 	users.NomorHP = nomorHp
+	users.ProfileUrl = "https://storage.googleapis.com/image_skripsi/gambar/users/default/Profile_User.png"
 
 	err = s.d.Register(users)
 	if err != nil {
@@ -212,7 +213,7 @@ func (s *UserService) SendVerificationEmail(email, link string) error {
 	return s.m.SendEmail(email, subject, body)
 }
 
-func (s *UserService) GetAllUserPagination(page, limit int) ([]users.GetUser, int, error) {
+func (s *UserService) GetAllUserPagination(page, limit int) ([]users.User, int, error) {
 	return s.d.GetAllUserPagination(page, limit)
 }
 

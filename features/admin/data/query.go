@@ -2,8 +2,10 @@ package data
 
 import (
 	"errors"
+	"log"
 	"skripsi/features/admin"
 	"skripsi/helper"
+	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -68,4 +70,22 @@ func (d *AdminData) LoginAdmin(admins admin.Admin) (admin.Admin, error) {
 		return admin.Admin{}, errors.New("wrong password")
 	}
 	return adminData, nil
+}
+
+func (d *AdminData) DownloadLaporanPembelian(startDate, endDate time.Time) ([]map[string]interface{}, error) {
+	var histories []map[string]interface{}
+
+	err := d.DB.Table("transaksi_histories").
+		Select("transaksi_histories.id, transaksi_histories.transaksi_id, transaksi_histories.kursus_id, transaksi_histories.user_id, users.nama AS user_nama, users.email AS email, kursus.nama AS nama_kursus,transaksi_histories.status, transaksi_histories.valid_until, transaksis.total_harga, transaksis.status AS transaksi_status").
+		Joins("JOIN kursus ON kursus.id = transaksi_histories.kursus_id").
+		Joins("JOIN transaksis ON transaksis.id = transaksi_histories.transaksi_id").
+		Joins("JOIN users ON users.id = transaksi_histories.user_id").
+		Where("transaksi_histories.created_at BETWEEN ? AND ?", startDate, endDate).
+		Scan(&histories).Error
+	if err != nil {
+		return nil, err
+	}
+	log.Println("Histories:", histories)
+
+	return histories, nil
 }

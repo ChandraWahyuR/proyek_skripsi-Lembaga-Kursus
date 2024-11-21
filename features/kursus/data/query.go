@@ -52,7 +52,7 @@ func (d *KursusData) GetAllKursus() ([]kursus.Kursus, error) {
 func (d *KursusData) GetAllKursusById(id string) (kursus.Kursus, error) {
 	var dataKursus kursus.Kursus
 	if err := d.DB.Model(&kursus.Kursus{}).Preload("Image", "deleted_at IS NULL").Preload("Jadwal", "deleted_at IS NULL").Preload("Instruktur", "deleted_at IS NULL").Preload("Kategori.Kategori", "deleted_at IS NULL").Preload("MateriPembelajaran", "deleted_at IS NULL").Where("id = ? AND deleted_at IS NULL", id).First(&dataKursus).Error; err != nil {
-		return kursus.Kursus{}, err
+		return kursus.Kursus{}, constant.ErrGetID
 	}
 	return dataKursus, nil
 }

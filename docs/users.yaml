@@ -503,7 +503,366 @@ paths:
                 example:
                   status: false
                   message: User not found
+                  data: null 
+  /kursus/{kursus_id}:
+    get:
+      tags:
+        - kursus
+      summary: Menampilkan data kursus by id
+      description: Menampilkan data kursus by id
+      operationId: getKursusbyid
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: kursus_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 005c310b-015a-4075-b3b5-575b1feb14d6
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        nama:
+                          type: string
+                        deskripsi:
+                          type: string
+                        image: 
+                          type: array
+                          items: 
+                            type: object
+                            properties:
+                              nama: 
+                                type: string
+                              url:
+                                type: string
+                              position:
+                                type: integer
+                        harga:
+                          type: integer
+                        jadwal:
+                          type: array
+                          items: 
+                            type: object
+                            properties:
+                              hari: 
+                                type: string
+                              jam_mulai:
+                                type: string
+                              jam_selesai:
+                                type: string
+                example:
+                  status: true
+                  message: Get kursus Success
+                  data:
+                      id: "86265355-f2a4-4acd-8195-6e56de7aba56"
+                      nama: "Corel"
+                      deskripsi: "Corel"
+                      image:
+                        - nama: "Corel"
+                          url: "https://test.com"
+                          position: 1
+                        - nama: "Corel"
+                          url: "https://test2.com"
+                          position: 2
+                      harga: 1500000
+                      jadwal:
+                        - hari: "Senin"
+                          jam_mulai: "16:00"
+                          jam_selesai: "18:00"
+                        - hari: "Selasa"
+                          jam_mulai: "16:00"
+                          jam_selesai: "18:00"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                example:
+                  status: false
+                  message: Unauthorized
                   data: null
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  message:
+                    type: string
+                example:
+                  status: false
+                  message: User not found
+                  data: null 
+  /kursus/search:
+    get:
+      tags:
+        - kursus
+      summary: Menampilkan data kursus berdasarkan nama
+      description: Endpoint ini menampilkan data kursus berdasarkan pencarian dengan parameter nama.
+      operationId: getKursusByName
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: name
+          in: query
+          description: Nama kursus yang ingin dicari
+          required: true
+          schema:
+            type: string
+          example: corel
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        nama:
+                          type: string
+                        deskripsi:
+                          type: string
+                        image:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              nama:
+                                type: string
+                              url:
+                                type: string
+                              position:
+                                type: integer
+                        harga:
+                          type: integer
+                        jadwal:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              hari:
+                                type: string
+                              jam_mulai:
+                                type: string
+                              jam_selesai:
+                                type: string
+                example:
+                  status: true
+                  message: Get kursus Success
+                  data:
+                    - id: "86265355-f2a4-4acd-8195-6e56de7aba56"
+                      nama: "Corel"
+                      deskripsi: "Pelatihan Corel untuk pemula"
+                      image:
+                        - nama: "Corel"
+                          url: "https://test.com/image1.jpg"
+                          position: 1
+                        - nama: "Corel"
+                          url: "https://test2.com/image2.jpg"
+                          position: 2
+                      harga: 1500000
+                      jadwal:
+                        - hari: "Senin"
+                          jam_mulai: "16:00"
+                          jam_selesai: "18:00"
+                        - hari: "Selasa"
+                          jam_mulai: "16:00"
+                          jam_selesai: "18:00"
+  /voucher:
+    get:
+      tags:
+        - voucher
+      summary: Menampilkan seluruh voucher yang ada
+      description: Menampilkan seluruh data mengenai voucher yang tersedia
+      operationId: getVoucher
+      security:
+        - bearerAuth: []
+      responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: boolean
+                    message:
+                      type: string
+                    data:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          nama:
+                            type: string
+                          code:
+                            type: string
+                          discount: 
+                            type: integer
+                          expired_at:
+                            type: string
+                  example:
+                    status: true
+                    message: Get Voucher Success
+                    metadata: 
+                      type: a
+                    data:
+                      - id: "15270598-8731-41ea-b3a3-12e18ef14206"
+                        nama: "Voucher Awal Tahun"
+                        code: "ZLsSmWQb24"
+                        discount: 5,
+                        expired_at: "2025-01-07T23:59:59Z"
+                        
+          "401":
+            description: Unauthorized
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                  example:
+                    status: false
+                    message: Unauthorized
+                    data: null
+          "404":
+            description: Not Found
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: boolean
+                    message:
+                      type: string
+                  example:
+                    status: false
+                    message: Data not found
+                    data: null 
+  /voucher/{voucher_id}:
+    get:
+      tags:
+        - voucher
+      summary: Menampilkan seluruh voucher yang ada
+      description: Menampilkan seluruh data mengenai voucher yang tersedia
+      operationId: getVoucherbyid
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: voucher_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 15270598-8731-41ea-b3a3-12e18ef14206
+      responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: boolean
+                    message:
+                      type: string
+                    data:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          nama:
+                            type: string
+                          code:
+                            type: string
+                          discount: 
+                            type: integer
+                          expired_at:
+                            type: string
+                  example:
+                    status: true
+                    message: Get Voucher Success
+                    metadata: 
+                      type: a
+                    data:
+                      - id: "15270598-8731-41ea-b3a3-12e18ef14206"
+                        nama: "Voucher Awal Tahun"
+                        code: "ZLsSmWQb24"
+                        discount: 5,
+                        expired_at: "2025-01-07T23:59:59Z"
+                        
+          "401":
+            description: Unauthorized
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                  example:
+                    status: false
+                    message: Unauthorized
+                    data: null
+          "404":
+            description: Not Found
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: boolean
+                    message:
+                      type: string
+                  example:
+                    status: false
+                    message: Data not found
+                    data: null 
+
 
 components:
   securitySchemes:

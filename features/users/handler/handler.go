@@ -271,12 +271,23 @@ func (h *UserHandler) GetAllUser() echo.HandlerFunc {
 		var dataResponse []GetAllUserResponse
 		for _, value := range data {
 			dataResponse = append(dataResponse, GetAllUserResponse{
-				ID:       value.ID,
-				NIS:      value.NIS,
-				Username: value.Username,
-				Nama:     value.Nama,
-				Email:    value.Email,
-				NomorHP:  value.NomorHP,
+				ID:            value.ID,
+				NIS:           value.NIS,
+				Username:      value.Username,
+				Nama:          value.Nama,
+				Email:         value.Email,
+				NomorHP:       value.NomorHP,
+				ProfileUrl:    value.ProfileUrl,
+				IsActive:      value.IsActive,
+				Agama:         value.Agama,
+				Gender:        value.Gender,
+				TempatLahir:   value.TempatLahir,
+				TanggalLahir:  value.TanggalLahir,
+				OrangTua:      value.OrangTua,
+				Profesi:       value.Profesi,
+				Ijazah:        value.Ijazah,
+				KTP:           value.KTP,
+				KartuKeluarga: value.KartuKeluarga,
 			})
 		}
 		if err != nil {

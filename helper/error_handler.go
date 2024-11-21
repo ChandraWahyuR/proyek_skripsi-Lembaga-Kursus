@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"log"
 	"net/http"
 	"skripsi/constant"
 
@@ -8,6 +9,7 @@ import (
 )
 
 func ConverResponse(err error) int {
+	log.Printf("Received error: %v", err)
 	switch err {
 	// General errors
 	case constant.ErrBadRequest:
@@ -19,7 +21,7 @@ func ConverResponse(err error) int {
 	case constant.ErrDataNotfound, constant.ErrKursusNotfound, constant.ErrInstrukturNotFound, constant.ErrKategoriNotFound, constant.ErrUserNotFound:
 		return http.StatusNotFound
 	case constant.ErrGetData, constant.ErrGetInstruktur, constant.ErrGetID:
-		return http.StatusInternalServerError
+		return http.StatusNotFound
 	case constant.ErrEmptyId:
 		return http.StatusBadRequest
 
@@ -60,8 +62,10 @@ func ConverResponse(err error) int {
 		return http.StatusInternalServerError
 
 	// Voucher errors
-	case constant.ErrVoucherNotFound, constant.ErrVoucherIDNotFound, constant.ErrVoucherFailedCreate:
+	case constant.ErrVoucherNotFound, constant.ErrVoucherFailedCreate:
 		return http.StatusBadRequest
+	case constant.ErrVoucherIDNotFound:
+		return http.StatusNotFound
 
 	// Transaksi errors
 	case constant.ErrTransaksiNotFound, constant.ErrValidateDokumenUser:

@@ -57,7 +57,7 @@ type TransaksiHandlerInterface interface {
 	// Tansaksi History
 	GetAllTransaksiHistory() echo.HandlerFunc
 	GetAllTransaksiHistoryForUser() echo.HandlerFunc
-	// GetTransaksiHistoryByID() echo.HandlerFunc
+	GetTransaksiHistoryByID() echo.HandlerFunc
 }
 
 type TransaksiDataInterface interface {
@@ -89,7 +89,7 @@ type TransaksiServiceInterface interface {
 	// // Tansaksi History
 	CreateTransaksiHistory(TransaksiHistory) error
 	GetAllTransaksiHistoryForUser(userID string, page, limit int) ([]TransaksiHistory, int, error)
-	// GetTransaksiHistoryByID(id string) (TransaksiHistory, error)
+	GetTransaksiHistoryByID(id string) (TransaksiHistory, error)
 	// // Pagination
 	GetAllTransaksiPagination(page, limit int) ([]Transaksi, int, error)
 	GetAllHistoryTransaksiPagination(page, limit int) ([]TransaksiHistory, int, error)

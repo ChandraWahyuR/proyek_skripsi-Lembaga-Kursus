@@ -15,6 +15,6 @@ func (s *Seeder) Seed() {
 	s.SeedVoucher()
 	s.SeedInstruktur()
 	// s.SeedUsers()
-	s.SeedKursus()
 	s.SeedCategory()
+	s.SeedKursus()
 }

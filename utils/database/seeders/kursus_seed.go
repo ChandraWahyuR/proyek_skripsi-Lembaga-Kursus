@@ -46,6 +46,20 @@ func (s *Seeder) SeedKursus() {
 					JamSelesai: time.Date(2000, 1, 1, 11, 0, 0, 0, time.UTC), // Jam selesai 11:00
 				},
 			},
+			MateriPembelajaran: []data.MateriPembelajaran{
+				{
+					ID:        "1ec0cf31-86ea-4ab3-9f1a-8c1f64ea1098",
+					KursusID:  "92ca1f3a-3a58-4d63-91c0-30db2642e0af",
+					Position:  1,
+					Deskripsi: "Materi 1",
+				},
+				{
+					ID:        "9824c000-ef7e-41a4-acdd-899c94efb642",
+					KursusID:  "92ca1f3a-3a58-4d63-91c0-30db2642e0af",
+					Position:  2,
+					Deskripsi: "Materi 2",
+				},
+			},
 		},
 	}
 	for _, dataKursus := range kursus {

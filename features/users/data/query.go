@@ -34,13 +34,14 @@ func (u *UserData) Register(user users.User) error {
 	}
 
 	userData := User{
-		ID:       uuid.New().String(),
-		Username: user.Username,
-		Email:    user.Email,
-		Password: user.Password,
-		NomorHP:  user.NomorHP,
-		NIS:      helper.GenerateNis(),
-		IsActive: false,
+		ID:         uuid.New().String(),
+		Username:   user.Username,
+		Email:      user.Email,
+		Password:   user.Password,
+		NomorHP:    user.NomorHP,
+		NIS:        helper.GenerateNis(),
+		ProfileUrl: user.ProfileUrl,
+		IsActive:   false,
 	}
 
 	if err := u.DB.Create(&userData).Error; err != nil {
@@ -154,11 +155,11 @@ func (d *UserData) VerifyEmail(email string, isValid bool) error {
 	return nil
 }
 
-func (d *UserData) GetAllUserPagination(page, limit int) ([]users.GetUser, int, error) {
-	var data []users.GetUser
+func (d *UserData) GetAllUserPagination(page, limit int) ([]users.User, int, error) {
+	var data []users.User
 	var total int64
 
-	count := d.DB.Model(&users.GetUser{}).Where("deleted_at IS NULL").Count(&total)
+	count := d.DB.Model(&users.User{}).Where("deleted_at IS NULL").Count(&total)
 	if count.Error != nil {
 		return nil, 0, constant.ErrDataNotfound
 	}

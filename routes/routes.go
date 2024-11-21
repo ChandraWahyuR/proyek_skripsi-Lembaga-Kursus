@@ -33,8 +33,8 @@ func RouteUser(e *echo.Echo, u users.UserHandlerInterface, cfg config.Config) {
 	e.GET("/api/v1/profile", u.GetUserByUser(), echojwt.WithConfig(jwtConfig))
 	e.PUT("/api/v1/profile", u.UpdateUser(), echojwt.WithConfig(jwtConfig))
 	// Admin
-	e.GET("/api/v1/users", u.GetAllUser(), echojwt.WithConfig(jwtConfig))
-	e.GET("/api/v1/users", u.GetUserByID(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/admin/users", u.GetAllUser(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/admin/users/:id", u.GetUserByID(), echojwt.WithConfig(jwtConfig))
 	e.POST("/api/v1/logout", u.Logout(), echojwt.WithConfig(jwtConfig))
 	e.GET("/verify", u.VerifyAccount()) // handler untuk memverifikasi token
 }
@@ -47,6 +47,7 @@ func RouteAdmin(e *echo.Echo, a admin.AdminHandlerInterface, cfg config.Config) 
 
 	e.POST("/api/v1/admin/register", a.RegisterAdmin(), echojwt.WithConfig(jwtConfig))
 	e.POST("/api/v1/admin/login", a.LoginAdmin())
+	e.POST("/api/v1/admin/laporan-pembelian", a.DownloadLaporanPembelian())
 }
 
 func RouteInstruktor(e *echo.Echo, i instruktur.InstrukturHandlerInterface, cfg config.Config) {
@@ -112,10 +113,11 @@ func RouteTransaksi(e *echo.Echo, tr transaksi.TransaksiHandlerInterface, cfg co
 	e.POST("/api/v1/transaksi", tr.CreateTransaksi(), echojwt.WithConfig(jwtConfig))
 	e.GET("/api/v1/admin/list-transaksi", tr.GetAllStatusTransaksi(), echojwt.WithConfig(jwtConfig))
 	e.GET("/api/v1/admin/list-transaksi/:id", tr.GetStatusTransaksiByID(), echojwt.WithConfig(jwtConfig))
-	e.GET("/api/v1/admin/history-transaksi/:id", tr.GetAllTransaksiHistory(), echojwt.WithConfig(jwtConfig))
 	e.GET("/api/v1/list-transaksi", tr.GetStatusTransaksiForUser(), echojwt.WithConfig(jwtConfig))
 	e.GET("/api/v1/history-transaksi", tr.GetAllTransaksiHistoryForUser(), echojwt.WithConfig(jwtConfig))
 
+	e.GET("/api/v1/admin/history-transaksi", tr.GetAllTransaksiHistory(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/admin/history-transaksi/:id", tr.GetTransaksiHistoryByID(), echojwt.WithConfig(jwtConfig))
 }
 
 func RouteWebhook(e *echo.Echo, w webhook.MidtransNotificationHandler, cfg config.Config) {

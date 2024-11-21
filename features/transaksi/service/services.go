@@ -110,6 +110,13 @@ func (s *TransaksiService) GetAllTransaksiHistoryForUser(userID string, page, li
 	return s.d.GetAllTransaksiHistoryForUser(userID, page, limit)
 }
 
+func (s *TransaksiService) GetTransaksiHistoryByID(id string) (transaksi.TransaksiHistory, error) {
+	if id == "" {
+		return transaksi.TransaksiHistory{}, constant.ErrGetID
+	}
+	return s.d.GetTransaksiHistoryByID(id)
+}
+
 // =============================================================================================
 func (s *TransaksiService) createMidtransPayment(transaksi transaksi.Transaksi) (string, error) {
 	snapGateway := midtrans.SnapGateway{

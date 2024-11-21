@@ -50,7 +50,7 @@ func (d *VoucherData) GetAllVoucherPagination(page, limit int) ([]voucher.Vouche
 func (d *VoucherData) GetByIDVoucher(id string) (voucher.Voucher, error) {
 	var dataVoucher voucher.Voucher
 	if err := d.DB.Where("id = ?", id).Where("deleted_at IS NULL AND expired_at > ?", time.Now()).First(&dataVoucher).Error; err != nil {
-		return voucher.Voucher{}, err
+		return voucher.Voucher{}, constant.ErrVoucherIDNotFound
 	}
 	return dataVoucher, nil
 }

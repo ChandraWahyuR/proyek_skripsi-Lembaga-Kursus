@@ -212,7 +212,7 @@ func (h *TransaksiHanlder) GetStatusTransaksiByID() echo.HandlerFunc {
 		}
 		tokenData := h.j.ExtractAdminToken(token)
 		role, ok := tokenData[constant.JWT_ROLE]
-		if !ok || role != constant.RoleAdmin {
+		if !ok || (role != constant.RoleAdmin && role != constant.RoleUser) {
 			return helper.UnauthorizedError(c)
 		}
 
@@ -292,6 +292,53 @@ func (h *TransaksiHanlder) GetAllTransaksiHistory() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, "Success", metadata, response))
+	}
+}
+
+func (h *TransaksiHanlder) GetTransaksiHistoryByID() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
+		if tokenString == "" {
+			return helper.UnauthorizedError(c)
+		}
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
+		if err != nil {
+			return helper.UnauthorizedError(c)
+		}
+		tokenData := h.j.ExtractAdminToken(token)
+		role, ok := tokenData[constant.JWT_ROLE]
+		if !ok || (role != constant.RoleAdmin && role != constant.RoleUser) {
+			return helper.UnauthorizedError(c)
+		}
+
+		id := c.Param("id")
+		dataHistoryT, err := h.s.GetTransaksiHistoryByID(id)
+		if err != nil {
+			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
+		}
+
+		response := GetHistoryAdminByIDResponse{
+			ID: dataHistoryT.ID,
+			Transaksi: Transaksi{
+				ID:         dataHistoryT.Transaksi.ID,
+				TotalHarga: dataHistoryT.Transaksi.TotalHarga,
+			},
+			Kursus: Kursus{
+				ID:   dataHistoryT.KursusID,
+				Nama: dataHistoryT.Kursus.Nama,
+			},
+			User: User{
+				ID:       dataHistoryT.UserID,
+				Username: dataHistoryT.User.Username,
+				Email:    dataHistoryT.User.Email,
+			},
+			VoucherID:  dataHistoryT.Transaksi.VoucherID,
+			TotalHarga: dataHistoryT.Transaksi.TotalHarga,
+			Status:     dataHistoryT.Status,
+			ValidUntil: dataHistoryT.ValidUntil,
+		}
+		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, "Berhasil", response))
 	}
 }
 
