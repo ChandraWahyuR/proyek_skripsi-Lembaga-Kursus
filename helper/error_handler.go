@@ -62,7 +62,7 @@ func ConverResponse(err error) int {
 		return http.StatusInternalServerError
 
 	// Voucher errors
-	case constant.ErrVoucherNotFound, constant.ErrVoucherFailedCreate:
+	case constant.ErrVoucherNotFound, constant.ErrVoucherFailedCreate, constant.ErrVoucherUsed:
 		return http.StatusBadRequest
 	case constant.ErrVoucherIDNotFound:
 		return http.StatusNotFound

@@ -8,6 +8,7 @@ import (
 	"skripsi/features/users"
 	"skripsi/helper"
 	"strconv"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -270,6 +271,10 @@ func (h *UserHandler) GetAllUser() echo.HandlerFunc {
 
 		var dataResponse []GetAllUserResponse
 		for _, value := range data {
+			formattedTanggalLahir := ""
+			if !value.TanggalLahir.IsZero() {
+				formattedTanggalLahir = value.TanggalLahir.Format(constant.TTLFormat)
+			}
 			dataResponse = append(dataResponse, GetAllUserResponse{
 				ID:            value.ID,
 				NIS:           value.NIS,
@@ -282,7 +287,7 @@ func (h *UserHandler) GetAllUser() echo.HandlerFunc {
 				Agama:         value.Agama,
 				Gender:        value.Gender,
 				TempatLahir:   value.TempatLahir,
-				TanggalLahir:  value.TanggalLahir,
+				TanggalLahir:  formattedTanggalLahir,
 				OrangTua:      value.OrangTua,
 				Profesi:       value.Profesi,
 				Ijazah:        value.Ijazah,
@@ -322,6 +327,11 @@ func (h *UserHandler) GetUserByID() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
+		formattedTanggalLahir := ""
+		if !dataUser.TanggalLahir.IsZero() {
+			formattedTanggalLahir = dataUser.TanggalLahir.Format(constant.TTLFormat)
+		}
+
 		responseData := GetUserIDResponse{
 			ID:            dataUser.ID,
 			NIS:           dataUser.NIS,
@@ -332,7 +342,7 @@ func (h *UserHandler) GetUserByID() echo.HandlerFunc {
 			Agama:         dataUser.Agama,
 			Gender:        dataUser.Gender,
 			TempatLahir:   dataUser.TempatLahir,
-			TanggalLahir:  dataUser.TanggalLahir,
+			TanggalLahir:  formattedTanggalLahir,
 			OrangTua:      dataUser.OrangTua,
 			Profesi:       dataUser.Profesi,
 			Ijazah:        dataUser.Ijazah,
@@ -369,6 +379,11 @@ func (h *UserHandler) GetUserByUser() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
+		formattedTanggalLahir := ""
+		if !data.TanggalLahir.IsZero() {
+			formattedTanggalLahir = data.TanggalLahir.Format(constant.TTLFormat)
+		}
+
 		responseData := GetUserIDResponse{
 			ID:            data.ID,
 			NIS:           data.NIS,
@@ -379,7 +394,7 @@ func (h *UserHandler) GetUserByUser() echo.HandlerFunc {
 			Agama:         data.Agama,
 			Gender:        data.Gender,
 			TempatLahir:   data.TempatLahir,
-			TanggalLahir:  data.TanggalLahir,
+			TanggalLahir:  formattedTanggalLahir,
 			OrangTua:      data.OrangTua,
 			Profesi:       data.Profesi,
 			Ijazah:        data.Ijazah,
@@ -465,6 +480,11 @@ func (h *UserHandler) UpdateUser() echo.HandlerFunc {
 			ijazahUrl = data.Ijazah
 		}
 
+		tanggalLahir, err := time.Parse(constant.TTLFormat, dataRequest.TanggalLahir)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, "Formatnya tanggal bulan tahun", nil))
+		}
+
 		responseData := users.EditUser{
 			ID:            data.ID,
 			Nama:          dataRequest.Nama,
@@ -472,7 +492,7 @@ func (h *UserHandler) UpdateUser() echo.HandlerFunc {
 			Agama:         dataRequest.Agama,
 			Gender:        dataRequest.Gender,
 			TempatLahir:   dataRequest.TempatLahir,
-			TanggalLahir:  dataRequest.TanggalLahir,
+			TanggalLahir:  tanggalLahir,
 			OrangTua:      dataRequest.OrangTua,
 			Profesi:       dataRequest.Profesi,
 			Ijazah:        ijazahUrl,

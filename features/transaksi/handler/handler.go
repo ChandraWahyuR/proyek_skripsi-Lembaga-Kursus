@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"skripsi/constant"
 	"skripsi/features/transaksi"
+	"skripsi/features/voucher"
 	"skripsi/helper"
 	"strconv"
 
@@ -53,12 +54,35 @@ func (h *TransaksiHanlder) CreateTransaksi() echo.HandlerFunc {
 			KursusID: dataTransaksi.Kursus,
 			UserID:   userId.(string),
 		}
+
+		// Validasi voucher
 		if dataTransaksi.VoucherID != "" {
+			voucherExists, err := h.s.CheckVoucherExists(dataTransaksi.VoucherID)
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Failed to validate voucher", nil))
+			}
+			if !voucherExists {
+				return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, "Invalid voucher ID", nil))
+			}
 			response.VoucherID = dataTransaksi.VoucherID
 		}
+
 		transaksiResponse, err := h.s.CreateTransaksi(response)
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
+		}
+
+		if dataTransaksi.VoucherID != "" {
+			response.VoucherID = dataTransaksi.VoucherID
+			usedVoucher := voucher.VoucherUsed{
+				ID:        uuid.New().String(),
+				VoucherID: response.VoucherID,
+				UserID:    userId.(string),
+			}
+			err = h.s.UsedVoucher(usedVoucher)
+			if err != nil {
+				return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
+			}
 		}
 
 		paymentResponse := PaymentResponse{
@@ -74,10 +98,12 @@ func (h *TransaksiHanlder) CreateTransaksi() echo.HandlerFunc {
 			TransaksiID: transaksiResponse.ID,
 			Status:      "Not Active",
 		}
+
 		err = h.s.CreateTransaksiHistory(dataHistory)
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
+
 		return c.JSON(http.StatusCreated, helper.FormatResponse(true, "Transaksi has been sent", paymentResponse))
 	}
 }

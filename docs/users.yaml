@@ -12,6 +12,8 @@ tags:
     description: kursus
   - name : transaksi
     description: transaksi
+  - name: profile
+    description: profile user
 paths:
   /register:
     post:
@@ -862,7 +864,182 @@ paths:
                     status: false
                     message: Data not found
                     data: null 
-
+  /profile:
+    get:
+      tags:
+          - profile
+      summary: Menampilkan seluruh voucher yang ada
+      description: Menampilkan seluruh data mengenai voucher yang tersedia
+      operationId: getProfile
+      security:
+        - bearerAuth: []
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            nis:
+                              type: string
+                            username:
+                              type: string
+                            nama: 
+                              type: string
+                            email: 
+                              type: string
+                            nomor_hp : 
+                              type: string
+                            agama:
+                              type: string
+                            gender:
+                              type: string
+                            tempat_lahir:
+                              type: string
+                            tanggal_lahir:
+                              type: string
+                            orang_tua:
+                              type: string
+                            profesi:
+                              type: string
+                            ijazah:
+                              type: string
+                            ktp:
+                              type: string
+                            kartu_keluarga: 
+                              type: string
+                            profile_url: 
+                              type: string  
+                    example:
+                      status: true
+                      message: Get Profile Success
+                      data:
+                          id: "7a9470b7-e05a-4e09-8764-d0b4b97309da"
+                          nis: ""
+                          username: "Chand"
+                          nama: "Chandra"
+                          email: "chand@test.com"
+                          nomor_hp: "01232421451"
+                          agama: "Islam"
+                          gender: "laki-laki"
+                          tempat_lahir: "Banyumas, Jawa Tengah"
+                          tanggal_lahir: "dd-mm-yyyy"
+                          orang_tua: "Ibu dan Ayah"
+                          profesi: "Mahasiswa"
+                          ijazah: "https://storage.googleapis.com/ijazah.png"
+                          ktp : "https://storage.googleapis.com/ktp.png"
+                          kartu_keluarga: "https://storage.googleapis.com/kartu_keluarga.png"
+                          profile_url: "https://storage.googleapis.com/profile.png"
+          "401":
+              description: Unauthorized
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                    example:
+                      status: false
+                      message: Unauthorized
+                      data: null
+          "404":
+              description: Not Found
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                    example:
+                      status: false
+                      message: Data not found
+                      data: null 
+    put:
+      tags:
+          - profile
+      summary: Menampilkan seluruh voucher yang ada
+      description: Menampilkan seluruh data mengenai voucher yang tersedia
+      operationId: updateProfile
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - nomor_hp
+                - email
+                - password
+                - confirm_password
+              properties:
+                username:
+                  type: string
+                nomor_hp:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                confirm_password:
+                  type: string
+              example:
+                username: test
+                nomor_hp: 012345678911
+                email: testing@test.com
+                password: test123
+                confirm_password: test123
+      responses:
+        "201":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: boolean
+                    message:
+                      type: string
+                    data:
+                      type: array
+                      properties:
+                        token:
+                          type: string
+                example:
+                  status: true
+                  message: Register Success
+                  data: null
+        "401":
+              description: Unauthorized
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                    example:
+                      status: false
+                      message: Unauthorized
+                      data: null
 
 components:
   securitySchemes:

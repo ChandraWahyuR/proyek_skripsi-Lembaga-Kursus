@@ -5,6 +5,7 @@ import (
 	"log"
 	"skripsi/constant"
 	"skripsi/features/transaksi"
+	"skripsi/features/voucher"
 	"skripsi/helper"
 
 	"github.com/veritrans/go-midtrans"
@@ -30,34 +31,31 @@ func (s *TransaksiService) CreateTransaksi(transaksiData transaksi.Transaksi) (t
 		return transaksi.Transaksi{}, constant.ErrValidateDokumenUser
 	}
 
-	var finalPrice float64
 	kursusData, err := s.d.GetKursusByID(transaksiData.KursusID)
 	if err != nil {
-		// log.Printf("Error fetching Kursus for ID: %s, Error: %v", transaksiData.KursusID, err)
 		return transaksi.Transaksi{}, fmt.Errorf("failed to get Kursus data: %v", err)
 	}
 
-	finalPrice = float64(kursusData.Harga)
-	// log.Printf("Kursus Price: %.2f", finalPrice)
-
 	// Kalkulasi diskon
+	finalPrice := float64(kursusData.Harga)
 	if transaksiData.VoucherID != "" {
 		voucher, err := s.d.GetByIDVoucher(transaksiData.VoucherID)
 		if err != nil {
-			// log.Printf("Error fetching voucher for ID: %s, Error: %v", transaksiData.VoucherID, err)
 			return transaksi.Transaksi{}, err
 		}
 
-		discount := voucher.Discount / 100
-		// log.Printf("Voucher Discount: %.2f%%", voucher.Discount)
+		// Check voucher
+		isVoucherUsed := s.d.UsedVoucherCheck(transaksiData.UserID, transaksiData.VoucherID)
+		if isVoucherUsed {
+			return transaksi.Transaksi{}, constant.ErrVoucherUsed
+		}
 
+		discount := voucher.Discount / 100
 		finalPrice -= (finalPrice * discount)
 		if finalPrice < 0.01 {
 			finalPrice = 0.01
 		}
 	}
-
-	// log.Printf("Calculated Final Price for transaction: %.2f", finalPrice)
 
 	transaksiData.Status = "Pending"
 	transaksiData.TotalHarga = finalPrice
@@ -69,11 +67,9 @@ func (s *TransaksiService) CreateTransaksi(transaksiData transaksi.Transaksi) (t
 	}
 
 	// log.Printf("Midtrans Snap URL for transaction ID: %s: %s", transaksiData.ID, snapURL)
-
 	transaksiData.SnapURL = snapURL
 	savedTransaksi, err := s.d.CreateTransaksi(transaksiData)
 	if err != nil {
-		// log.Printf("Error saving transaction ID: %s, Error: %v", transaksiData.ID, err)
 		return transaksi.Transaksi{}, err
 	}
 
@@ -100,6 +96,13 @@ func (s *TransaksiService) GetStatusTransaksiByID(id string) (transaksi.Transaks
 		return transaksi.Transaksi{}, constant.ErrGetID
 	}
 	return s.d.GetStatusTransaksiByID(id)
+}
+
+func (s *TransaksiService) UsedVoucher(data voucher.VoucherUsed) error {
+	return s.d.UsedVoucher(data)
+}
+func (s *TransaksiService) CheckVoucherExists(voucherID string) (bool, error) {
+	return s.d.CheckVoucherExists(voucherID)
 }
 
 func (s *TransaksiService) GetAllHistoryTransaksiPagination(page, limit int) ([]transaksi.TransaksiHistory, int, error) {

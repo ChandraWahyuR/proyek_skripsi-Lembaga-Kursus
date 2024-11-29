@@ -80,6 +80,10 @@ type TransaksiDataInterface interface {
 	GetKursusByID(kursusID string) (kursus.Kursus, error)
 	GetUserByID(userID string) (users.User, error)
 	ValidateUserDokumentation(userId string) bool
+	//
+	UsedVoucher(voucher.VoucherUsed) error
+	UsedVoucherCheck(userID, voucherID string) bool
+	CheckVoucherExists(voucherID string) (bool, error)
 }
 
 type TransaksiServiceInterface interface {
@@ -93,4 +97,7 @@ type TransaksiServiceInterface interface {
 	// // Pagination
 	GetAllTransaksiPagination(page, limit int) ([]Transaksi, int, error)
 	GetAllHistoryTransaksiPagination(page, limit int) ([]TransaksiHistory, int, error)
+	//
+	UsedVoucher(voucher.VoucherUsed) error
+	CheckVoucherExists(voucherID string) (bool, error)
 }

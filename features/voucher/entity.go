@@ -17,6 +17,12 @@ type Voucher struct {
 	UpdatedAt time.Time
 }
 
+type VoucherUsed struct {
+	ID        string
+	VoucherID string
+	UserID    string
+}
+
 type VoucherHandlerInterface interface {
 	GetAllVoucher() echo.HandlerFunc
 	GetByIDVoucher() echo.HandlerFunc

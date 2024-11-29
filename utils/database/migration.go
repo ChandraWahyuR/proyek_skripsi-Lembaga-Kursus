@@ -27,6 +27,7 @@ func Migrate(db *gorm.DB) error {
 	db.AutoMigrate(&Kursus.JadwalKursus{})
 	// Voucher
 	db.AutoMigrate(&Voucher.Voucher{})
+	db.AutoMigrate(&Voucher.VoucherUsed{})
 	// Transaksi
 	db.AutoMigrate(&Transaksi.Transaksi{})
 	db.AutoMigrate(&Transaksi.TransaksiHistory{})

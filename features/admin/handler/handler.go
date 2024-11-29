@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"skripsi/constant"
 	"skripsi/features/admin"
 	"skripsi/helper"
@@ -91,7 +92,8 @@ func (h *AdminHandler) DownloadLaporanPembelian() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, "Error generating report")
 		}
-
+		// Hapus file setelah download
+		defer os.Remove(filename)
 		// Set response header for CSV download
 		c.Response().Header().Set("Content-Disposition", "attachment; filename="+filename)
 		c.Response().Header().Set("Content-Type", "text/csv")

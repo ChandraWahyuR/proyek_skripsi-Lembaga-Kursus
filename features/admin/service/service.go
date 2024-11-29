@@ -102,7 +102,7 @@ func (s *AdminService) DownloadLaporanPembelian(startDate, endDate time.Time) (s
 	}
 
 	filename := "laporan_pembelian_" + startDate.Format("2006-01-02") + "_to_" + endDate.Format("2006-01-02") + ".csv"
-	file, err := os.Create(filename)
+	file, err := os.CreateTemp("", filename)
 	if err != nil {
 		return "", err
 	}

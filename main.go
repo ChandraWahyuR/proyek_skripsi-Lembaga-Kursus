@@ -129,11 +129,15 @@ func main() {
 	// e.File("/verification-failed", "assets/verifikasi_gagal.html")
 
 	// Swagger
-	e.Static("/", "public")
+	e.Static("/", "static")
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
-	e.GET("/swagger.yaml", func(c echo.Context) error {
+	e.GET("/docs/users.yaml", func(c echo.Context) error {
 		return c.File("docs/users.yaml")
+	})
+
+	e.GET("/docs/admins.yaml", func(c echo.Context) error {
+		return c.File("docs/admin.yaml")
 	})
 
 	// e.Logger.Fatal(e.Start(":8080"))

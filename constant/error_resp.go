@@ -96,6 +96,7 @@ var ErrGetID = errors.New("id tidak ditemukan")
 // Voucher
 var ErrVoucherNotFound = errors.New("data voucher tidak ada")
 var ErrVoucherIDNotFound = errors.New("id voucher tidak ditemukan")
+var ErrVoucherUsed = errors.New("voucher telah digunakan")
 
 // Voucher data
 var ErrVoucherFailedCreate = errors.New("data voucher gagal dibuat")

@@ -1,6 +1,7 @@
 package data
 
 import (
+	"log"
 	"skripsi/constant"
 	"skripsi/features/kursus"
 	"skripsi/features/transaksi"
@@ -199,4 +200,35 @@ func (d *TransaksiData) ValidateUserDokumentation(userId string) bool {
 	}
 
 	return true
+}
+
+// Voucher
+
+func (d *TransaksiData) UsedVoucher(data voucher.VoucherUsed) error {
+	if err := d.DB.Create(&data).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (d *TransaksiData) UsedVoucherCheck(userID, voucherID string) bool {
+	var count int64
+	if err := d.DB.Model(&voucher.VoucherUsed{}).
+		Where("user_id = ? AND voucher_id = ?", userID, voucherID).
+		Count(&count).Error; err != nil {
+		log.Printf("Error checking voucher usage: %v", err)
+		return false
+	}
+
+	return count > 0
+}
+
+func (d *TransaksiData) CheckVoucherExists(voucherID string) (bool, error) {
+	var count int64
+	err := d.DB.Model(&voucher.Voucher{}).Where("id = ?", voucherID).Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }
