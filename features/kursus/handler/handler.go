@@ -86,7 +86,7 @@ func (h *KursusHandler) GetAllKursus() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, "Berhasil", metadata, response))
+		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, constant.GetAllKursus, metadata, response))
 	}
 }
 func (h *KursusHandler) GetAllKursusById() echo.HandlerFunc {
@@ -129,7 +129,7 @@ func (h *KursusHandler) GetAllKursusById() echo.HandlerFunc {
 			Kategori:           mapKategori(dataKursus.Kategori),
 			MateriPembelajaran: mapMateri(dataKursus.MateriPembelajaran),
 		}
-		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, "Berhasil", kursusResponse))
+		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, constant.GetAllKursus, kursusResponse))
 	}
 }
 
@@ -257,7 +257,7 @@ func (h *KursusHandler) AddKursus() echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusCreated, helper.FormatResponse(true, "Kursus added successfully", nil))
+		return c.JSON(http.StatusCreated, helper.FormatResponse(true, constant.PostKursus, nil))
 	}
 }
 
@@ -389,7 +389,7 @@ func (h *KursusHandler) UpdateKursus() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
-		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Kursus updated successfully", nil))
+		return c.JSON(http.StatusOK, helper.FormatResponse(true, constant.EditKursus, nil))
 	}
 }
 
@@ -417,7 +417,7 @@ func (h *KursusHandler) DeleteKursus() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Kursus delete successfully", nil))
+		return c.JSON(http.StatusOK, helper.FormatResponse(true, constant.DeleteKursus, nil))
 	}
 }
 
@@ -473,7 +473,7 @@ func (h *KursusHandler) GetAllKursusByName() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, "berhasil", metaData, response))
+		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, constant.GetAllKursus, metaData, response))
 	}
 }
 

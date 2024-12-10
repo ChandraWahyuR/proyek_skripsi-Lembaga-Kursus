@@ -2,8 +2,11 @@ package handler
 
 import (
 	"fmt"
+	"log"
 	"net/http"
-	"os"
+	"os/user"
+	"path"
+	"path/filepath"
 	"skripsi/constant"
 	"skripsi/features/admin"
 	"skripsi/helper"
@@ -42,7 +45,7 @@ func (h *AdminHandler) RegisterAdmin() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
-		return c.JSON(http.StatusCreated, helper.FormatResponse(true, "Success", nil))
+		return c.JSON(http.StatusCreated, helper.FormatResponse(true, constant.RegisterBerhasil, nil))
 	}
 }
 func (h *AdminHandler) LoginAdmin() echo.HandlerFunc {
@@ -64,7 +67,7 @@ func (h *AdminHandler) LoginAdmin() echo.HandlerFunc {
 		}
 		var response AdminLoginResponse
 		response.Token = adminData.Token
-		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Login Success", response))
+		return c.JSON(http.StatusOK, helper.FormatResponse(true, constant.LoginBerhasil, response))
 	}
 }
 
@@ -74,7 +77,7 @@ func (h *AdminHandler) DownloadLaporanPembelian() echo.HandlerFunc {
 		startDate := c.QueryParam("start_date")
 		endDate := c.QueryParam("end_date")
 
-		// Validasi
+		// Validasi input
 		if startDate == "" || endDate == "" {
 			return c.JSON(http.StatusBadRequest, "Start date and end date are required")
 		}
@@ -88,18 +91,32 @@ func (h *AdminHandler) DownloadLaporanPembelian() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, "Invalid end date format")
 		}
-		filename, err := h.s.DownloadLaporanPembelian(tglMulai, tglAkhir)
+
+		// Tentukan folder Downloads
+		downloadsFolder := GetDownloadsFolder()
+
+		// Generate laporan dan simpan di folder Downloads
+		filename, err := h.s.DownloadLaporanPembelian(tglMulai, tglAkhir, downloadsFolder)
 		if err != nil {
+			log.Println("Error generating report:", err)
 			return c.JSON(http.StatusInternalServerError, "Error generating report")
 		}
-		// Hapus file setelah download
-		defer os.Remove(filename)
-		// Set response header for CSV download
-		c.Response().Header().Set("Content-Disposition", "attachment; filename="+filename)
-		c.Response().Header().Set("Content-Type", "text/csv")
-		fmt.Println("Received start_date:", startDate)
-		fmt.Println("Received end_date:", endDate)
 
+		log.Println("File generated:", filename)
+
+		// Set header untuk mengunduh file
+		c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", path.Base(filename)))
+		c.Response().Header().Set("Content-Type", "text/csv")
+
+		log.Println("Sending file to client:", filename)
 		return c.File(filename)
 	}
+}
+
+func GetDownloadsFolder() string {
+	usr, err := user.Current()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return filepath.Join(usr.HomeDir, "Downloads")
 }

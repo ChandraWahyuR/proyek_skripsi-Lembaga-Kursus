@@ -75,7 +75,7 @@ func (h *VoucherHandler) GetAllVoucher() echo.HandlerFunc {
 				ExpiredAt: value.ExpiredAt,
 			})
 		}
-		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, "berhasil", metadata, dataResponse))
+		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, constant.GetAllVoucher, metadata, dataResponse))
 	}
 }
 
@@ -110,7 +110,7 @@ func (h *VoucherHandler) GetByIDVoucher() echo.HandlerFunc {
 			Discount:  data.Discount,
 			ExpiredAt: data.ExpiredAt,
 		}
-		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, "sukses", response))
+		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, constant.GetAllVoucher, response))
 	}
 }
 
@@ -150,7 +150,7 @@ func (h *VoucherHandler) CreateVoucher() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
-		return c.JSON(http.StatusCreated, helper.ObjectFormatResponse(true, "Success", nil))
+		return c.JSON(http.StatusCreated, helper.ObjectFormatResponse(true, constant.PostVoucher, nil))
 	}
 }
 
@@ -194,7 +194,7 @@ func (h *VoucherHandler) UpdateVoucher() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
-		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, "Success", nil))
+		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, constant.EditVoucher, nil))
 	}
 }
 
@@ -221,6 +221,6 @@ func (h *VoucherHandler) DeleteVoucher() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
-		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, "Success", nil))
+		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, constant.DeleteVoucher, nil))
 	}
 }

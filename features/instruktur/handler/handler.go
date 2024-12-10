@@ -76,7 +76,7 @@ func (h *InstrukturHandler) GetAllInstruktur() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, "Berhasil", metadata, response))
+		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, constant.GetAllInstruktur, metadata, response))
 	}
 }
 
@@ -115,7 +115,7 @@ func (h *InstrukturHandler) GetAllInstrukturByID() echo.HandlerFunc {
 			Alamat: dataInstruktur.Alamat,
 			NoHp:   dataInstruktur.NoHp,
 		}
-		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, "sukses", dataResponse))
+		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, constant.GetAllInstruktur, dataResponse))
 	}
 }
 
@@ -191,7 +191,7 @@ func (h *InstrukturHandler) PostInstruktur() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusCreated, helper.FormatResponse(true, "Success", nil))
+		return c.JSON(http.StatusCreated, helper.FormatResponse(true, constant.PostInstruktur, nil))
 	}
 }
 
@@ -280,7 +280,7 @@ func (h *InstrukturHandler) UpdateInstruktur() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
-		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, "Success", nil))
+		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, constant.EditInstruktur, nil))
 	}
 }
 
@@ -308,7 +308,7 @@ func (h *InstrukturHandler) DeleteInstruktur() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Success", nil))
+		return c.JSON(http.StatusOK, helper.FormatResponse(true, constant.DeleteInstruktur, nil))
 	}
 }
 
@@ -364,6 +364,6 @@ func (h *InstrukturHandler) GetInstruktorByName() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, "Berhasil", metadata, response))
+		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, constant.GetAllInstruktur, metadata, response))
 	}
 }

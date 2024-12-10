@@ -46,6 +46,10 @@ import (
 	WebhookData "skripsi/features/webhook/data"
 	WebhookHandler "skripsi/features/webhook/handler"
 	WebhookService "skripsi/features/webhook/service"
+
+	GmapsData "skripsi/features/gmaps/data"
+	GmapsHandler "skripsi/features/gmaps/handler"
+	GmapsService "skripsi/features/gmaps/service"
 )
 
 // Ini logout kaya forgot juga diredis aja
@@ -112,6 +116,10 @@ func main() {
 	webhookService := WebhookService.New(webhookData)
 	webhookHandler := WebhookHandler.New(webhookService)
 
+	gmapsData := GmapsData.New(cfg.Gmaps.GOOGLE_MAPS_API_KEY)
+	gmapsService := GmapsService.New(gmapsData)
+	gmapsHandler := GmapsHandler.New(gmapsService)
+
 	routes.RouteUser(e, usersHandler, *cfg)
 	routes.RouteAdmin(e, adminHandler, *cfg)
 	routes.RouteInstruktor(e, instrukturHandler, *cfg)
@@ -120,6 +128,7 @@ func main() {
 	routes.RouteVoucher(e, voucherHandler, *cfg)
 	routes.RouteTransaksi(e, transaksiHandler, *cfg)
 	routes.RouteWebhook(e, webhookHandler, *cfg)
+	routes.RouteGmaps(e, gmapsHandler, *cfg)
 
 	// Redirect
 	// http://localhost:8080/halaman/example.html
@@ -129,8 +138,16 @@ func main() {
 	// e.File("/verification-failed", "assets/verifikasi_gagal.html")
 
 	// Swagger
-	e.Static("/", "static")
+	e.Static("/static", "static")
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
+
+	e.GET("/index.html", func(c echo.Context) error {
+		return c.String(403, "Akses langsung ke halaman ini tidak diperbolehkan.")
+	})
+
+	e.GET("/dokumen", func(c echo.Context) error {
+		return c.File("static/index.html")
+	})
 
 	e.GET("/docs/users.yaml", func(c echo.Context) error {
 		return c.File("docs/users.yaml")

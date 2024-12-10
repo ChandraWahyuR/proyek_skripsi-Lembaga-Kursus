@@ -63,7 +63,7 @@ func (h *UserHandler) Register() echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Failed to send verification email", nil))
 		}
 
-		return c.JSON(http.StatusCreated, helper.FormatResponse(true, "Success", nil))
+		return c.JSON(http.StatusCreated, helper.FormatResponse(true, constant.RegisterBerhasil, nil))
 	}
 }
 
@@ -90,7 +90,7 @@ func (h *UserHandler) Login() echo.HandlerFunc {
 		var response UserLoginResponse
 		response.Token = userData.Token
 
-		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Login Success", response))
+		return c.JSON(http.StatusOK, helper.FormatResponse(true, constant.LoginBerhasil, response))
 	}
 }
 
@@ -113,7 +113,7 @@ func (h *UserHandler) ForgotPassword() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Success", map[string]string{"token": token}))
+		return c.JSON(http.StatusOK, helper.FormatResponse(true, constant.KirimLupaPassword, map[string]string{"token": token}))
 	}
 }
 
@@ -150,7 +150,7 @@ func (h *UserHandler) VerifyOTP() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
-		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Success", nil))
+		return c.JSON(http.StatusOK, helper.FormatResponse(true, constant.OtpStatus, nil))
 	}
 }
 
@@ -193,7 +193,7 @@ func (h *UserHandler) ResetPassword() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Success", nil))
+		return c.JSON(http.StatusOK, helper.FormatResponse(true, constant.ResetPassword, nil))
 	}
 }
 
@@ -298,7 +298,7 @@ func (h *UserHandler) GetAllUser() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
-		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, "Success", metadata, dataResponse))
+		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, constant.GetAllUser, metadata, dataResponse))
 	}
 }
 
@@ -350,7 +350,7 @@ func (h *UserHandler) GetUserByID() echo.HandlerFunc {
 			KartuKeluarga: dataUser.KartuKeluarga,
 			ProfileUrl:    dataUser.ProfileUrl,
 		}
-		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Success", responseData))
+		return c.JSON(http.StatusOK, helper.FormatResponse(true, constant.GetAllUser, responseData))
 	}
 }
 
@@ -402,7 +402,7 @@ func (h *UserHandler) GetUserByUser() echo.HandlerFunc {
 			KartuKeluarga: data.KartuKeluarga,
 			ProfileUrl:    data.ProfileUrl,
 		}
-		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Success", responseData))
+		return c.JSON(http.StatusOK, helper.FormatResponse(true, constant.GetProfile, responseData))
 	}
 }
 
@@ -505,7 +505,7 @@ func (h *UserHandler) UpdateUser() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, "Success", nil))
+		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, constant.EditProfile, nil))
 	}
 }
 
@@ -534,7 +534,7 @@ func (h *UserHandler) DeleteUser() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Success", nil))
+		return c.JSON(http.StatusOK, helper.FormatResponse(true, constant.DeleteUser, nil))
 	}
 }
 

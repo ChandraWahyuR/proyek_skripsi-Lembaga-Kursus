@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/csv"
 	"fmt"
+	"log"
 	"os"
 	"skripsi/constant"
 	"skripsi/features/admin"
@@ -95,15 +96,20 @@ func (s *AdminService) LoginAdmin(user admin.Admin) (admin.Login, error) {
 	return adminLoginData, nil
 }
 
-func (s *AdminService) DownloadLaporanPembelian(startDate, endDate time.Time) (string, error) {
+func (s *AdminService) DownloadLaporanPembelian(startDate, endDate time.Time, folder string) (string, error) {
 	histories, err := s.d.DownloadLaporanPembelian(startDate, endDate)
 	if err != nil {
 		return "", err
 	}
 
-	filename := "laporan_pembelian_" + startDate.Format("2006-01-02") + "_to_" + endDate.Format("2006-01-02") + ".csv"
-	file, err := os.CreateTemp("", filename)
+	filename := fmt.Sprintf("%s/laporan_pembelian_%s_to_%s.csv",
+		folder,
+		startDate.Format("2006-01-02"),
+		endDate.Format("2006-01-02"))
+
+	file, err := os.Create(filename)
 	if err != nil {
+		log.Println("Error creating file:", err)
 		return "", err
 	}
 	defer file.Close()
@@ -111,12 +117,10 @@ func (s *AdminService) DownloadLaporanPembelian(startDate, endDate time.Time) (s
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	// Menambahkan header laporan
+	// Tambahkan header laporan
 	writer.Write([]string{"Laporan Pembelian"})
 	writer.Write([]string{"Periode", startDate.Format("02 January 2006") + " - " + endDate.Format("02 January 2006")})
 	writer.Write([]string{})
-
-	// Header tabel
 	writer.Write([]string{"ID", "TransaksiID", "KursusID", "UserID", "UserNama", "Email", "Nama Kursus", "Status Pembelian", "ValidUntil", "TotalHarga", "Status Transaksi"})
 
 	var totalUser int
@@ -165,11 +169,6 @@ func (s *AdminService) DownloadLaporanPembelian(startDate, endDate time.Time) (s
 			totalHarga += harga
 		}
 	}
-
-	// Footer
-	writer.Write([]string{})
-	writer.Write([]string{"Total User", fmt.Sprintf("%d", totalUser)})
-	writer.Write([]string{"Total Dana yang Masuk", fmt.Sprintf("%.2f", totalHarga)})
 
 	return filename, nil
 }

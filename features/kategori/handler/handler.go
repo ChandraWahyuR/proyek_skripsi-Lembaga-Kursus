@@ -76,7 +76,7 @@ func (h *KategoriHandler) GetAllKategori() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, "Berhasil", metadata, response))
+		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, constant.GetAllKategori, metadata, response))
 	}
 }
 
@@ -111,7 +111,7 @@ func (h *KategoriHandler) GetKategoriById() echo.HandlerFunc {
 			ImageUrl:  dataKategori.ImageUrl,
 		}
 
-		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, "Berhasil", dataResponse))
+		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, constant.GetAllKategori, dataResponse))
 
 	}
 }
@@ -190,7 +190,7 @@ func (h *KategoriHandler) CreateKategori() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusCreated, helper.FormatResponse(true, "Success", nil))
+		return c.JSON(http.StatusCreated, helper.FormatResponse(true, constant.PostKategori, nil))
 	}
 }
 func (h *KategoriHandler) UpdateKategori() echo.HandlerFunc {
@@ -259,7 +259,7 @@ func (h *KategoriHandler) UpdateKategori() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, "Success", nil))
+		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, constant.EditKategori, nil))
 	}
 }
 func (h *KategoriHandler) DeleteKategori() echo.HandlerFunc {
@@ -287,6 +287,6 @@ func (h *KategoriHandler) DeleteKategori() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Success", nil))
+		return c.JSON(http.StatusOK, helper.FormatResponse(true, constant.DeleteKategori, nil))
 	}
 }

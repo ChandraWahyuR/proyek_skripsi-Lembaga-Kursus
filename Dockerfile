@@ -21,7 +21,8 @@ WORKDIR /
 # Copy executable and environment file
 COPY --from=build-stage /goapp /goapp
 COPY .env .env 
-COPY static /app/static
+COPY static /static
+COPY docs /docs
 
  # Salin file .env ke dalam container
 COPY Keys_GCS-Image.json Keys_GCS-Image.json  

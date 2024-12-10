@@ -30,7 +30,7 @@ type AdminServiceInterface interface {
 	RegisterAdmin(admin Admin) error
 	LoginAdmin(admin Admin) (Login, error)
 	//
-	DownloadLaporanPembelian(startDate, endDate time.Time) (string, error)
+	DownloadLaporanPembelian(startDate, endDate time.Time, folder string) (string, error)
 }
 
 type AdminDataInterface interface {

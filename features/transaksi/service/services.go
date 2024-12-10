@@ -98,6 +98,16 @@ func (s *TransaksiService) GetStatusTransaksiByID(id string) (transaksi.Transaks
 	return s.d.GetStatusTransaksiByID(id)
 }
 
+// Respon Midtrans Finsih Url
+func (s *TransaksiService) UpdateTransaksiStatus(id string) (transaksi.Transaksi, error) {
+	if id == "" {
+		return transaksi.Transaksi{}, constant.ErrGetID
+	}
+
+	return s.d.GetStatusTransaksiByID(id)
+}
+
+// Validator
 func (s *TransaksiService) UsedVoucher(data voucher.VoucherUsed) error {
 	return s.d.UsedVoucher(data)
 }
@@ -109,6 +119,7 @@ func (s *TransaksiService) GetAllHistoryTransaksiPagination(page, limit int) ([]
 	return s.d.GetAllHistoryTransaksiPagination(page, limit)
 }
 
+// History Transaksi
 func (s *TransaksiService) GetAllTransaksiHistoryForUser(userID string, page, limit int) ([]transaksi.TransaksiHistory, int, error) {
 	return s.d.GetAllTransaksiHistoryForUser(userID, page, limit)
 }
@@ -163,6 +174,9 @@ func (s *TransaksiService) createMidtransPayment(transaksi transaksi.Transaksi) 
 			ShipAddr: custAddress,
 		},
 		Items: &itemDetails,
+		Callbacks: &midtrans.Callbacks{
+			Finish: "https://skripsi-245802795341.asia-southeast2.run.app/api/v1/response-transaksi?order_id={order_id}",
+		},
 	}
 
 	// log.Printf("Midtrans Request OrderID: %s, Gross Amount: %.2f", transaksi.ID, transaksi.TotalHarga)

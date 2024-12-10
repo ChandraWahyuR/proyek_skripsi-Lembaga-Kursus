@@ -3,6 +3,7 @@ package routes
 import (
 	"skripsi/config"
 	"skripsi/features/admin"
+	"skripsi/features/gmaps"
 	"skripsi/features/instruktur"
 	"skripsi/features/kategori"
 	"skripsi/features/kursus"
@@ -116,10 +117,19 @@ func RouteTransaksi(e *echo.Echo, tr transaksi.TransaksiHandlerInterface, cfg co
 	e.GET("/api/v1/list-transaksi", tr.GetStatusTransaksiForUser(), echojwt.WithConfig(jwtConfig))
 	e.GET("/api/v1/history-transaksi", tr.GetAllTransaksiHistoryForUser(), echojwt.WithConfig(jwtConfig))
 
+	e.GET("/api/v1/list-transaksi/:id", tr.GetStatusTransaksiForUserByID(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/history-transaksi/:id", tr.GetAllTransaksiHistoryForUserByID(), echojwt.WithConfig(jwtConfig))
+	//
+	e.GET("/api/v1/response-transaksi", tr.GetResponseTransaksi())
+
 	e.GET("/api/v1/admin/history-transaksi", tr.GetAllTransaksiHistory(), echojwt.WithConfig(jwtConfig))
 	e.GET("/api/v1/admin/history-transaksi/:id", tr.GetTransaksiHistoryByID(), echojwt.WithConfig(jwtConfig))
 }
 
 func RouteWebhook(e *echo.Echo, w webhook.MidtransNotificationHandler, cfg config.Config) {
 	e.POST("/notifikasi-midtrans", w.HandleNotification())
+}
+
+func RouteGmaps(e *echo.Echo, g gmaps.GmapsHandlerInterface, cfg config.Config) {
+	e.GET("/api/v1/maps/directions", g.GetDirections())
 }

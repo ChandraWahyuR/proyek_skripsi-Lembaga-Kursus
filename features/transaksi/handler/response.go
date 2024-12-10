@@ -77,6 +77,14 @@ type GetHistoryAdminByIDResponse struct {
 	Status     string    `json:"status"`
 	ValidUntil time.Time `json:"valid_until"`
 }
+type GetTransaksiResponse struct {
+	ID         string    `json:"id"`
+	Transaksi  Transaksi `json:"transaksi"`
+	Kursus     Kursus    `json:"kursus"`
+	User       User      `json:"user"`
+	VoucherID  string    `json:"voucher_id"`
+	TotalHarga float64   `json:"total_harga"`
+}
 
 type Transaksi struct {
 	ID         string  `json:"id"`

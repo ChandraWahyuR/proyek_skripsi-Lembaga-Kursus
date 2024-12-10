@@ -104,7 +104,7 @@ func (h *TransaksiHanlder) CreateTransaksi() echo.HandlerFunc {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusCreated, helper.FormatResponse(true, "Transaksi has been sent", paymentResponse))
+		return c.JSON(http.StatusCreated, helper.FormatResponse(true, constant.PostTransaksi, paymentResponse))
 	}
 }
 
@@ -165,7 +165,7 @@ func (h *TransaksiHanlder) GetAllStatusTransaksi() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
-		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, "Succses", metadata, response))
+		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, constant.GetAllTransaski, metadata, response))
 	}
 }
 
@@ -221,7 +221,7 @@ func (h *TransaksiHanlder) GetStatusTransaksiForUser() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
-		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, "Succses", metadata, response))
+		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, constant.GetAllTransaski, metadata, response))
 	}
 }
 
@@ -263,7 +263,7 @@ func (h *TransaksiHanlder) GetStatusTransaksiByID() echo.HandlerFunc {
 			Status:     dataTransaksi.Status,
 		}
 
-		return c.JSON(http.StatusOK, helper.FormatResponse(true, "Success", responseData))
+		return c.JSON(http.StatusOK, helper.FormatResponse(true, constant.GetAllTransaski, responseData))
 	}
 }
 
@@ -317,7 +317,7 @@ func (h *TransaksiHanlder) GetAllTransaksiHistory() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
-		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, "Success", metadata, response))
+		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, constant.GetAllHistoryTransaki, metadata, response))
 	}
 }
 
@@ -364,10 +364,95 @@ func (h *TransaksiHanlder) GetTransaksiHistoryByID() echo.HandlerFunc {
 			Status:     dataHistoryT.Status,
 			ValidUntil: dataHistoryT.ValidUntil,
 		}
-		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, "Berhasil", response))
+		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, constant.GetAllHistoryTransaki, response))
 	}
 }
 
+func (h *TransaksiHanlder) GetResponseTransaksi() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id := c.QueryParam("order_id")
+		dataHistoryT, err := h.s.GetTransaksiHistoryByID(id)
+		if err != nil {
+			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
+		}
+		var voucherID string
+		if dataHistoryT.Transaksi.VoucherID != "" {
+			voucherID = dataHistoryT.Transaksi.VoucherID
+		} else {
+			voucherID = "Kosong"
+		}
+		response := GetTransaksiResponse{
+			ID: dataHistoryT.ID,
+			Transaksi: Transaksi{
+				ID:         dataHistoryT.Transaksi.ID,
+				TotalHarga: dataHistoryT.Transaksi.TotalHarga,
+			},
+			Kursus: Kursus{
+				ID:   dataHistoryT.KursusID,
+				Nama: dataHistoryT.Kursus.Nama,
+			},
+			User: User{
+				ID:       dataHistoryT.UserID,
+				Username: dataHistoryT.User.Username,
+				Email:    dataHistoryT.User.Email,
+			},
+			VoucherID:  voucherID,
+			TotalHarga: dataHistoryT.Transaksi.TotalHarga,
+		}
+		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, constant.ResponTransaksi, response))
+	}
+}
+
+func (h *TransaksiHanlder) GetStatusTransaksiForUserByID() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
+		if tokenString == "" {
+			return helper.UnauthorizedError(c)
+		}
+
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
+		if err != nil {
+			return helper.UnauthorizedError(c)
+		}
+
+		tokenData := h.j.ExtractUserToken(token)
+		role, ok := tokenData[constant.JWT_ROLE]
+		userId := tokenData[constant.JWT_ID].(string)
+		if !ok || role != constant.RoleUser {
+			return helper.UnauthorizedError(c)
+		}
+
+		id := c.Param("id")
+		dataTransaksi, err := h.s.GetStatusTransaksiByID(id)
+		if err != nil {
+			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
+		}
+		if dataTransaksi.UserID != userId {
+			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, "bukan haknya kamu!", nil))
+		}
+
+		responseData := GetAllTransaksiByIDAdminResponse{
+			ID: dataTransaksi.ID,
+			User: User{
+				ID:       dataTransaksi.UserID,
+				Username: dataTransaksi.User.Username,
+				Email:    dataTransaksi.User.Email,
+			},
+			Kursus: Kursus{
+				ID:   dataTransaksi.KursusID,
+				Nama: dataTransaksi.Kursus.Nama,
+			},
+			VoucherID:  dataTransaksi.VoucherID,
+			TotalHarga: dataTransaksi.TotalHarga,
+			Status:     dataTransaksi.Status,
+		}
+
+		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, constant.GetAllTransaski, responseData))
+	}
+}
+
+// History Transaksi
 func (h *TransaksiHanlder) GetAllTransaksiHistoryForUser() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
@@ -418,6 +503,60 @@ func (h *TransaksiHanlder) GetAllTransaksiHistoryForUser() echo.HandlerFunc {
 				ValidUntil: responseData.ValidUntil,
 			})
 		}
-		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, "Success", metadata, response))
+		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, constant.GetAllHistoryTransaki, metadata, response))
+	}
+}
+
+func (h *TransaksiHanlder) GetAllTransaksiHistoryForUserByID() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
+		if tokenString == "" {
+			return helper.UnauthorizedError(c)
+		}
+
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
+		if err != nil {
+			return helper.UnauthorizedError(c)
+		}
+
+		tokenData := h.j.ExtractUserToken(token)
+		role, ok := tokenData[constant.JWT_ROLE]
+		userId := tokenData[constant.JWT_ID].(string)
+		if !ok || role != constant.RoleUser {
+			return helper.UnauthorizedError(c)
+		}
+
+		id := c.Param("id")
+		dataHistoryT, err := h.s.GetTransaksiHistoryByID(id)
+		if err != nil {
+			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
+		}
+		if dataHistoryT.UserID != userId {
+			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, "bukan haknya kamu!", nil))
+		}
+
+		response := GetHistoryAdminByIDResponse{
+			ID: dataHistoryT.ID,
+			Transaksi: Transaksi{
+				ID:         dataHistoryT.Transaksi.ID,
+				TotalHarga: dataHistoryT.Transaksi.TotalHarga,
+			},
+			Kursus: Kursus{
+				ID:   dataHistoryT.KursusID,
+				Nama: dataHistoryT.Kursus.Nama,
+			},
+			User: User{
+				ID:       dataHistoryT.UserID,
+				Username: dataHistoryT.User.Username,
+				Email:    dataHistoryT.User.Email,
+			},
+			VoucherID:  dataHistoryT.Transaksi.VoucherID,
+			TotalHarga: dataHistoryT.Transaksi.TotalHarga,
+			Status:     dataHistoryT.Status,
+			ValidUntil: dataHistoryT.ValidUntil,
+		}
+
+		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, constant.GetAllHistoryTransaki, response))
 	}
 }

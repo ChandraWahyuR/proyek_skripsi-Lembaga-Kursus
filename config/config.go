@@ -24,6 +24,7 @@ type Config struct {
 	Midtrans MidtransConfig
 
 	Redis RedisConfig
+	Gmaps GmapsConfig
 }
 type RedisConfig struct {
 	Host     string
@@ -35,6 +36,10 @@ type SMTPConfig struct {
 	SMTPPORT string
 	SMTPUSER string
 	SMTPPASS string
+}
+
+type GmapsConfig struct {
+	GOOGLE_MAPS_API_KEY string
 }
 
 type MidtransConfig struct {
@@ -72,6 +77,9 @@ func InitConfig() *Config {
 	res.Redis.Host = os.Getenv("REDIS_HOST")
 	res.Redis.Port, _ = strconv.Atoi(os.Getenv("REDIS_PORT"))
 	res.Redis.Password = os.Getenv("REDIS_PASSWORD")
+
+	// GMAPS
+	res.Gmaps.GOOGLE_MAPS_API_KEY = os.Getenv("GOOGLE_MAPS_API_KEY")
 
 	return res
 }
