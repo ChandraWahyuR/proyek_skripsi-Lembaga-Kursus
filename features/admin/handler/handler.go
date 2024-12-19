@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os/user"
-	"path"
 	"path/filepath"
 	"skripsi/constant"
 	"skripsi/features/admin"
@@ -92,24 +91,26 @@ func (h *AdminHandler) DownloadLaporanPembelian() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, "Invalid end date format")
 		}
 
-		// Tentukan folder Downloads
-		downloadsFolder := GetDownloadsFolder()
-
-		// Generate laporan dan simpan di folder Downloads
-		filename, err := h.s.DownloadLaporanPembelian(tglMulai, tglAkhir, downloadsFolder)
+		// Ambil data laporan dari service
+		histories, err := h.s.DownloadLaporanPembelian(tglMulai, tglAkhir)
 		if err != nil {
-			log.Println("Error generating report:", err)
-			return c.JSON(http.StatusInternalServerError, "Error generating report")
+			log.Println("Error fetching report data:", err)
+			return c.JSON(http.StatusInternalServerError, "Error fetching report data")
 		}
 
-		log.Println("File generated:", filename)
-
 		// Set header untuk mengunduh file
-		c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", path.Base(filename)))
+		filename := fmt.Sprintf("laporan_pembelian_%s_to_%s.csv", startDate, endDate)
+		c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
 		c.Response().Header().Set("Content-Type", "text/csv")
 
-		log.Println("Sending file to client:", filename)
-		return c.File(filename)
+		// Generate CSV langsung ke respons
+		err = h.s.GenerateLaporanCSV(c.Response().Writer, histories, tglMulai, tglAkhir)
+		if err != nil {
+			log.Println("Error generating CSV:", err)
+			return c.JSON(http.StatusInternalServerError, "Error generating CSV")
+		}
+
+		return nil
 	}
 }
 

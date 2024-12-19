@@ -40,13 +40,13 @@ func (s *VoucherService) CreateVoucher(data voucher.Voucher) error {
 	data.Code = strings.ToUpper(data.Code)
 	switch {
 	case data.Nama == "":
-		return constant.ErrEmptyNameInstuktor
+		return constant.ErrNameVoucher
 	case data.Deskripsi == "":
-		return constant.ErrEmptyEmailInstuktor
+		return constant.ErrDekripsiVoucher
 	case data.Discount == 0:
-		return constant.ErrEmptyNumbertelponInstuktor
+		return constant.ErrDiscountVoucher
 	case data.ExpiredAt == (time.Time{}):
-		return constant.ErrEmptyDescriptionInstuktor
+		return constant.ErrExpriedAtVoucher
 	}
 	if data.Code != "" {
 		if len(data.Code) != 10 {

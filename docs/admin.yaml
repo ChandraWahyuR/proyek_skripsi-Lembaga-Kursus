@@ -10,7 +10,7 @@ tags:
     description: admin
 
 paths:
-  /register:
+  /admin/register:
     post:
       tags:
         - admin
@@ -24,14 +24,11 @@ paths:
               type: object
               required:
                 - username
-                - nomor_hp
                 - email
                 - password
                 - confirm_password
               properties:
                 username:
-                  type: string
-                nomor_hp:
                   type: string
                 email:
                   type: string
@@ -41,7 +38,6 @@ paths:
                   type: string
               example:
                 username: test
-                nomor_hp: 012345678911
                 email: testing@test.com
                 password: test123
                 confirm_password: test123
@@ -114,3 +110,96 @@ paths:
                     status: false
                     message: Username already exists
                     data: null 
+  /admin/laporan-pembelian:
+    post:
+      tags:
+        - admin 
+      summary: Ambil jumlah melakukan pembelian kursus.
+      description: Endpoint ini mengeprint jumlah user yang melakukan pembelian kurur
+      operationId: postLaporanPembelian
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: start_date
+          in: query
+          description: tanggal target awal
+          required: true
+          schema:
+            type: string
+          example: 2024-10-01
+        - name: end_date
+          in: query
+          description: tanggal target akhir
+          required: true
+          schema:
+            type: string
+          example: 2024-12-01
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        nama:
+                          type: string
+                        deskripsi:
+                          type: string
+                        image:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              nama:
+                                type: string
+                              url:
+                                type: string
+                              position:
+                                type: integer
+                        harga:
+                          type: integer
+                        jadwal:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              hari:
+                                type: string
+                              jam_mulai:
+                                type: string
+                              jam_selesai:
+                                type: string
+                example:
+                  status: true
+                  message: Get kursus Success
+                  data:
+                    - id: "86265355-f2a4-4acd-8195-6e56de7aba56"
+                      nama: "Corel"
+                      deskripsi: "Pelatihan Corel untuk pemula"
+                      image:
+                        - nama: "Corel"
+                          url: "https://test.com/image1.jpg"
+                          position: 1
+                        - nama: "Corel"
+                          url: "https://test2.com/image2.jpg"
+                          position: 2
+                      harga: 1500000
+                      jadwal:
+                        - hari: "Senin"
+                          jam_mulai: "16:00"
+                          jam_selesai: "18:00"
+                        - hari: "Selasa"
+                          jam_mulai: "16:00"
+                          jam_selesai: "18:00"

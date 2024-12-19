@@ -57,6 +57,7 @@ var ErrInstrukturID = errors.New("error id instruktor tidak ada")
 var ErrInstrukturNIKEmpty = errors.New("error NIK tidak boleh kosong")
 var ErrInstrukturNIPEmpty = errors.New("error NIP tidak boleh kosong")
 var ErrInstrukturImageEmpty = errors.New("error image instruktor tidak boleh kosong")
+var ErrGenderInstruktorRmpty = errors.New("gender masih kosong")
 
 // post
 
@@ -85,6 +86,8 @@ var ErrGambarKursus = errors.New("gambar tidak boleh kosong")
 var ErrKategoriKursus = errors.New("kategori tidak boleh kosong")
 var ErrMateriPembelajaran = errors.New("materi tidak boleh kosong")
 var ErrKursusNotfound = errors.New("kursus tidak ditemukan")
+var ErrDekripsiKursus = errors.New("deskripsi masih kosong")
+var ErrHargaKursus = errors.New("harga masih kosong")
 
 // GCS
 var ErrOpeningFile = errors.New("gagal membuka file")
@@ -100,6 +103,10 @@ var ErrVoucherUsed = errors.New("voucher telah digunakan")
 
 // Voucher data
 var ErrVoucherFailedCreate = errors.New("data voucher gagal dibuat")
+var ErrNameVoucher = errors.New("nama voucher jangan kosong")
+var ErrDekripsiVoucher = errors.New("deksripsi voucher jangan kosong")
+var ErrDiscountVoucher = errors.New("diskon voucher jangan kosong, min 1%")
+var ErrExpriedAtVoucher = errors.New("masukkan tanggal kadaluarsa voucher")
 
 // Transaksi
 var ErrTransaksiNotFound = errors.New("data transaksi belum ada")

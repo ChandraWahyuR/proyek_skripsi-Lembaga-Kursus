@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"skripsi/features/gmaps"
+	"skripsi/helper"
 
 	"github.com/labstack/echo/v4"
 )
@@ -20,12 +21,11 @@ func New(u gmaps.GmapsServiceInterface) gmaps.GmapsHandlerInterface {
 func (h *GmapsHandler) GetDirections() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		origin := c.QueryParam("origin")
-		destination := c.QueryParam("destination")
+		const destination = "-7.484362621456366,108.78844442023427"
 
-		if origin == "" || destination == "" {
-			return c.JSON(http.StatusBadRequest, map[string]string{"message": "origin and destination are required"})
+		if origin == "" {
+			return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, "Masukkan alamat asal", nil))
 		}
-
 		request := gmaps.DirectionsRequest{
 			Origin:      origin,
 			Destination: destination,

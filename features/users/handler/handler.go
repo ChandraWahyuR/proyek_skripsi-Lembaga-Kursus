@@ -480,9 +480,13 @@ func (h *UserHandler) UpdateUser() echo.HandlerFunc {
 			ijazahUrl = data.Ijazah
 		}
 
-		tanggalLahir, err := time.Parse(constant.TTLFormat, dataRequest.TanggalLahir)
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, "Formatnya tanggal bulan tahun", nil))
+		tanggalLahir := data.TanggalLahir // Default value dari database
+		if dataRequest.TanggalLahir != "" {
+			parsedDate, err := time.Parse(constant.TTLFormat, dataRequest.TanggalLahir)
+			if err != nil {
+				return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, "Format tanggal tidak valid. Gunakan format: YYYY-MM-DD.", nil))
+			}
+			tanggalLahir = parsedDate
 		}
 
 		responseData := users.EditUser{
@@ -499,6 +503,7 @@ func (h *UserHandler) UpdateUser() echo.HandlerFunc {
 			KTP:           ktpUrl,
 			KartuKeluarga: kkUrl,
 			ProfileUrl:    profileUrl,
+			Password:      dataRequest.Password,
 		}
 		err = h.s.UpdateUser(responseData)
 		if err != nil {

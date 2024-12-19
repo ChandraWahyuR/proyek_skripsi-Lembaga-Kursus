@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"io"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -30,7 +31,8 @@ type AdminServiceInterface interface {
 	RegisterAdmin(admin Admin) error
 	LoginAdmin(admin Admin) (Login, error)
 	//
-	DownloadLaporanPembelian(startDate, endDate time.Time, folder string) (string, error)
+	DownloadLaporanPembelian(startDate, endDate time.Time) ([]map[string]interface{}, error)
+	GenerateLaporanCSV(w io.Writer, histories []map[string]interface{}, startDate, endDate time.Time) error
 }
 
 type AdminDataInterface interface {

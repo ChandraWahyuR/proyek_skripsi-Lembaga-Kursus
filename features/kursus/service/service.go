@@ -34,11 +34,11 @@ func (s *KursusService) AddKursus(data kursus.Kursus) error {
 	case data.Nama == "":
 		return constant.ErrEmptyNameInstuktor
 	case data.Deskripsi == "":
-		return constant.ErrEmptyEmailInstuktor
+		return constant.ErrDekripsiKursus
 	case data.Harga == 0:
-		return constant.ErrEmptyAlamatInstuktor
+		return constant.ErrHargaKursus
 	case data.InstrukturID == "":
-		return constant.ErrEmptyNumbertelponInstuktor
+		return constant.ErrInstrukturID
 	case len(data.Jadwal) == 0:
 		return constant.ErrJadwal
 	case len(data.Image) == 0:
@@ -83,7 +83,7 @@ func (s *KursusService) DeleteMateriKursus(id string) error {
 }
 
 func (s *KursusService) DeleteKategoriKursus(id string) error {
-	return s.d.DeleteMateriKursus(id)
+	return s.d.DeleteKategoriKursus(id)
 }
 
 func (s *KursusService) GetAllKursusByName(name string, page int, limit int) ([]kursus.Kursus, int, error) {
@@ -91,6 +91,11 @@ func (s *KursusService) GetAllKursusByName(name string, page int, limit int) ([]
 
 	if err != nil {
 		return nil, 0, err
+	}
+
+	// Pastikan data tidak nil
+	if data == nil {
+		data = []kursus.Kursus{}
 	}
 
 	return data, total, nil

@@ -41,7 +41,7 @@ func (s *InstrukturService) PostInstruktur(data instruktur.Instruktur) error {
 	case data.NoHp == "":
 		return constant.ErrEmptyNumbertelponInstuktor
 	case data.Gender == "":
-		return constant.ErrEmptyDescriptionInstuktor
+		return constant.ErrGenderInstruktorRmpty
 	case data.NIK == "":
 		return constant.ErrInstrukturNIKEmpty
 	case data.NomorIndukPendidikan == "":

@@ -23,16 +23,19 @@ func New(db *gorm.DB) users.UserDataInterface {
 }
 
 func (u *UserData) Register(user users.User) error {
+	// Pengecekan Username
 	isUsername := u.IsUsernameExist(user.Username)
 	if isUsername {
-		return errors.New("username already exist")
+		return errors.New("username telah digunakan")
 	}
 
+	// Pengecekan Email
 	isEmail := u.IsEmailExist(user.Email)
 	if isEmail {
-		return errors.New("email already exist")
+		return errors.New("email telah terdaftar")
 	}
 
+	// Value yang akan dimasukkan ke dalam database
 	userData := User{
 		ID:         uuid.New().String(),
 		Username:   user.Username,
@@ -44,6 +47,7 @@ func (u *UserData) Register(user users.User) error {
 		IsActive:   false,
 	}
 
+	// Perintah query untuk menambahkan data baru kedalam database menggunakan GORM
 	if err := u.DB.Create(&userData).Error; err != nil {
 		return err
 	}
@@ -58,11 +62,11 @@ func (u *UserData) Login(user users.User) (users.User, error) {
 	}
 
 	if !userData.IsActive {
-		return users.User{}, errors.New("user not active")
+		return users.User{}, errors.New("akun pengguna belum aktif")
 	}
 
 	if !helper.CheckPasswordHash(user.Password, userData.Password) {
-		return users.User{}, errors.New("wrong password")
+		return users.User{}, errors.New("password salah")
 	}
 	return userData, nil
 }
@@ -92,11 +96,11 @@ func (d *UserData) VerifyOTP(verify users.VerifyOtp) error {
 	}
 
 	if time.Now().After(otp.ExpiredAt) {
-		return errors.New("OTP has expired")
+		return errors.New("oTP telah expired")
 	}
 
 	if verify.Otp != otp.Otp {
-		return errors.New("wrong otp")
+		return errors.New("kode OTP Salah")
 	}
 
 	err = d.DB.Model(&otp).Update("status", verify.Status).Error
@@ -123,7 +127,8 @@ func (d *UserData) ResetPassword(change users.ResetPassword) error {
 // ==========================================================================================================
 // Check
 func (u *UserData) IsEmailExist(email string) bool {
-	var userData User
+	var userData User // membuat variable untuk dijadikan base value dari model table user
+	// Pengecekan email didalam database, apakah email sudah ada menggunakan perintah first (mencari berdasarkan Primary Key)
 	if err := u.DB.Where("email = ?", email).First(&userData).Error; err != nil {
 		return false
 	}

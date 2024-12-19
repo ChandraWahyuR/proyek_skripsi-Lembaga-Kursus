@@ -3,8 +3,7 @@ package service
 import (
 	"encoding/csv"
 	"fmt"
-	"log"
-	"os"
+	"io"
 	"skripsi/constant"
 	"skripsi/features/admin"
 	"skripsi/helper"
@@ -96,35 +95,25 @@ func (s *AdminService) LoginAdmin(user admin.Admin) (admin.Login, error) {
 	return adminLoginData, nil
 }
 
-func (s *AdminService) DownloadLaporanPembelian(startDate, endDate time.Time, folder string) (string, error) {
-	histories, err := s.d.DownloadLaporanPembelian(startDate, endDate)
-	if err != nil {
-		return "", err
-	}
+func (s *AdminService) DownloadLaporanPembelian(startDate, endDate time.Time) ([]map[string]interface{}, error) {
+	return s.d.DownloadLaporanPembelian(startDate, endDate)
+}
 
-	filename := fmt.Sprintf("%s/laporan_pembelian_%s_to_%s.csv",
-		folder,
-		startDate.Format("2006-01-02"),
-		endDate.Format("2006-01-02"))
-
-	file, err := os.Create(filename)
-	if err != nil {
-		log.Println("Error creating file:", err)
-		return "", err
-	}
-	defer file.Close()
-
-	writer := csv.NewWriter(file)
+// Generate laporan CSV dan tulis langsung ke writer
+func (s *AdminService) GenerateLaporanCSV(w io.Writer, histories []map[string]interface{}, startDate, endDate time.Time) error {
+	writer := csv.NewWriter(w)
 	defer writer.Flush()
 
-	// Tambahkan header laporan
-	writer.Write([]string{"Laporan Pembelian"})
-	writer.Write([]string{"Periode", startDate.Format("02 January 2006") + " - " + endDate.Format("02 January 2006")})
+	// Header laporan
+	writer.Write([]string{"Laporan Pembelian Kursus \nLKP Mediakom Sidareja"})
+	writer.Write([]string{"Periode", fmt.Sprintf("%s - %s", startDate.Format("02 January 2006"), endDate.Format("02 January 2006"))})
 	writer.Write([]string{})
 	writer.Write([]string{"ID", "TransaksiID", "KursusID", "UserID", "UserNama", "Email", "Nama Kursus", "Status Pembelian", "ValidUntil", "TotalHarga", "Status Transaksi"})
 
+	// Isi laporan
 	var totalUser int
 	var totalHarga float64
+	var userAktif int
 
 	// Tulis data dari map ke CSV dan hitung total harga
 	for _, history := range histories {
@@ -167,8 +156,13 @@ func (s *AdminService) DownloadLaporanPembelian(startDate, endDate time.Time, fo
 		// Hanya total transaksi yang statusnya sudah aktif dan pembayarannya sukses
 		if history["status"] == "Active" && history["transaksi_status"] == "Success" {
 			totalHarga += harga
+			userAktif += totalUser
 		}
-	}
 
-	return filename, nil
+	}
+	writer.Write([]string{}) // Baris kosong sebagai pemisah
+	writer.Write([]string{"Total Pengguna Yang Mendaftar", fmt.Sprintf("%d", totalUser)})
+	writer.Write([]string{"Total Pengguna Yang Telah Membayar", fmt.Sprintf("%d", userAktif)})
+	writer.Write([]string{"Total Harga", fmt.Sprintf("%.2f", totalHarga)})
+	return nil
 }
