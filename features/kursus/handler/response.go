@@ -48,9 +48,9 @@ type MateriPembelajaran struct {
 }
 
 type JadwalKursus struct {
-	Hari       string
-	JamMulai   string
-	JamSelesai string
+	Hari       string `json:"hari"`
+	JamMulai   string `json:"jam_mulai"`
+	JamSelesai string `json:"jam_selesai"`
 }
 
 //

@@ -232,3 +232,21 @@ func (d *TransaksiData) CheckVoucherExists(voucherID string) (bool, error) {
 	}
 	return count > 0, nil
 }
+
+// Cron Job
+func (d *TransaksiData) FindExpiredTransactions(now time.Time) ([]transaksi.TransaksiHistory, error) {
+	var transaksi []transaksi.TransaksiHistory
+	if err := d.DB.Where("valid_until < ? AND status != ?", now, "tidak aktif").Find(&transaksi).Error; err != nil {
+		return nil, err
+	}
+
+	return transaksi, nil
+}
+
+func (d *TransaksiData) UpdateStatus(transaksiID string, status string) error {
+	if err := d.DB.Model(&transaksi.TransaksiHistory{}).Where("id = ?", transaksiID).Update("status", status).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

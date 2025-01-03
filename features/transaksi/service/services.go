@@ -7,6 +7,7 @@ import (
 	"skripsi/features/transaksi"
 	"skripsi/features/voucher"
 	"skripsi/helper"
+	"time"
 
 	"github.com/veritrans/go-midtrans"
 )
@@ -129,6 +130,22 @@ func (s *TransaksiService) GetTransaksiHistoryByID(id string) (transaksi.Transak
 		return transaksi.TransaksiHistory{}, constant.ErrGetID
 	}
 	return s.d.GetTransaksiHistoryByID(id)
+}
+
+func (s *TransaksiService) UpdateExpiredTransactions(now time.Time) error {
+	expiredTransactions, err := s.d.FindExpiredTransactions(now)
+	if err != nil {
+		return err
+	}
+
+	for _, transaksi := range expiredTransactions {
+		err := s.d.UpdateStatus(transaksi.ID, "Tidak Aktif")
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // =============================================================================================

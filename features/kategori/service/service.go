@@ -23,6 +23,9 @@ func (s *KategoriService) GetAllKategori() ([]kategori.Kategori, error) {
 
 }
 func (s *KategoriService) GetKategoriById(id string) (kategori.Kategori, error) {
+	if id == "" {
+		return kategori.Kategori{}, constant.ErrDataNotfound
+	}
 	return s.d.GetKategoriById(id)
 }
 func (s *KategoriService) CreateKategori(data kategori.Kategori) error {

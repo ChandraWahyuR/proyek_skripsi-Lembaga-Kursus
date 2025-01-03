@@ -90,6 +90,10 @@ type TransaksiDataInterface interface {
 	UsedVoucher(voucher.VoucherUsed) error
 	UsedVoucherCheck(userID, voucherID string) bool
 	CheckVoucherExists(voucherID string) (bool, error)
+
+	//
+	FindExpiredTransactions(now time.Time) ([]TransaksiHistory, error)
+	UpdateStatus(transaksiID string, status string) error
 }
 
 type TransaksiServiceInterface interface {
@@ -107,4 +111,7 @@ type TransaksiServiceInterface interface {
 	//
 	UsedVoucher(voucher.VoucherUsed) error
 	CheckVoucherExists(voucherID string) (bool, error)
+
+	// Cron job
+	UpdateExpiredTransactions(now time.Time) error
 }

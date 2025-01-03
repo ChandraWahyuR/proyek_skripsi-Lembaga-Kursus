@@ -130,6 +130,8 @@ func main() {
 	routes.RouteWebhook(e, webhookHandler, *cfg)
 	routes.RouteGmaps(e, gmapsHandler, *cfg)
 
+	// Cron job
+	utils.StartCronJob(transaksiService)
 	// Redirect
 	// http://localhost:8080/halaman/example.html
 	e.Static("/assets", "assets")

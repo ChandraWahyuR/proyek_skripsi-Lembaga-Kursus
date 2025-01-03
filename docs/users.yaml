@@ -1040,7 +1040,363 @@ paths:
                       status: false
                       message: Unauthorized
                       data: null
+  /transaksi:
+      post:
+        tags:
+            - transaksi
+        summary: Melakukan transaksi Kursus
+        description: Melakukan proses transaksi kursus dengan memasukkan id kursus dan voucher kursus
+        operationId: postTransaksi
+        security:
+          - bearerAuth: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - kursus
+                  - voucher_id
+                properties:
+                  kursus:
+                    type: string
+                  voucher_id:
+                    type: string
+                example:
+                  kursus: "012321" 
+                  voucher_id: ""
+        responses:
+            "200":
+                description: OK
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        status:
+                          type: boolean
+                        message:
+                          type: string
+                        data:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              kursus:
+                                type: string
+                              voucher_id:
+                                type: string
+                      example:
+                        status: true
+                        message: Transaksi berhasil dibuat
+                        data:
+                            ammount: 10000000
+                            snap_url: https://midtrans-example.com
+            "401":
+                description: Unauthorized
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                      example:
+                        status: false
+                        message: Unauthorized
+                        data: null
+  /list-transaksi:
+    get:
+      tags:
+          - transaksi
+      summary: Menampilkan seluruh transaksi yang ada berdasarkan user yang login
+      description: Menampilkan seluruh transaksi yang ada berdasarkan user yang login
+      operationId: getListTransaksi
+      security:
+        - bearerAuth: []
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            kursus:
+                              type: string
+                            total_harga: 
+                              type: integer  
+                            status: 
+                              type: string  
+                    example:
+                      status: true
+                      message: Get List transaksi Success
+                      data:
+                            id: "000120301"
+                            kursus: 
+                              - Id : "01023013"
+                                nama: "Corel"
+                            total_harga: 1000000 
+                            status: Pending  
+          "401":
+              description: Unauthorized
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                    example:
+                      status: false
+                      message: Unauthorized
+                      data: null
+          "404":
+              description: Not Found
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                    example:
+                      status: false
+                      message: Data not found
+                      data: null 
+  /list-transaksi/{id}:
+    get:
+      tags:
+          - transaksi
+      summary: Menampilkan data transaksi yang ada berdasarkan id dan user yang login
+      description: Menampilkan data transaksi yang ada berdasarkan id  dan user yang login
+      operationId: getListTransaksibyID
+      security:
+        - bearerAuth: []
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            kursus:
+                              type: string
+                            total_harga: 
+                              type: integer  
+                            status: 
+                              type: string  
+                    example:
+                      status: true
+                      message: Get List transaksi Success
+                      data:
+                            id: "000120301"
+                            kursus: 
+                              - Id : "01023013"
+                                nama: "Corel"
+                            total_harga: 1000000 
+                            status: Pending  
+          "401":
+              description: Unauthorized
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                    example:
+                      status: false
+                      message: Unauthorized
+                      data: null
+          "404":
+              description: Not Found
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                    example:
+                      status: false
+                      message: Data not found
+                      data: null 
+  /history-transaksi:
 
+    get:
+      tags:
+          - transaksi
+      summary: Menampilkan data transaksi yang ada berdasarkan id dan user yang login
+      description: Menampilkan data transaksi yang ada berdasarkan id  dan user yang login
+      operationId: getListTransaksibyID
+      security:
+        - bearerAuth: []
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            kursus:
+                              type: string
+                            total_harga: 
+                              type: integer  
+                            status: 
+                              type: string  
+                    example:
+                      status: true
+                      message: Get List transaksi Success
+                      data:
+                            id: "000120301"
+                            kursus: 
+                              - Id : "01023013"
+                                nama: "Corel"
+                            total_harga: 1000000 
+                            status: Pending  
+          "401":
+              description: Unauthorized
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                    example:
+                      status: false
+                      message: Unauthorized
+                      data: null
+          "404":
+              description: Not Found
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                    example:
+                      status: false
+                      message: Data not found
+                      data: null 
+  /history-transaksi/{id}:
+
+    get:
+      tags:
+          - transaksi
+      summary: Menampilkan data transaksi yang ada berdasarkan id dan user yang login
+      description: Menampilkan data transaksi yang ada berdasarkan id  dan user yang login
+      operationId: getListTransaksibyID
+      security:
+        - bearerAuth: []
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            kursus:
+                              type: string
+                            total_harga: 
+                              type: integer  
+                            status: 
+                              type: string  
+                    example:
+                      status: true
+                      message: Get List transaksi Success
+                      data:
+                            id: "000120301"
+                            kursus: 
+                              - Id : "01023013"
+                                nama: "Corel"
+                            total_harga: 1000000 
+                            status: Pending  
+          "401":
+              description: Unauthorized
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                    example:
+                      status: false
+                      message: Unauthorized
+                      data: null
+          "404":
+              description: Not Found
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                    example:
+                      status: false
+                      message: Data not found
+                      data: null 
 components:
   securitySchemes:
     bearerAuth:
