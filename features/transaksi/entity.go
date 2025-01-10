@@ -94,6 +94,9 @@ type TransaksiDataInterface interface {
 	//
 	FindExpiredTransactions(now time.Time) ([]TransaksiHistory, error)
 	UpdateStatus(transaksiID string, status string) error
+
+	//
+	ValidateDurationKursus(userID, kursusID string) bool
 }
 
 type TransaksiServiceInterface interface {

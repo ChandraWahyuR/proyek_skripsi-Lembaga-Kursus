@@ -49,6 +49,11 @@ func (m *MockVoucherData) DeleteVoucher(id string) error {
 	return args.Error(0)
 }
 
+func (m *MockVoucherData) ValidateVoucher(userID string) ([]voucher.Voucher, error) {
+	args := m.Called(userID)
+	return args.Get(0).([]voucher.Voucher), args.Error(1)
+}
+
 type MockHelper struct {
 	mock.Mock
 }

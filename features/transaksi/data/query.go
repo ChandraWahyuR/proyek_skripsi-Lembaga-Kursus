@@ -32,6 +32,21 @@ func (d *TransaksiData) CreateTransaksi(data transaksi.Transaksi) (transaksi.Tra
 	return data, nil
 }
 
+func (d *TransaksiData) ValidateDurationKursus(userID, kursusID string) bool {
+	var count int64
+	err := d.DB.Model(&TransaksiHistory{}).
+		Where("user_id = ?", userID).
+		Where("kursus_id = ?", kursusID).
+		Where("valid_until >= ?", time.Now()).
+		Count(&count).Error
+
+	if err != nil {
+		return false
+	}
+
+	return count == 0 // Mengembalikan true jika tidak ada kursus yang masih aktif
+}
+
 func (d *TransaksiData) GetTotalTransaksiWithDiscount(total float64, voucherId string) (float64, error) {
 	var voucherData voucher.Voucher
 	if err := d.DB.Where("id = ? AND deleted_at IS NULL", voucherId).First(&voucherData).Error; err != nil {

@@ -25,6 +25,10 @@ func (s *VoucherService) GetAllVoucher() ([]voucher.Voucher, error) {
 	return s.d.GetAllVoucher()
 }
 
+func (s *VoucherService) ValidateVoucher(userId string) ([]voucher.Voucher, error) {
+	return s.d.ValidateVoucher(userId)
+}
+
 func (s *VoucherService) GetAllVoucherPagination(page, limit int) ([]voucher.Voucher, int, error) {
 	return s.d.GetAllVoucherPagination(page, limit)
 }

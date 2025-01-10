@@ -53,10 +53,10 @@ func ValidatePassword(password string) (string, error) {
 
 	// Panjang password 8 - 16
 	if len(password) < 8 || len(password) > 16 {
-		return "", errors.New("password must be between 8 and 16 characters long")
+		return "", constant.ErrLenPassword
 	}
 	if !containsLower || !containsUpper || !containsNumber || !containsSpecial {
-		return "", errors.New("password must contain at least 1 number, 1 uppercase letter, one punctuation symbol and 1 lowercase letter")
+		return "", constant.ErrInvalidPassword
 	}
 	return password, nil
 }

@@ -79,6 +79,48 @@ func (h *VoucherHandler) GetAllVoucher() echo.HandlerFunc {
 	}
 }
 
+func (h *VoucherHandler) GetAllValidVoucher() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
+		if tokenString == "" {
+			helper.UnauthorizedError(c)
+		}
+
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
+		if err != nil {
+			return helper.UnauthorizedError(c)
+		}
+
+		tokenData := h.j.ExtractUserToken(token)
+		role, ok := tokenData[constant.JWT_ROLE]
+		userId := tokenData[constant.JWT_ID].(string)
+		if !ok || role != constant.RoleUser {
+			return helper.UnauthorizedError(c)
+		}
+
+		dataVoucher, err := h.s.ValidateVoucher(userId)
+		if err != nil {
+			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
+		}
+
+		// Array jadi for in range
+		var dataResponse []ResponseGetIDVoucher
+		for _, value := range dataVoucher {
+			dataResponse = append(dataResponse, ResponseGetIDVoucher{
+				ID:        value.ID,
+				Nama:      value.Nama,
+				Code:      value.Code,
+				Deskripsi: value.Deskripsi,
+				Discount:  value.Discount,
+				ExpiredAt: value.ExpiredAt,
+			})
+		}
+
+		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, constant.GetAllVoucher, dataResponse))
+	}
+}
+
 func (h *VoucherHandler) GetByIDVoucher() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)

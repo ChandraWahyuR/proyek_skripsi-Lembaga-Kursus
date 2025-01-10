@@ -110,4 +110,5 @@ var ErrExpriedAtVoucher = errors.New("masukkan tanggal kadaluarsa voucher")
 
 // Transaksi
 var ErrTransaksiNotFound = errors.New("data transaksi belum ada")
-var ErrValidateDokumenUser = errors.New("user belum mengisi seluruh dokumen penting")
+var ErrValidateDokumenUser = errors.New("silahkan lengkapi dokumen terlebih dahulu, di halaman profile")
+var ErrSameKursusValid = errors.New("maaf, anda telah berlangganan di kursus ini dan masa waktunya masih aktif")

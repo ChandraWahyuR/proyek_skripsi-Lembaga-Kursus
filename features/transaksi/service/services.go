@@ -32,6 +32,11 @@ func (s *TransaksiService) CreateTransaksi(transaksiData transaksi.Transaksi) (t
 		return transaksi.Transaksi{}, constant.ErrValidateDokumenUser
 	}
 
+	isValid := s.d.ValidateDurationKursus(transaksiData.UserID, transaksiData.KursusID)
+	if !isValid {
+		return transaksi.Transaksi{}, constant.ErrSameKursusValid
+	}
+
 	kursusData, err := s.d.GetKursusByID(transaksiData.KursusID)
 	if err != nil {
 		return transaksi.Transaksi{}, fmt.Errorf("failed to get Kursus data: %v", err)

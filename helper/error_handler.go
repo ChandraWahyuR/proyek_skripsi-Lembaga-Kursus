@@ -68,7 +68,7 @@ func ConverResponse(err error) int {
 		return http.StatusNotFound
 
 	// Transaksi errors
-	case constant.ErrTransaksiNotFound, constant.ErrValidateDokumenUser:
+	case constant.ErrTransaksiNotFound, constant.ErrValidateDokumenUser, constant.ErrSameKursusValid:
 		return http.StatusBadRequest
 	// Default case for internal server errors
 	default:

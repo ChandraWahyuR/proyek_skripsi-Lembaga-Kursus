@@ -29,6 +29,8 @@ type VoucherHandlerInterface interface {
 	CreateVoucher() echo.HandlerFunc
 	UpdateVoucher() echo.HandlerFunc
 	DeleteVoucher() echo.HandlerFunc
+	//
+	GetAllValidVoucher() echo.HandlerFunc
 }
 
 type VoucherDataInterface interface {
@@ -38,6 +40,9 @@ type VoucherDataInterface interface {
 	CreateVoucher(Voucher) error
 	UpdateVoucher(Voucher) error
 	DeleteVoucher(id string) error
+
+	//
+	ValidateVoucher(userID string) ([]Voucher, error)
 }
 
 type VoucherServiceInterface interface {
@@ -47,4 +52,7 @@ type VoucherServiceInterface interface {
 	CreateVoucher(Voucher) error
 	UpdateVoucher(Voucher) error
 	DeleteVoucher(id string) error
+
+	//
+	ValidateVoucher(userID string) ([]Voucher, error)
 }

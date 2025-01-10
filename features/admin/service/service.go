@@ -162,7 +162,7 @@ func (s *AdminService) GenerateLaporanCSV(w io.Writer, histories []map[string]in
 	}
 	writer.Write([]string{}) // Baris kosong sebagai pemisah
 	writer.Write([]string{"Total Pengguna Yang Mendaftar", fmt.Sprintf("%d", totalUser)})
-	writer.Write([]string{"Total Pengguna Yang Telah Membayar", fmt.Sprintf("%d", userAktif)})
-	writer.Write([]string{"Total Harga", fmt.Sprintf("%.2f", totalHarga)})
+	writer.Write([]string{"Total Pengguna Yang Aktif", fmt.Sprintf("%d", userAktif)})
+	writer.Write([]string{"Total Pemasukkan", fmt.Sprintf("%.2f", totalHarga)})
 	return nil
 }

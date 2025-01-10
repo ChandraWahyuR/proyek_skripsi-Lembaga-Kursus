@@ -3,6 +3,7 @@ package data
 import (
 	"errors"
 	"log"
+	"skripsi/constant"
 	"skripsi/features/admin"
 	"skripsi/helper"
 	"time"
@@ -63,11 +64,11 @@ func (d *AdminData) LoginAdmin(admins admin.Admin) (admin.Admin, error) {
 	var adminData admin.Admin
 	err := d.DB.Where("username = ?", admins.Username).First(&adminData).Error
 	if err != nil {
-		return admin.Admin{}, err
+		return admin.Admin{}, constant.ErrAdminNotFound
 	}
 
 	if !helper.CheckPasswordHash(admins.Password, adminData.Password) {
-		return admin.Admin{}, errors.New("wrong password")
+		return admin.Admin{}, constant.ErrPasswordNotMatch
 	}
 	return adminData, nil
 }

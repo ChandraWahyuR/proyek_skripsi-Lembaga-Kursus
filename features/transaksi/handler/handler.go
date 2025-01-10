@@ -7,6 +7,7 @@ import (
 	"skripsi/features/voucher"
 	"skripsi/helper"
 	"strconv"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -97,6 +98,7 @@ func (h *TransaksiHanlder) CreateTransaksi() echo.HandlerFunc {
 			UserID:      userId.(string),
 			TransaksiID: transaksiResponse.ID,
 			Status:      "Not Active",
+			ValidUntil:  time.Time{},
 		}
 
 		err = h.s.CreateTransaksiHistory(dataHistory)

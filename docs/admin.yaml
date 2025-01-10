@@ -8,6 +8,8 @@ servers:
 tags:
   - name: admin
     description: admin
+  - name: users
+    description: user
 
 paths:
   /admin/register:
@@ -61,6 +63,98 @@ paths:
               example:
                 status: true
                 message: Register Success
+                data: null
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  message:
+                    type: string
+              examples:
+                Empty Field:
+                  value:
+                    status: false
+                    message: <Field> cannot be empty
+                    data: null
+                Bad Input:
+                  value:
+                    status: false
+                    message: Format data not valid
+                    data: null
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  message:
+                    type: string
+                  errorType:
+                    type: string
+                  data:
+                    type: array
+              examples:
+                Email Exist:
+                  value:
+                    status: false
+                    message: Email already exists
+                    data: null
+                Username Exist:
+                  value:
+                    status: false
+                    message: Username already exists
+                    data: null 
+  /admin/login:
+    post:
+      tags:
+        - admin
+      summary: Login admin
+      description: admin Login, setiap field harus terisi, kalo kosong response nya bad request
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              example:
+                username: test
+                password: test123
+      responses:
+        "201":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    properties:
+                      token:
+                        type: string
+              example:
+                status: true
+                message: Login Success
                 data: null
         "400":
           description: Bad Request
@@ -203,3 +297,1407 @@ paths:
                         - hari: "Selasa"
                           jam_mulai: "16:00"
                           jam_selesai: "18:00"
+  /admin/users:
+    get:
+      tags:
+        - users
+      summary: Menampilkan seluruh data users yang ada
+      description: Menampilkan seluruh data mengenai users yang ada
+      operationId: getUsers
+      security:
+        - bearerAuth: []
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            nis:
+                              type: string
+                            username:
+                              type: string
+                            nama: 
+                              type: string
+                            email: 
+                              type: string
+                            nomor_hp : 
+                              type: string
+                            agama:
+                              type: string
+                            gender:
+                              type: string
+                            tempat_lahir:
+                              type: string
+                            tanggal_lahir:
+                              type: string
+                            orang_tua:
+                              type: string
+                            profesi:
+                              type: string
+                            ijazah:
+                              type: string
+                            ktp:
+                              type: string
+                            kartu_keluarga: 
+                              type: string
+                            profile_url: 
+                              type: string  
+                    example:
+                      status: true
+                      message: Get All users Success
+                      data:
+                        - id: "7a9470b7-e05a-4e09-8764-d0b4b97309da"
+                          nis: ""
+                          username: "Chand"
+                          nama: "Chandra"
+                          email: "chand@test.com"
+                          nomor_hp: "01232421451"
+                          agama: "Islam"
+                          gender: "laki-laki"
+                          tempat_lahir: "Banyumas, Jawa Tengah"
+                          tanggal_lahir: "dd-mm-yyyy"
+                          orang_tua: "Ibu dan Ayah"
+                          profesi: "Mahasiswa"
+                          ijazah: "https://storage.googleapis.com/ijazah.png"
+                          ktp : "https://storage.googleapis.com/ktp.png"
+                          kartu_keluarga: "https://storage.googleapis.com/kartu_keluarga.png"
+                          profile_url: "https://storage.googleapis.com/profile.png"
+  /admin/users/{user_id}:
+    get:
+      tags:
+        - users
+      summary: Menampilkan seluruh data users yang ada
+      description: Menampilkan seluruh data mengenai users yang ada
+      operationId: getUsersById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 7a9470b7-e05a-4e09-8764-d0b4b97309da
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            nis:
+                              type: string
+                            username:
+                              type: string
+                            nama: 
+                              type: string
+                            email: 
+                              type: string
+                            nomor_hp : 
+                              type: string
+                            agama:
+                              type: string
+                            gender:
+                              type: string
+                            tempat_lahir:
+                              type: string
+                            tanggal_lahir:
+                              type: string
+                            orang_tua:
+                              type: string
+                            profesi:
+                              type: string
+                            ijazah:
+                              type: string
+                            ktp:
+                              type: string
+                            kartu_keluarga: 
+                              type: string
+                            profile_url: 
+                              type: string  
+                    example:
+                      status: true
+                      message: Get users Success
+                      data:
+                          id: "7a9470b7-e05a-4e09-8764-d0b4b97309da"
+                          nis: ""
+                          username: "Chand"
+                          nama: "Chandra"
+                          email: "chand@test.com"
+                          nomor_hp: "01232421451"
+                          agama: "Islam"
+                          gender: "laki-laki"
+                          tempat_lahir: "Banyumas, Jawa Tengah"
+                          tanggal_lahir: "dd-mm-yyyy"
+                          orang_tua: "Ibu dan Ayah"
+                          profesi: "Mahasiswa"
+                          ijazah: "https://storage.googleapis.com/ijazah.png"
+                          ktp : "https://storage.googleapis.com/ktp.png"
+                          kartu_keluarga: "https://storage.googleapis.com/kartu_keluarga.png"
+                          profile_url: "https://storage.googleapis.com/profile.png"
+  /instruktur:
+    get:
+      tags:
+        - instruktur
+      summary: Menampilkan seluruh data instruktur yang ada
+      description: Menampilkan seluruh data mengenai instruktur yang ada
+      operationId: getInstruktur
+      security:
+        - bearerAuth: []
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            nik:
+                              type: string
+                            nip:
+                              type: string
+                            nama: 
+                              type: string
+                            email: 
+                              type: string
+                            nomor_hp : 
+                              type: string
+                    example:
+                      status: true
+                      message: Get all admin Success
+                      data:
+                      parameters:
+                        - id: "c12efdd2-7069-4f34-af59-0d28b5046f54"
+                          nik: ""
+                          nip: "Chand"
+                          nama: "Chandra"
+                          email: "chand@test.com"
+                          nomor_hp: "01232421451"
+    post:
+      tags:
+        - instruktur
+      summary: Menambahkan data instruktur 
+      description: Menambahkan data instruktur 
+      operationId: postInstruktur
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - nik
+                - nip
+                - nama 
+                - email 
+                - nomor_hp 
+                - alamat
+              properties:
+                name: 
+                  type: string
+                email:
+                  type: string
+                alamat:
+                  type: string
+                gender:
+                  type: string
+                image: 
+                  type: string
+                nik:
+                  type: string
+                nip:
+                  type: string
+                nomor_hp:
+                  type: string
+              example:
+                name: test
+                nomor_hp: "012345678911"
+                email: testing@test.com
+                alamat: "Banyumas"
+                gender: "laki-laki"
+                nik: "12345678"
+                nip: "12345678"
+                image: "https://storage.googleapis.com/foto_instruktur.png"
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            nik:
+                              type: string
+                            nip:
+                              type: string
+                            nama: 
+                              type: string
+                            email: 
+                              type: string
+                            nomor_hp : 
+                              type: string
+                    example:
+                      status: true
+                      message: Success add instruktur
+                      data: null
+  /instruktur/{instruktur_id}:
+    get:
+      tags:
+        - instruktur
+      summary: Menampilkan seluruh data instruktur yang ada berdasarkan id
+      description: Menampilkan seluruh data mengenai instruktur yang ada berdasarkan id
+      operationId: getInstrukturbyId
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: instruktur_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: c12efdd2-7069-4f34-af59-0d28b5046f54
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            nik:
+                              type: string
+                            nip:
+                              type: string
+                            nama: 
+                              type: string
+                            email: 
+                              type: string
+                            nomor_hp : 
+                              type: string
+                    example:
+                      status: true
+                      message: Get all admin Success
+                      data:
+                      parameters:
+                        - id: "c12efdd2-7069-4f34-af59-0d28b5046f54"
+                          nik: ""
+                          nip: "12313"
+                          nama: "Adit"
+                          email: "Adit@test.com"
+                          nomor_hp: "01232421451"
+                          image: "https://storage.googleapis.com/foto_instruktur.png"
+                          gender: "laki-laki"
+                          alamat: "Banyumas"
+    delete:
+      tags:
+        - instruktur
+      summary: Menghapus data instruktur berdasarkan id
+      description: Menghapus data instruktur berdasarkan id
+      operationId: deleteInstrukturbyId
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: instruktur_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: c12efdd2-7069-4f34-af59-0d28b5046f54
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                    example:
+                      status: true
+                      message: delete data success
+                      data: null
+    put:
+      tags:
+        - instruktur
+      summary: Mengedit data instruktur 
+      description: Mengedit data instruktur 
+      operationId: putInstruktur
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: instruktur_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: c12efdd2-7069-4f34-af59-0d28b5046f54
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - nik
+                - nip
+                - nama 
+                - email 
+                - nomor_hp 
+                - alamat
+              properties:
+                name: 
+                  type: string
+                email:
+                  type: string
+                alamat:
+                  type: string
+                gender:
+                  type: string
+                image: 
+                  type: string
+                nik:
+                  type: string
+                nip:
+                  type: string
+                nomor_hp:
+                  type: string
+              example:
+                name: test
+                nomor_hp: "012345678911"
+                email: testing@test.com
+                alamat: "Banyumas"
+                gender: "laki-laki"
+                nik: "12345678"
+                nip: "12345678"
+                image: "https://storage.googleapis.com/foto_instruktur.png"
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            nik:
+                              type: string
+                            nip:
+                              type: string
+                            nama: 
+                              type: string
+                            email: 
+                              type: string
+                            nomor_hp : 
+                              type: string
+                    example:
+                      status: true
+                      message: Success edit data instruktur
+                      data: null
+  /instruktur/search:
+    get:
+      tags:
+        - instruktur
+      summary: Menampilkan data instruktur berdasarkan nama
+      description: Endpoint ini menampilkan data instruktur berdasarkan pencarian dengan parameter nama.
+      operationId: getinstrukturByName
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: name
+          in: query
+          description: Nama instruktur yang ingin dicari
+          required: true
+          schema:
+            type: string
+          example: Adit
+      responses:
+            "200":
+                description: OK
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        status:
+                          type: boolean
+                        message:
+                          type: string
+                        data:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              nik:
+                                type: string
+                              nip:
+                                type: string
+                              nama: 
+                                type: string
+                              email: 
+                                type: string
+                              nomor_hp : 
+                                type: string
+                      example:
+                        status: true
+                        message: Get all admin Success
+                        data:
+                        parameters:
+                            id: "c12efdd2-7069-4f34-af59-0d28b5046f54"
+                            nik: ""
+                            nip: "12313"
+                            nama: "Adit"
+                            email: "Adit@test.com"
+                            nomor_hp: "01232421451"
+                            image: "https://storage.googleapis.com/foto_instruktur.png"
+                            gender: "laki-laki"
+                            alamat: "Banyumas"
+  /kategori:
+    get:
+      tags:
+        - kategori
+      summary: Menampilkan seluruh data kategori yang ada
+      description: Menampilkan seluruh data mengenai kategori yang ada
+      operationId: getKategori
+      security:
+        - bearerAuth: []
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            deskripsi:
+                              type: string
+                            nama: 
+                              type: string
+                            image_url: 
+                              type: string
+                    example:
+                      status: true
+                      message: Get all kategori Success
+                      data:
+                      parameters:
+                        - id: "c12efdd2-7069-4f34-af59-0d28b5046f54"
+                          deskripsi: "test"
+                          nama: "test"
+                          image_url: "https://storage.googleapis.com/test.png"
+    post:
+      tags:
+        - kategori
+      summary: Menambahkan data kategori 
+      description: Menambahkan data kategori 
+      operationId: postKategori
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - nama 
+                - deskripsi 
+                - image_url 
+              properties:
+                nama: 
+                  type: string
+                deskripsi:
+                  type: string
+                image_url:
+                  type: string
+              example:
+                nama: test
+                deskripsi: "test"
+                image_url: "https://storage.googleapis.com/foto_instruktur.png"
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            nama: 
+                              type: string
+                            deskripsi: 
+                              type: string
+                            image_url : 
+                              type: string
+                    example:
+                      status: true
+                      message: Success add kategori
+                      data: null
+  
+  /kategori/{kategori_id}:
+    get:
+      tags:
+        - kategori
+      summary: Menampilkan seluruh data kategori berdasarkan id
+      description: Menampilkan seluruh data mengenai kategori berdasarkan id
+      operationId: getKategoriId
+      security:
+        - bearerAuth: []
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            deskripsi:
+                              type: string
+                            nama: 
+                              type: string
+                            image_url: 
+                              type: string
+                    example:
+                      status: true
+                      message: Get kategori Success
+                      data:
+                      parameters:
+                          id: "c12efdd2-7069-4f34-af59-0d28b5046f54"
+                          deskripsi: "test"
+                          nama: "test"
+                          image_url: "https://storage.googleapis.com/test.png"
+    put:
+      tags:
+        - kategori
+      summary: Mengedit data kategori 
+      description: Mengedit data kategori
+      operationId: putKategori
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: kategori_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 005c310b-015a-4075-b3b5-575b1feb14d6
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - nama 
+                - deskripsi 
+                - image_url 
+              properties:
+                nama: 
+                  type: string
+                deskripsi:
+                  type: string
+                image_url:
+                  type: string
+              example:
+                nama: test
+                deskripsi: "test"
+                image_url: "https://storage.googleapis.com/foto_instruktur.png"
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            nama: 
+                              type: string
+                            deskripsi: 
+                              type: string
+                            image_url : 
+                              type: string
+                    example:
+                      status: true
+                      message: Success edit kategori
+                      data: null
+    delete:
+      tags:
+        - kategori
+      summary: Menghapus data kategori berdasarkan id
+      description: Menghapus data kategori berdasarkan id
+      operationId: deleteKategoribyId
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: kategori_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: c12efdd2-7069-4f34-af59-0d28b5046f54
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                    example:
+                      status: true
+                      message: delete data success
+                      data: null
+  /voucher:
+    post:
+      tags:
+        - voucher
+      summary: Menambahkan data voucher 
+      description: Menambahkan data voucher 
+      operationId: postVoucher
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - nama 
+                - deskripsi 
+                - code
+                - discount 
+                - expired_at
+              properties:
+                nama: 
+                  type: string
+                deskripsi:
+                  type: string
+                code:
+                  type: string
+                discount:
+                  type: number
+                expired_at:
+                  type: string
+                  format: date-time
+              example:
+                nama: test
+                deskripsi: "test"
+                code: "test123"
+                discount: 15.0
+                expired_at: "2024-10-31T23:59:59Z"
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            nama: 
+                              type: string
+                            deskripsi: 
+                              type: string
+                            code : 
+                              type: string
+                            discount:
+                              type: number
+                            expired_at:
+                              type: string
+                              format: date-time
+                    example:
+                      status: true
+                      message: Success add Voucher
+                      data: null
+  /voucher/{voucher_id}:
+    put:
+      tags:
+        - voucher
+      summary: Mengedit data voucher 
+      description: Mengedit data voucher 
+      operationId: putVoucher
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: voucher_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: c12efdd2-7069-4f34-af59-0d28b5046f54
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - nama 
+                - deskripsi 
+                - code
+                - discount 
+                - expired_at
+              properties:
+                nama: 
+                  type: string
+                deskripsi:
+                  type: string
+                code:
+                  type: string
+                discount:
+                  type: number
+                expired_at:
+                  type: string
+                  format: date-time
+              example:
+                nama: test
+                deskripsi: "test"
+                code: "test123"
+                discount: 15.0
+                expired_at: "2024-10-31T23:59:59Z"
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            nama: 
+                              type: string
+                            deskripsi: 
+                              type: string
+                            code : 
+                              type: string
+                            discount:
+                              type: number
+                            expired_at:
+                              type: string
+                              format: date-time
+                    example:
+                      status: true
+                      message: Success add Voucher
+                      data: null
+    delete:
+      tags:
+        - voucher
+      summary: Menghapus data voucher 
+      description: Menghapus data voucher 
+      operationId: deleteVoucher
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: voucher_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: c12efdd2-7069-4f34-af59-0d28b5046f54
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                    example:
+                      status: true
+                      message: delete data success
+                      data: null
+  /admin/list-transaksi:
+    get:
+      tags:
+        - list-transaksi
+      summary: Menampilkan seluruh data list-transaksi yang ada
+      description: Menampilkan seluruh data mengenai list-transaksi yang ada
+      operationId: getListTransaksi
+      security:
+        - bearerAuth: []
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            users:
+                              type: string
+                            kursus: 
+                              type: string
+                            total_harga: 
+                              type: integer
+                            status:
+                              type: string
+                    example:
+                      status: true
+                      message: Get all transaksi Success
+                      data:
+                      parameters:
+                        - id: "c12efdd2-7069-4f34-af59-0d28b5046f54"
+                          users: 
+                            user_id: "5cdac16f-22b3-430d-9dad-04f9157c8351"
+                            name: "Chand"
+                          kursus: 
+                            kursus_id: "3f59b885-d9aa-4e5c-b2bd-6002861e3aad"
+                            name: "corel"
+                          total_harga: 1.500.000
+                          status: "Success"
+  /admin/list-transaksi/{listTransaksi_id}:
+    get:
+      tags:
+        - list-transaksi
+      summary: Menampilkan data list-transaksi berdasarkan id
+      description: Menampilkan data mengenai list-transaksi berdasarkan id
+      operationId: getListTransaksibyId
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: listTransaksi_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: c12efdd2-7069-4f34-af59-0d28b5046f54
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            users:
+                              type: string
+                            kursus: 
+                              type: string
+                            total_harga: 
+                              type: integer
+                            status:
+                              type: string
+                    example:
+                      status: true
+                      message: Get all transaksi Success
+                      data:
+                      parameters:
+                          id: "c12efdd2-7069-4f34-af59-0d28b5046f54"
+                          users: 
+                            user_id: "5cdac16f-22b3-430d-9dad-04f9157c8351"
+                            name: "Chand"
+                          kursus: 
+                            kursus_id: "3f59b885-d9aa-4e5c-b2bd-6002861e3aad"
+                            name: "corel"
+                          total_harga: 1.500.000
+                          status: "Success"
+  /admin/history-transaksi:
+    get:
+      tags:
+        - history-transaksi
+      summary: Menampilkan seluruh data history-transaksi yang ada
+      description: Menampilkan seluruh data mengenai history-transaksi yang ada
+      operationId: getHistoryTransaksi
+      security:
+        - bearerAuth: []
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            transaksi:
+                              type: string
+                            users:
+                              type: string
+                            kursus: 
+                              type: string
+                            status:
+                              type: string
+                            valid_until:
+                              type: string
+                              format: date-time
+                    example:
+                      status: true
+                      message: Get all history users Success
+                      data:
+                      parameters:
+                        - id: "d30ecbb3-77ee-4e33-aa18-17924ecc368f"
+                          transaksi: 
+                            transaksi_id: "c12efdd2-7069-4f34-af59-0d28b5046f54"
+                          users: 
+                            user_id: "5cdac16f-22b3-430d-9dad-04f9157c8351"
+                            name: "Chand"
+                          kursus: 
+                            kursus_id: "3f59b885-d9aa-4e5c-b2bd-6002861e3aad"
+                            name: "corel"
+                          status: "aktif"
+                          valid_until: "2024-10-31T23:59:59Z"
+  /admin/history-transaksi/{historyTransaksi_id}:
+    get:
+      tags:
+        - history-transaksi
+      summary: Menampilkan data history transaksi users berdasarkan id
+      description: Menampilkan data history transaksi users berdasarkan id
+      operationId: getHistoryTransaksibyId
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: historyTransaksi_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: c12efdd2-7069-4f34-af59-0d28b5046f54
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            transaksi:
+                              type: string
+                            users:
+                              type: string
+                            kursus: 
+                              type: string
+                            status:
+                              type: string
+                            valid_until:
+                              type: string
+                              format: date-time
+                    example:
+                      status: true
+                      message: Get all history users Success
+                      data:
+                      parameters:
+                          id: "d30ecbb3-77ee-4e33-aa18-17924ecc368f"
+                          transaksi: 
+                            transaksi_id: "c12efdd2-7069-4f34-af59-0d28b5046f54"
+                          users: 
+                            user_id: "5cdac16f-22b3-430d-9dad-04f9157c8351"
+                            name: "Chand"
+                          kursus: 
+                            kursus_id: "3f59b885-d9aa-4e5c-b2bd-6002861e3aad"
+                            name: "corel"
+                          status: "aktif"
+                          valid_until: "2024-10-31T23:59:59Z"
+  /kursus:
+    post:
+      tags:
+        - kursus
+      summary: Menambahkan data kursus 
+      description: Menambahkan data kursus 
+      operationId: postKursus
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - nama 
+                - image 
+                - deskripsi 
+                - kategori
+                - jadwal 
+                - harga
+                - instruktur_id
+                - MateriPembelajaran
+              properties:
+                nama: 
+                  type: string
+                image: 
+                  type: string
+                deskripsi:
+                  type: string
+                kategori:
+                  type: string
+                instruktur_id:
+                  type: string
+                MateriPembelajaran:
+                  type: string
+                jadwal:
+                  type: string
+                harga:
+                  type: integer
+              example:
+                nama: corel
+                image: "https://storage.googleapis.com/foto_kursus.png"
+                deskripsi: "test"
+                kategori: 
+                  - kategori: "df5312cc-ab5b-416f-a193-ac6c0bd10f46"
+                  - kategori: "1ca87164-569b-44f6-8c84-0577b42eeebc"
+                harga: 1500000
+                instruktur_id: "9a12417a-7314-44ff-9bd9-0acea2a76d49"
+                materi: 
+                  - "test1"
+                  - "test2"
+                jadwal[0][hari]: "Senin"
+                jadwal[0][jam_mulai]: "10.00"
+                jadwal[0][jam_selesai]: "11.00"
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            nama: 
+                              type: string
+                            deskripsi: 
+                              type: string
+                            code : 
+                              type: string
+                            discount:
+                              type: number
+                            expired_at:
+                              type: string
+                              format: date-time
+                    example:
+                      status: true
+                      message: Success add Kursus
+                      data: null
+  /kursus/{kursus_id}:
+    put:
+      tags:
+        - kursus
+      summary: Menambahkan data kursus 
+      description: Menambahkan data kursus 
+      operationId: postKursus
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: kursus_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: c12efdd2-7069-4f34-af59-0d28b5046f54
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - nama 
+                - image 
+                - deskripsi 
+                - kategori
+                - jadwal 
+                - harga
+                - instruktur_id
+                - MateriPembelajaran
+              properties:
+                nama: 
+                  type: string
+                image: 
+                  type: string
+                deskripsi:
+                  type: string
+                kategori:
+                  type: string
+                instruktur_id:
+                  type: string
+                MateriPembelajaran:
+                  type: string
+                jadwal:
+                  type: string
+                harga:
+                  type: integer
+              example:
+                nama: corel
+                image: "https://storage.googleapis.com/foto_kursus.png"
+                deskripsi: "test"
+                kategori: 
+                  - kategori: "df5312cc-ab5b-416f-a193-ac6c0bd10f46"
+                  - kategori: "1ca87164-569b-44f6-8c84-0577b42eeebc"
+                harga: 1500000
+                instruktur_id: "9a12417a-7314-44ff-9bd9-0acea2a76d49"
+                materi: 
+                  - "test1"
+                  - "test2"
+                jadwal[0][hari]: "Senin"
+                jadwal[0][jam_mulai]: "10.00"
+                jadwal[0][jam_selesai]: "11.00"
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            nama: 
+                              type: string
+                            deskripsi: 
+                              type: string
+                            code : 
+                              type: string
+                            discount:
+                              type: number
+                            expired_at:
+                              type: string
+                              format: date-time
+                    example:
+                      status: true
+                      message: Success add Kursus
+                      data: null
+    delete:
+      tags:
+        - kursus
+      summary: Menghapus data kursus berdasarkan id
+      description: Menghapus data kursus berdasarkan id
+      operationId: deleteKursusbyId
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: kursus_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: c12efdd2-7069-4f34-af59-0d28b5046f54
+      responses:
+          "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                      message:
+                        type: string
+                    example:
+                      status: true
+                      message: delete data success
+                      data: null
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []

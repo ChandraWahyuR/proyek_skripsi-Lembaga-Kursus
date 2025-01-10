@@ -63,7 +63,6 @@ type GetAllHistoryAdminResponse struct {
 	KursusID   string    `json:"kursus_id"`
 	UserID     string    `json:"user_id"`
 	Status     string    `json:"status"`
-	Voucher    string    `json:"voucher"`
 	ValidUntil time.Time `json:"valid_until"`
 }
 

@@ -8,10 +8,16 @@ import (
 	"gorm.io/gorm"
 )
 
+// VoucherData adalah struct yang berfungsi sebagai data layer yang menghubungkan logika aplikasi dengan database menggunakan GORM
 type VoucherData struct {
 	DB *gorm.DB
 }
 
+// Fungsi New memastikan bahwa struct VoucherData
+// Memiliki semua metode yang sesuai dengan kontrak interface.
+// Siap digunakan sebagai implementasi dari interface.
+// Sebaliknya, fungsi ini mengembalikan objek VoucherData sebagai implementasi dari VoucherDataInterface.
+// Atau Menciptakan objek VoucherData dan Mengembalikannya dalam bentuk interface (VoucherDataInterface) agar memenuhi kontrak yang diharapkan
 func New(db *gorm.DB) voucher.VoucherDataInterface {
 	return &VoucherData{
 		DB: db,
@@ -29,7 +35,8 @@ func (d *VoucherData) GetAllVoucher() ([]voucher.Voucher, error) {
 func (d *VoucherData) GetAllVoucherPagination(page, limit int) ([]voucher.Voucher, int, error) {
 	var dataVoucher []voucher.Voucher
 	var total int64
-	// Count ambil data ditable sesuai where nya apa
+	// Count ambil data ditable sesuai where nya apa.
+	// Count menghitung baris data yang ada di table. jadi misal ada 50 data. misal menampilkan data 1 halaman 10 berarti 1 dari 5 halaman.
 	count := d.DB.Model(voucher.Voucher{}).Where("deleted_at IS NULL AND expired_at > ?", time.Now()).Count(&total)
 	if count.Error != nil {
 		return nil, 0, constant.ErrVoucherNotFound
@@ -87,4 +94,16 @@ func (d *VoucherData) DeleteVoucher(id string) error {
 	}
 
 	return res.Commit().Error
+}
+
+func (d *VoucherData) ValidateVoucher(userID string) ([]voucher.Voucher, error) {
+	var dataVoucher []voucher.Voucher
+	err := d.DB.Model(voucher.Voucher{}).Where("deleted_at IS NULL AND expired_at > ?", time.Now()).Not("id IN (?)", d.DB.Model(&voucher.VoucherUsed{}).
+		Select("voucher_id").
+		Where("user_id = ?", userID)).Find(&dataVoucher).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return dataVoucher, nil
 }

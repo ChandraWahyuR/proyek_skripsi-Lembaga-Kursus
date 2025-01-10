@@ -55,7 +55,7 @@ func (s *UserService) Register(users users.User) error {
 	// validate password
 	pass, err := helper.ValidatePassword(users.Password)
 	if err != nil {
-		return err
+		return constant.ErrInvalidPassword
 	}
 
 	// hashing password
