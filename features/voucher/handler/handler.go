@@ -226,7 +226,8 @@ func (h *VoucherHandler) UpdateVoucher() echo.HandlerFunc {
 		}
 
 		response := voucher.Voucher{
-			Nama:      data.ID,
+			ID:        data.ID,
+			Nama:      voucherRequest.Nama,
 			Deskripsi: voucherRequest.Deskripsi,
 			Code:      voucherRequest.Code,
 			Discount:  voucherRequest.Discount,

@@ -269,3 +269,7 @@ func (s *UserService) DeleteUser(userId string) error {
 	}
 	return s.d.DeleteUser(userId)
 }
+
+func (s *UserService) SearchUserByUsernameEmail(search string, page, limit int) ([]users.User, int, error) {
+	return s.d.SearchUserByUsernameEmail(search, page, limit)
+}

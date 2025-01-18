@@ -543,6 +543,77 @@ func (h *UserHandler) DeleteUser() echo.HandlerFunc {
 	}
 }
 
+func (h *UserHandler) SearchUserByUsernameEmail() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		searchData := c.QueryParam("user")
+		tokenString := c.Request().Header.Get(constant.HeaderAuthorization)
+		if tokenString == "" {
+			return helper.UnauthorizedError(c)
+		}
+
+		ctx := c.Request().Context()
+		token, err := h.j.ValidateToken(ctx, tokenString)
+		if err != nil {
+			return helper.UnauthorizedError(c)
+		}
+
+		userData := h.j.ExtractUserToken(token)
+		role, ok := userData[constant.JWT_ROLE]
+		if !ok || role != constant.RoleAdmin {
+			return helper.UnauthorizedError(c)
+		}
+
+		// Pagination
+		pageStr := c.QueryParam("page")
+		page, err := strconv.Atoi(pageStr)
+		if err != nil || page <= 0 {
+			page = 1
+		}
+
+		limitStr := c.QueryParam("limit")
+		limit, err := strconv.Atoi(limitStr)
+		if err != nil || limit <= 0 {
+			limit = 10
+		}
+		dataUser, totalPages, err := h.s.SearchUserByUsernameEmail(searchData, page, limit)
+		metadata := MetadataResponse{
+			TotalPage: totalPages,
+			Page:      page,
+		}
+		if err != nil {
+			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
+		}
+
+		var dataResponse []GetAllUserResponse
+		for _, value := range dataUser {
+			formattedTanggalLahir := ""
+			if !value.TanggalLahir.IsZero() {
+				formattedTanggalLahir = value.TanggalLahir.Format(constant.TTLFormat)
+			}
+			dataResponse = append(dataResponse, GetAllUserResponse{
+				ID:            value.ID,
+				NIS:           value.NIS,
+				Username:      value.Username,
+				Nama:          value.Nama,
+				Email:         value.Email,
+				NomorHP:       value.NomorHP,
+				ProfileUrl:    value.ProfileUrl,
+				IsActive:      value.IsActive,
+				Agama:         value.Agama,
+				Gender:        value.Gender,
+				TempatLahir:   value.TempatLahir,
+				TanggalLahir:  formattedTanggalLahir,
+				OrangTua:      value.OrangTua,
+				Profesi:       value.Profesi,
+				Ijazah:        value.Ijazah,
+				KTP:           value.KTP,
+				KartuKeluarga: value.KartuKeluarga,
+			})
+		}
+		return c.JSON(http.StatusOK, helper.MetadataFormatResponse(true, constant.GetAllHistoryTransaki, metadata, dataResponse))
+	}
+}
+
 // redis ini bayar tambahan, buat ada ada aja sih
 // func (h *UserHandler) Logout() echo.HandlerFunc {
 // 	return func(c echo.Context) error {

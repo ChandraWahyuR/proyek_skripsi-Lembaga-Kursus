@@ -97,3 +97,12 @@ type GetAllHistoryUserResponse struct {
 	UserID     string    `json:"user_id"`
 	ValidUntil time.Time `json:"valid_until"`
 }
+
+type GetAllUserActiveResponse struct {
+	Kursus     Kursus    `json:"kursus"`
+	UserID     string    `json:"user_id"`
+	UserName   string    `json:"username"`
+	Email      string    `json:"email"`
+	Status     string    `json:"status"`
+	ValidUntil time.Time `json:"valid_until"`
+}

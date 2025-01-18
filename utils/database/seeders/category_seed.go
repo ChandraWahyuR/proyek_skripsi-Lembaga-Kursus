@@ -13,6 +13,12 @@ func (s *Seeder) SeedCategory() {
 			Deskripsi: "Category yang membahas tentang desain grafis",
 			ImageUrl:  "https://storage.googleapis.com/image_skripsi/gambar/kategori/default/Question%20Mark.png",
 		},
+		{
+			ID:        "f0adef3c-179a-4b35-a6e9-8badc4406a1b",
+			Nama:      "Category Operasi Perangkat Lunak",
+			Deskripsi: "Category yang membahas pengoprasian penggunaan perangkat lunak",
+			ImageUrl:  "https://storage.googleapis.com/image_skripsi/gambar/kategori/default/Question%20Mark.png",
+		},
 	}
 	for _, category := range categories {
 		result := s.db.FirstOrCreate(&category, data.Kategori{ID: category.ID})

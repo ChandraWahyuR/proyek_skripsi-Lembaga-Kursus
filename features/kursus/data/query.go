@@ -124,6 +124,12 @@ func (d *KursusData) UpdateKursus(data kursus.Kursus) error {
 		return err
 	}
 
+	// Tambahan Jadwal
+	if err := tx.Model(&dataKursus).Association("Jadwal").Append(data.Jadwal); err != nil {
+		tx.Rollback()
+		return err
+	}
+
 	// Update kursus
 	if err := tx.Model(&dataKursus).Updates(data).Error; err != nil {
 		tx.Rollback()

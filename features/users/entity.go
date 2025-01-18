@@ -114,6 +114,9 @@ type UserHandlerInterface interface {
 	// Auth Email
 	// AuthEmail() echo.HandlerFunc
 	// ConfirmValidatateUser() echo.HandlerFunc
+
+	// Status User
+	SearchUserByUsernameEmail() echo.HandlerFunc
 }
 
 type UserServiceInterface interface {
@@ -133,6 +136,9 @@ type UserServiceInterface interface {
 	GetUserByID(id string) (User, error)
 	UpdateUser(EditUser) error
 	DeleteUser(userId string) error
+
+	// Search
+	SearchUserByUsernameEmail(search string, page, limit int) ([]User, int, error)
 }
 
 type UserDataInterface interface {
@@ -156,4 +162,7 @@ type UserDataInterface interface {
 	GetUserByID(id string) (User, error)
 	UpdateUser(EditUser) error
 	DeleteUser(userId string) error
+
+	// Search
+	SearchUserByUsernameEmail(search string, page, limit int) ([]User, int, error)
 }

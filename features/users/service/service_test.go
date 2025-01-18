@@ -91,6 +91,10 @@ func (m *MockUserData) DeleteUser(id string) error {
 	args := m.Called(id)
 	return args.Error(0)
 }
+func (m *MockUserData) SearchUserByUsernameEmail(search string, page, limit int) ([]users.User, int, error) {
+	args := m.Called(search, page, limit)
+	return args.Get(0).([]users.User), args.Int(1), args.Error(2)
+}
 
 // Mock Helper
 type MockHelper struct {

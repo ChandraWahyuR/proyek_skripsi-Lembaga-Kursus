@@ -153,6 +153,10 @@ func (s *TransaksiService) UpdateExpiredTransactions(now time.Time) error {
 	return nil
 }
 
+func (s *TransaksiService) GetActiveUsersFromTransaksiHistory(page, limit int) ([]transaksi.TransaksiHistory, int, error) {
+	return s.d.GetActiveUsersFromTransaksiHistory(page, limit)
+}
+
 // =============================================================================================
 func (s *TransaksiService) createMidtransPayment(transaksi transaksi.Transaksi) (string, error) {
 	snapGateway := midtrans.SnapGateway{

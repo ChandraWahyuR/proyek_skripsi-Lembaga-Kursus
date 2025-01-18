@@ -216,3 +216,26 @@ func (d *UserData) DeleteUser(userId string) error {
 	}
 	return res.Commit().Error
 }
+
+func (d *UserData) SearchUserByUsernameEmail(search string, page, limit int) ([]users.User, int, error) {
+	var data []users.User
+	var total int64
+	if err := d.DB.Model(&users.User{}).
+		Where("username LIKE ? OR email LIKE ?", "%"+search+"%", "%"+search+"%").
+		Count(&total).Error; err != nil {
+		return []users.User{}, 0, constant.ErrGetData
+	}
+
+	totalPages := int((total + int64(limit) - 1) / int64(limit))
+	// Query dengan pagination
+	tx := d.DB.
+		Where("username LIKE ? OR email LIKE ?", "%"+search+"%", "%"+search+"%").
+		Where("deleted_at IS NULL").
+		Offset((page - 1) * limit).
+		Limit(limit).
+		Find(&data)
+	if tx.Error != nil {
+		return nil, 0, tx.Error
+	}
+	return data, totalPages, nil
+}

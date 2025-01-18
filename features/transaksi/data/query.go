@@ -265,3 +265,28 @@ func (d *TransaksiData) UpdateStatus(transaksiID string, status string) error {
 
 	return nil
 }
+
+// View User Active
+func (d *TransaksiData) GetActiveUsersFromTransaksiHistory(page, limit int) ([]transaksi.TransaksiHistory, int, error) {
+	var total int64
+	var histories []transaksi.TransaksiHistory
+	// Hitung total jumlah data dengan status "Active" tanpa memuat data relasi
+	if err := d.DB.Preload("User").Where("status = ?", "Active").Find(&histories).Count(&total).Error; err != nil {
+		return nil, 0, constant.ErrDataNotfound
+	}
+
+	// Ambil data dengan pagination dan preload relasi
+	totalPages := int((total + int64(limit) - 1) / int64(limit))
+	// Query data dengan pagination dan preload relasi
+	err := d.DB.Preload("User"). // Preload data User
+					Preload("Transaksi", "deleted_at IS NULL"). // Preload data Transaksi dengan kondisi
+					Preload("Kursus", "deleted_at IS NULL").    // Preload data Kursus dengan kondisi
+					Where("status = ?", "Active").              // Filter berdasarkan status
+					Offset((page - 1) * limit).                 // Mulai data berdasarkan halaman
+					Limit(limit).                               // Batas jumlah data per halaman
+					Find(&histories).Error                      // Eksekusi query dan simpan hasil ke histories
+	if err != nil {
+		return nil, 0, constant.ErrGetData
+	}
+	return histories, totalPages, nil
+}

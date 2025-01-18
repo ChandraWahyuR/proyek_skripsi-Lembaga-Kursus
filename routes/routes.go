@@ -36,6 +36,7 @@ func RouteUser(e *echo.Echo, u users.UserHandlerInterface, cfg config.Config) {
 	// Admin
 	e.GET("/api/v1/admin/users", u.GetAllUser(), echojwt.WithConfig(jwtConfig))
 	e.GET("/api/v1/admin/users/:id", u.GetUserByID(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/admin/users/search", u.SearchUserByUsernameEmail(), echojwt.WithConfig(jwtConfig))
 	e.POST("/api/v1/logout", u.Logout(), echojwt.WithConfig(jwtConfig))
 	e.GET("/verify", u.VerifyAccount()) // handler untuk memverifikasi token
 }
@@ -125,6 +126,7 @@ func RouteTransaksi(e *echo.Echo, tr transaksi.TransaksiHandlerInterface, cfg co
 
 	e.GET("/api/v1/admin/history-transaksi", tr.GetAllTransaksiHistory(), echojwt.WithConfig(jwtConfig))
 	e.GET("/api/v1/admin/history-transaksi/:id", tr.GetTransaksiHistoryByID(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/admin/users-active", tr.GetActiveUsersFromTransaksiHistory(), echojwt.WithConfig(jwtConfig))
 }
 
 func RouteWebhook(e *echo.Echo, w webhook.MidtransNotificationHandler, cfg config.Config) {

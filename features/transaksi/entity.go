@@ -55,14 +55,16 @@ type TransaksiHandlerInterface interface {
 	GetStatusTransaksiForUser() echo.HandlerFunc
 	GetStatusTransaksiByID() echo.HandlerFunc
 	GetResponseTransaksi() echo.HandlerFunc
-
 	GetStatusTransaksiForUserByID() echo.HandlerFunc
+
 	// Tansaksi History
 	GetAllTransaksiHistory() echo.HandlerFunc
 	GetAllTransaksiHistoryForUser() echo.HandlerFunc
 	GetTransaksiHistoryByID() echo.HandlerFunc
-
 	GetAllTransaksiHistoryForUserByID() echo.HandlerFunc
+
+	// Get Aktif user
+	GetActiveUsersFromTransaksiHistory() echo.HandlerFunc
 }
 
 type TransaksiDataInterface interface {
@@ -97,6 +99,9 @@ type TransaksiDataInterface interface {
 
 	//
 	ValidateDurationKursus(userID, kursusID string) bool
+
+	// Aktif User
+	GetActiveUsersFromTransaksiHistory(page, limit int) ([]TransaksiHistory, int, error)
 }
 
 type TransaksiServiceInterface interface {
@@ -117,4 +122,7 @@ type TransaksiServiceInterface interface {
 
 	// Cron job
 	UpdateExpiredTransactions(now time.Time) error
+
+	// Aktif user
+	GetActiveUsersFromTransaksiHistory(page, limit int) ([]TransaksiHistory, int, error)
 }
