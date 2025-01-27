@@ -254,7 +254,7 @@ func (h *KursusHandler) AddKursus() echo.HandlerFunc {
 		// Simpan kursus ke database
 		err = h.s.AddKursus(kursusData)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, err.Error(), nil))
+			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
 		}
 
 		return c.JSON(http.StatusCreated, helper.FormatResponse(true, constant.PostKursus, nil))

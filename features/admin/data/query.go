@@ -77,11 +77,12 @@ func (d *AdminData) DownloadLaporanPembelian(startDate, endDate time.Time) ([]ma
 	var histories []map[string]interface{}
 
 	err := d.DB.Table("transaksi_histories").
-		Select("transaksi_histories.id, transaksi_histories.transaksi_id, transaksi_histories.kursus_id, transaksi_histories.user_id, users.nama AS user_nama, users.email AS email, kursus.nama AS nama_kursus,transaksi_histories.status, transaksi_histories.valid_until, transaksis.total_harga, transaksis.status AS transaksi_status").
+		Select("transaksi_histories.id, transaksi_histories.transaksi_id, transaksi_histories.kursus_id, transaksi_histories.user_id, users.nis As nis, users.username as username, users.nama AS nama, users.email AS email, users.tempat_lahir as alamat, users.nomor_hp as hp, users.gender as jenis_kelamin, kursus.nama AS nama_kursus, transaksi_histories.created_at as tgl_masuk, transaksi_histories.valid_until,  transaksi_histories.status as status,transaksis.status as transaksi_status, transaksis.total_harga").
 		Joins("JOIN kursus ON kursus.id = transaksi_histories.kursus_id").
 		Joins("JOIN transaksis ON transaksis.id = transaksi_histories.transaksi_id").
 		Joins("JOIN users ON users.id = transaksi_histories.user_id").
 		Where("transaksi_histories.created_at BETWEEN ? AND ?", startDate, endDate).
+		Where("transaksi_histories.status = ?", "Active").
 		Scan(&histories).Error
 	if err != nil {
 		return nil, err

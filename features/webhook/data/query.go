@@ -34,15 +34,17 @@ func (d *WebhookData) HandleNotification(notification webhook.PaymentNotificatio
 	}
 
 	// Tambahan
-	historyUpdate := transaksi.UpdateHistoryStatus{
-		ID:         transaction.ID,
-		Status:     "Active",
-		ValidUntil: time.Now().AddDate(0, 3, 0),
-	}
-	err = d.DB.Model(&transaksiData.TransaksiHistory{}).Where("transaksi_id = ?", transaction.ID).Updates(&historyUpdate).Error
-	if err != nil {
-		fmt.Printf("Direct update error: %v\n", err)
-		return err
+	if transaction.Status == "Success" {
+		historyUpdate := transaksi.UpdateHistoryStatus{
+			ID:         transaction.ID,
+			Status:     "Active",
+			ValidUntil: time.Now().AddDate(0, 3, 0),
+		}
+		err = d.DB.Model(&transaksiData.TransaksiHistory{}).Where("transaksi_id = ?", transaction.ID).Updates(&historyUpdate).Error
+		if err != nil {
+			fmt.Printf("Direct update error: %v\n", err)
+			return err
+		}
 	}
 
 	return res.Commit().Error

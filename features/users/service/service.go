@@ -209,7 +209,7 @@ func (s *UserService) ActivateAccount(email string) error {
 
 func (s *UserService) SendVerificationEmail(email, link string) error {
 	subject := "Verifikasi Email"
-	body := fmt.Sprintf("<p>Klik email dibawah Untuk memverifikasi email:</p><a href='%s'>Verify</a>", link)
+	body := fmt.Sprintf("<p>Terima kasih telah mendaftar di LKP Mediakom Sidareja. Untuk melanjutkan, silakan klik tombol di bawah ini untuk memverifikasi alamat email Anda:</p><a href='%s'>Verifikasi Email</a>", link)
 	return s.m.SendEmail(email, subject, body)
 }
 

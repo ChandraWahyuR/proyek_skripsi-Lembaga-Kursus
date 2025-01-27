@@ -26,13 +26,13 @@ func (u *UserData) Register(user users.User) error {
 	// Pengecekan Username
 	isUsername := u.IsUsernameExist(user.Username)
 	if isUsername {
-		return errors.New("username telah digunakan")
+		return constant.ErrUsernameTaken
 	}
 
 	// Pengecekan Email
 	isEmail := u.IsEmailExist(user.Email)
 	if isEmail {
-		return errors.New("email telah terdaftar")
+		return constant.ErrEmailTaken
 	}
 
 	// Value yang akan dimasukkan ke dalam database

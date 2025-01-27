@@ -14,7 +14,8 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o /goapp
 
 # Release stage
-FROM gcr.io/distroless/base-debian11 AS release-stage
+FROM gcr.io/distroless/base-debian11:nonroot AS release-stage
+
 
 WORKDIR /
 

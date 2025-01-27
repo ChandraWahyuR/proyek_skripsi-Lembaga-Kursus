@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"skripsi/constant"
 	"skripsi/features/voucher"
 	"skripsi/helper"
@@ -54,7 +53,7 @@ func (s *VoucherService) CreateVoucher(data voucher.Voucher) error {
 	}
 	if data.Code != "" {
 		if len(data.Code) != 10 {
-			return errors.New("voucher code must be exactly 10 characters")
+			return constant.ErrPanjangVoucher
 		}
 	} else {
 		data.Code = helper.GenerateCode()

@@ -32,7 +32,7 @@ func (s *KursusService) GetAllKursusById(id string) (kursus.Kursus, error) {
 func (s *KursusService) AddKursus(data kursus.Kursus) error {
 	switch {
 	case data.Nama == "":
-		return constant.ErrEmptyNameInstuktor
+		return constant.ErrKursusName
 	case data.Deskripsi == "":
 		return constant.ErrDekripsiKursus
 	case data.Harga == 0:

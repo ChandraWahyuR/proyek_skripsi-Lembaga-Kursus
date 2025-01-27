@@ -169,7 +169,7 @@ func (h *InstrukturHandler) PostInstruktur() echo.HandlerFunc {
 
 		file, err := c.FormFile("image")
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, "Failed to get image", nil))
+			return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, "Gagal mendapatkan gambar", nil))
 		}
 		// Upload
 		src, err := file.Open()

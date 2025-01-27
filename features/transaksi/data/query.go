@@ -79,7 +79,7 @@ func (d *TransaksiData) GetStatusTransaksiForUser(userID string, page int, limit
 	totalPages := int((total + int64(limit) - 1) / int64(limit))
 	// data user
 	var data []transaksi.Transaksi
-	if err := d.DB.Preload("User").Preload("Kursus").Where("user_id = ? AND deleted_at IS NULL", userID).Offset((page - 1) * limit).Limit(limit).Find(&data).Error; err != nil {
+	if err := d.DB.Preload("User").Preload("Kursus").Where("status = ?", "Success").Where("user_id = ? AND deleted_at IS NULL", userID).Offset((page - 1) * limit).Limit(limit).Find(&data).Error; err != nil {
 		return nil, 0, constant.ErrGetData
 	}
 	return data, totalPages, nil
@@ -104,7 +104,7 @@ func (d *TransaksiData) GetAllTransaksiHistory() ([]transaksi.TransaksiHistory, 
 func (d *TransaksiData) GetAllTransaksiHistoryForUser(userID string, page, limit int) ([]transaksi.TransaksiHistory, int, error) {
 	// Pagination
 	var total int64
-	count := d.DB.Model(&transaksi.TransaksiHistory{}).Where("user_id = ? AND deleted_at IS NULL", userID).Count(&total)
+	count := d.DB.Model(&transaksi.TransaksiHistory{}).Where("user_id = ? AND deleted_at IS NULL", userID).Where("status = ?", "Active").Count(&total)
 	if count.Error != nil {
 		return nil, 0, constant.ErrTransaksiNotFound
 	}
@@ -112,7 +112,7 @@ func (d *TransaksiData) GetAllTransaksiHistoryForUser(userID string, page, limit
 
 	// data user
 	var data []transaksi.TransaksiHistory
-	if err := d.DB.Preload("Transaksi").Preload("Kursus").Where("user_id = ? AND deleted_at IS NULL", userID).Offset((page - 1) * limit).Limit(limit).Find(&data).Error; err != nil {
+	if err := d.DB.Preload("Transaksi").Preload("Kursus").Where("user_id = ? AND deleted_at IS NULL", userID).Where("status = ?", "Active").Offset((page - 1) * limit).Limit(limit).Find(&data).Error; err != nil {
 		return nil, 0, constant.ErrGetData
 	}
 	return data, totalPages, nil

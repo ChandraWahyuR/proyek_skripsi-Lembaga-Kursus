@@ -34,7 +34,7 @@ func ConverResponse(err error) int {
 		return http.StatusInternalServerError
 
 	// Register errors
-	case constant.ErrEmptyEmailRegister, constant.ErrEmptyNameRegister, constant.ErrEmptyPasswordRegister, constant.ErrPasswordNotMatch, constant.ErrInvalidEmail, constant.ErrInvalidUsername, constant.ErrInvalidPhone:
+	case constant.ErrEmptyEmailRegister, constant.ErrEmptyNameRegister, constant.ErrEmptyPasswordRegister, constant.ErrPasswordNotMatch, constant.ErrInvalidEmail, constant.ErrInvalidUsername, constant.ErrInvalidPhone, constant.ErrEmailTaken, constant.ErrUsernameTaken:
 		return http.StatusBadRequest
 
 	// Login errors
@@ -46,7 +46,7 @@ func ConverResponse(err error) int {
 		return http.StatusBadRequest
 
 	// Instruktur errors
-	case constant.ErrInstrukturNotFound, constant.ErrInstrukturID, constant.ErrGenderInstruktorRmpty, constant.ErrEmptyNameInstuktor, constant.ErrEmptyEmailInstuktor, constant.ErrEmptyAlamatInstuktor, constant.ErrEmptyNumbertelponInstuktor, constant.ErrEmptyDescriptionInstuktor:
+	case constant.ErrInstrukturNotFound, constant.ErrInstrukturID, constant.ErrGenderInstruktorRmpty, constant.ErrEmptyNameInstuktor, constant.ErrEmptyEmailInstuktor, constant.ErrEmptyAlamatInstuktor, constant.ErrEmptyNumbertelponInstuktor, constant.ErrEmptyDescriptionInstuktor, constant.ErrInstrukturNIKEmpty, constant.ErrInstrukturNIPEmpty, constant.ErrInstrukturImageEmpty:
 		return http.StatusBadRequest
 
 	// Kategori errors
@@ -54,7 +54,7 @@ func ConverResponse(err error) int {
 		return http.StatusBadRequest
 
 	// Kursus errors
-	case constant.ErrKursusNotFound, constant.ErrJadwal, constant.ErrJadwalFormat, constant.ErrGambarKursus, constant.ErrKategoriKursus, constant.ErrMateriPembelajaran, constant.ErrDekripsiKursus, constant.ErrHargaKursus:
+	case constant.ErrKursusNotFound, constant.ErrJadwal, constant.ErrKursusName, constant.ErrJadwalFormat, constant.ErrGambarKursus, constant.ErrKategoriKursus, constant.ErrMateriPembelajaran, constant.ErrDekripsiKursus, constant.ErrHargaKursus:
 		return http.StatusBadRequest
 
 	// GCS errors
@@ -62,7 +62,7 @@ func ConverResponse(err error) int {
 		return http.StatusInternalServerError
 
 	// Voucher errors
-	case constant.ErrVoucherNotFound, constant.ErrVoucherFailedCreate, constant.ErrVoucherUsed, constant.ErrNameVoucher, constant.ErrDekripsiVoucher, constant.ErrDiscountVoucher, constant.ErrExpriedAtVoucher:
+	case constant.ErrVoucherNotFound, constant.ErrVoucherFailedCreate, constant.ErrVoucherUsed, constant.ErrNameVoucher, constant.ErrPanjangVoucher, constant.ErrDekripsiVoucher, constant.ErrDiscountVoucher, constant.ErrExpriedAtVoucher:
 		return http.StatusBadRequest
 	case constant.ErrVoucherIDNotFound:
 		return http.StatusNotFound

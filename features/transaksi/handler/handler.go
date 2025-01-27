@@ -373,6 +373,11 @@ func (h *TransaksiHanlder) GetTransaksiHistoryByID() echo.HandlerFunc {
 func (h *TransaksiHanlder) GetResponseTransaksi() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id := c.QueryParam("order_id")
+
+		if id == "" {
+			return c.JSON(http.StatusBadRequest, helper.FormatResponse(false, "Order ID tidak ditemukan", nil))
+		}
+
 		dataHistoryT, err := h.s.GetTransaksiHistoryByID(id)
 		if err != nil {
 			return c.JSON(helper.ConverResponse(err), helper.FormatResponse(false, err.Error(), nil))
@@ -401,6 +406,14 @@ func (h *TransaksiHanlder) GetResponseTransaksi() echo.HandlerFunc {
 			VoucherID:  voucherID,
 			TotalHarga: dataHistoryT.Transaksi.TotalHarga,
 		}
+
+		if dataHistoryT.ID == "" {
+			if c.QueryParam("transaction_status") == "pending" {
+				return c.JSON(http.StatusOK, helper.FormatResponse(false, "Transaksi sedang menunggu penyelesaian", nil))
+			}
+			return c.JSON(http.StatusNotFound, helper.FormatResponse(false, "Transaksi tidak ditemukan", nil))
+		}
+
 		return c.JSON(http.StatusOK, helper.ObjectFormatResponse(true, constant.ResponTransaksi, response))
 	}
 }

@@ -32,8 +32,10 @@ var ErrEmptyPasswordRegister = errors.New("password cannot be empty")
 var ErrPasswordNotMatch = errors.New("password not match")
 
 // Register Format Not Valid
-var ErrInvalidEmail = errors.New("email is not valid")
-var ErrInvalidUsername = errors.New("username formating not valid")
+var ErrInvalidEmail = errors.New("format email tidak valid")
+var ErrEmailTaken = errors.New("email telah terdaftar")
+var ErrUsernameTaken = errors.New("username telah terdaftar")
+var ErrInvalidUsername = errors.New("format username salah")
 var ErrInvalidPhone = errors.New("phone formating not valid")
 
 // Login
@@ -77,6 +79,7 @@ var ErrEmptyDeskripsiKategori = errors.New("deskripsi kategori tidak boleh koson
 
 // Kursus
 var ErrKursusNotFound = errors.New("data kursus tidak ada")
+var ErrKursusName = errors.New("nama kursus tidak boleh kosong")
 var ErrImageKursusNotFound = errors.New("gambar kursus tidak ada")
 var ErrKategoriKursusNotFound = errors.New("kategori kursus tidak ada")
 var ErrMateriKursusNotFound = errors.New("materi kursus tidak ada")
@@ -107,6 +110,7 @@ var ErrNameVoucher = errors.New("nama voucher jangan kosong")
 var ErrDekripsiVoucher = errors.New("deksripsi voucher jangan kosong")
 var ErrDiscountVoucher = errors.New("diskon voucher jangan kosong, min 1%")
 var ErrExpriedAtVoucher = errors.New("masukkan tanggal kadaluarsa voucher")
+var ErrPanjangVoucher = errors.New("masukkan kode dengan 10 karakter")
 
 // Transaksi
 var ErrTransaksiNotFound = errors.New("data transaksi belum ada")

@@ -10,6 +10,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 )
 
 type AdminService struct {
@@ -105,50 +108,51 @@ func (s *AdminService) GenerateLaporanCSV(w io.Writer, histories []map[string]in
 	defer writer.Flush()
 
 	// Header laporan
-	writer.Write([]string{"Laporan Pembelian Kursus \nLKP Mediakom Sidareja"})
+	writer.Write([]string{"Laporan Siswa Aktif \nLKP Mediakom Sidareja"})
 	writer.Write([]string{"Periode", fmt.Sprintf("%s - %s", startDate.Format("02 January 2006"), endDate.Format("02 January 2006"))})
 	writer.Write([]string{})
-	writer.Write([]string{"ID", "TransaksiID", "KursusID", "UserID", "UserNama", "Email", "Nama Kursus", "Status Pembelian", "ValidUntil", "TotalHarga", "Status Transaksi"})
+	writer.Write([]string{"No", "Nomor Induk", "Transaksi ID", "User ID", "Username", "Nama", "Jenis Kelamin", "Email", "Nomor Telepon", "Alamat", "Nama Kursus", "Tanggal Masuk", "Berlaku sampai", "Total Harga"})
 
 	// Isi laporan
 	var totalUser int
 	var totalHarga float64
 	var userAktif int
+	// Formatter Uang
+	formatter := message.NewPrinter(language.Indonesian)
 
 	// Tulis data dari map ke CSV dan hitung total harga
-	for _, history := range histories {
-		var totalHargaStr string
+	for i, history := range histories {
 		var harga float64
 
 		if th, ok := history["total_harga"].(float64); ok {
-			totalHargaStr = fmt.Sprintf("%.2f", th)
 			harga = th
 		} else if th, ok := history["total_harga"].(string); ok {
 			if floatVal, err := strconv.ParseFloat(th, 64); err == nil {
-				totalHargaStr = fmt.Sprintf("%.2f", floatVal)
 				harga = floatVal
 			} else {
-				totalHargaStr = "0.00"
 				harga = 0.0
 			}
 		} else {
-			totalHargaStr = "0.00"
 			harga = 0.0
 		}
 
+		totalHargaStr := formatter.Sprintf("Rp.%d", int64(harga))
 		// Tulis baris data ke CSV
 		writer.Write([]string{
-			history["id"].(string),
+			fmt.Sprintf("%d", i+1),
+			history["nis"].(string),
 			history["transaksi_id"].(string),
-			history["kursus_id"].(string),
 			history["user_id"].(string),
-			history["user_nama"].(string),
+			history["username"].(string),
+			history["jenis_kelamin"].(string),
+			history["nama"].(string),
 			history["email"].(string),
+			history["hp"].(string),
+			history["alamat"].(string),
 			history["nama_kursus"].(string),
-			history["status"].(string),
+			history["tgl_masuk"].(time.Time).Format("2006-01-02"),
 			history["valid_until"].(time.Time).Format("2006-01-02"),
 			totalHargaStr,
-			history["transaksi_status"].(string),
 		})
 
 		totalUser++
@@ -156,13 +160,13 @@ func (s *AdminService) GenerateLaporanCSV(w io.Writer, histories []map[string]in
 		// Hanya total transaksi yang statusnya sudah aktif dan pembayarannya sukses
 		if history["status"] == "Active" && history["transaksi_status"] == "Success" {
 			totalHarga += harga
-			userAktif += totalUser
+			userAktif++
 		}
-
 	}
+
+	hasil := formatter.Sprintf("Rp.%d", int64(totalHarga))
 	writer.Write([]string{}) // Baris kosong sebagai pemisah
 	writer.Write([]string{"Total Pengguna Yang Mendaftar", fmt.Sprintf("%d", totalUser)})
-	writer.Write([]string{"Total Pengguna Yang Aktif", fmt.Sprintf("%d", userAktif)})
-	writer.Write([]string{"Total Pemasukkan", fmt.Sprintf("%.2f", totalHarga)})
+	writer.Write([]string{"Total Pemasukkan", hasil})
 	return nil
 }
