@@ -5,8 +5,10 @@ import (
 	"skripsi/features/admin"
 	"skripsi/features/gmaps"
 	"skripsi/features/instruktur"
+	jadwal "skripsi/features/jadwal_mengajar"
 	"skripsi/features/kategori"
 	"skripsi/features/kursus"
+	"skripsi/features/notification/sse"
 	"skripsi/features/transaksi"
 	"skripsi/features/users"
 	"skripsi/features/voucher"
@@ -30,6 +32,9 @@ func RouteUser(e *echo.Echo, u users.UserHandlerInterface, cfg config.Config) {
 	e.POST("/api/v1/otp", u.VerifyOTP(), echojwt.WithConfig(jwtConfig))
 	e.POST("/api/v1/reset", u.ResetPassword(), echojwt.WithConfig(jwtConfig))
 
+	e.GET("/ping", func(c echo.Context) error {
+		return c.String(200, "pong")
+	})
 	// Edit
 	e.GET("/api/v1/profile", u.GetUserByUser(), echojwt.WithConfig(jwtConfig))
 	e.PUT("/api/v1/profile", u.UpdateUser(), echojwt.WithConfig(jwtConfig))
@@ -127,6 +132,19 @@ func RouteTransaksi(e *echo.Echo, tr transaksi.TransaksiHandlerInterface, cfg co
 	e.GET("/api/v1/admin/history-transaksi", tr.GetAllTransaksiHistory(), echojwt.WithConfig(jwtConfig))
 	e.GET("/api/v1/admin/history-transaksi/:id", tr.GetTransaksiHistoryByID(), echojwt.WithConfig(jwtConfig))
 	e.GET("/api/v1/admin/users-active", tr.GetActiveUsersFromTransaksiHistory(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/admin/users-new", tr.GetNewUsers(), echojwt.WithConfig(jwtConfig))
+}
+
+func RouteJadwal(e *echo.Echo, j jadwal.MengajarHandlerInterface, cfg config.Config) {
+	jwtConfig := echojwt.Config{
+		SigningKey:   []byte(cfg.JWT_Secret),
+		ErrorHandler: helper.JWTErrorHandler,
+	}
+	e.POST("/api/v1/admin/jadwal", j.CreateJadwalMengajar(), echojwt.WithConfig(jwtConfig))
+	e.PUT("/api/v1/admin/jadwal/:id", j.EditJadwalMengajar(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/admin/jadwal", j.GetJadwalMengajar(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/jadwal/:id", j.GetJadwalMengajarByID(), echojwt.WithConfig(jwtConfig))
+	e.GET("/api/v1/jadwal", j.GetJadwalMengajarForUser(), echojwt.WithConfig(jwtConfig))
 }
 
 func RouteWebhook(e *echo.Echo, w webhook.MidtransNotificationHandler, cfg config.Config) {
@@ -135,4 +153,12 @@ func RouteWebhook(e *echo.Echo, w webhook.MidtransNotificationHandler, cfg confi
 
 func RouteGmaps(e *echo.Echo, g gmaps.GmapsHandlerInterface, cfg config.Config) {
 	e.GET("/api/v1/maps/directions", g.GetDirections())
+}
+
+func RouteSSE(e *echo.Echo, jwtHelper helper.JWTInterface) {
+	sseHandler := sse.NewSSEHandler(jwtHelper)
+	e.GET("/api/v1/events", func(c echo.Context) error {
+		sseHandler.SseHandler(c.Response(), c.Request())
+		return nil
+	})
 }

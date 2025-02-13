@@ -157,6 +157,10 @@ func (s *TransaksiService) GetActiveUsersFromTransaksiHistory(page, limit int) (
 	return s.d.GetActiveUsersFromTransaksiHistory(page, limit)
 }
 
+func (s *TransaksiService) GetNewUsers(page, limit int) ([]transaksi.TransaksiHistory, int, error) {
+	return s.d.GetNewUsers(page, limit)
+}
+
 // =============================================================================================
 func (s *TransaksiService) createMidtransPayment(transaksi transaksi.Transaksi) (string, error) {
 	snapGateway := midtrans.SnapGateway{
@@ -204,8 +208,6 @@ func (s *TransaksiService) createMidtransPayment(transaksi transaksi.Transaksi) 
 			Finish: "https://skripsi-245802795341.asia-southeast2.run.app/api/v1/response-transaksi?order_id={order_id}",
 		},
 	}
-
-	// log.Printf("Midtrans Request OrderID: %s, Gross Amount: %.2f", transaksi.ID, transaksi.TotalHarga)
 
 	snapResp, err := snapGateway.GetToken(snapReq)
 	if err != nil {

@@ -290,3 +290,31 @@ func (d *TransaksiData) GetActiveUsersFromTransaksiHistory(page, limit int) ([]t
 	}
 	return histories, totalPages, nil
 }
+func (d *TransaksiData) GetNewUsers(page, limit int) ([]transaksi.TransaksiHistory, int, error) {
+	var total int64
+	var histories []transaksi.TransaksiHistory
+
+	// 1 minggu data user
+	now := time.Now()
+	oneWeekAgo := now.Add(-7 * 24 * time.Hour)
+
+	if err := d.DB.Model(&transaksi.TransaksiHistory{}).
+		Where("status = ? AND created_at BETWEEN ? AND ?", "Active", oneWeekAgo, now).
+		Count(&total).Error; err != nil {
+		return nil, 0, constant.ErrDataNotfound
+	}
+
+	totalPages := int((total + int64(limit) - 1) / int64(limit))
+
+	err := d.DB.Preload("User").
+		Preload("Transaksi", "deleted_at IS NULL").
+		Preload("Kursus", "deleted_at IS NULL").
+		Where("status = ? AND created_at BETWEEN ? AND ?", "Active", oneWeekAgo, now).
+		Offset((page - 1) * limit).
+		Limit(limit).
+		Find(&histories).Error
+	if err != nil {
+		return nil, 0, constant.ErrGetData
+	}
+	return histories, totalPages, nil
+}

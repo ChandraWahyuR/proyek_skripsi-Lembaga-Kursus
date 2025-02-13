@@ -116,3 +116,37 @@ func CodeVoucherValidator(code string) (string, error) {
 	}
 	return code, nil
 }
+
+// =====================================
+func ValidateTimeFormat(timeStr string) error {
+	const timePattern = `^(?:[01]\d|2[0-3]):[0-5]\d$`
+	match, _ := regexp.MatchString(timePattern, timeStr)
+	if !match {
+		return errors.New("invalid time format, expected HH:mm")
+	}
+	return nil
+}
+
+func ValidateTimeLogic(jamMulai, jamAkhir time.Time) error {
+	if !jamMulai.Before(jamAkhir) {
+		return errors.New("jam mulai harus lebih awal dari jam akhir")
+	}
+	return nil
+}
+
+func ValidateDateFormat(date string) error {
+	const datePattern = `^\d{4}-\d{2}-\d{2}$`
+	match, _ := regexp.MatchString(datePattern, date)
+	if !match {
+		return errors.New("invalid date format, expected YYYY-MM-DD")
+	}
+	return nil
+}
+
+func ValidateLogicalDate(tanggal time.Time) error {
+	now := time.Now()
+	if tanggal.Before(now) {
+		return errors.New("jadwal tidak boleh di masa lalu")
+	}
+	return nil
+}

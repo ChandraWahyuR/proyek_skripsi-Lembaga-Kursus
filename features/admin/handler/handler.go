@@ -75,41 +75,30 @@ func (h *AdminHandler) DownloadLaporanPembelian() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		startDate := c.QueryParam("start_date")
 		endDate := c.QueryParam("end_date")
-
-		// Validasi input
 		if startDate == "" || endDate == "" {
 			return c.JSON(http.StatusBadRequest, "Start date and end date are required")
 		}
-
 		tglMulai, err := time.Parse(constant.LayoutFormat, startDate)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, "Invalid start date format")
 		}
-
 		tglAkhir, err := time.Parse(constant.LayoutFormat, endDate)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, "Invalid end date format")
 		}
-
-		// Ambil data laporan dari service
 		histories, err := h.s.DownloadLaporanPembelian(tglMulai, tglAkhir)
 		if err != nil {
 			log.Println("Error fetching report data:", err)
 			return c.JSON(http.StatusInternalServerError, "Error fetching report data")
 		}
-
-		// Set header untuk mengunduh file
 		filename := fmt.Sprintf("laporan_pembelian_%s_to_%s.csv", startDate, endDate)
 		c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
 		c.Response().Header().Set("Content-Type", "text/csv")
-
-		// Generate CSV langsung ke respons
 		err = h.s.GenerateLaporanCSV(c.Response().Writer, histories, tglMulai, tglAkhir)
 		if err != nil {
 			log.Println("Error generating CSV:", err)
 			return c.JSON(http.StatusInternalServerError, "Error generating CSV")
 		}
-
 		return nil
 	}
 }

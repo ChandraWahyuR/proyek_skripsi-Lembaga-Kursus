@@ -3,6 +3,7 @@ package database
 import (
 	Admin "skripsi/features/admin/data"
 	Instruktor "skripsi/features/instruktur/data"
+	Jadwal "skripsi/features/jadwal_mengajar/data"
 	Kategori "skripsi/features/kategori/data"
 	Kursus "skripsi/features/kursus/data"
 	Transaksi "skripsi/features/transaksi/data"
@@ -31,6 +32,7 @@ func Migrate(db *gorm.DB) error {
 	// Transaksi
 	db.AutoMigrate(&Transaksi.Transaksi{})
 	db.AutoMigrate(&Transaksi.TransaksiHistory{})
+	db.AutoMigrate(&Jadwal.JadwalMengajar{})
 	// Webhook
 	db.AutoMigrate(&Webhook.PaymentNotification{})
 

@@ -65,6 +65,7 @@ type TransaksiHandlerInterface interface {
 
 	// Get Aktif user
 	GetActiveUsersFromTransaksiHistory() echo.HandlerFunc
+	GetNewUsers() echo.HandlerFunc
 }
 
 type TransaksiDataInterface interface {
@@ -102,6 +103,7 @@ type TransaksiDataInterface interface {
 
 	// Aktif User
 	GetActiveUsersFromTransaksiHistory(page, limit int) ([]TransaksiHistory, int, error)
+	GetNewUsers(page, limit int) ([]TransaksiHistory, int, error)
 }
 
 type TransaksiServiceInterface interface {
@@ -125,4 +127,5 @@ type TransaksiServiceInterface interface {
 
 	// Aktif user
 	GetActiveUsersFromTransaksiHistory(page, limit int) ([]TransaksiHistory, int, error)
+	GetNewUsers(page, limit int) ([]TransaksiHistory, int, error)
 }

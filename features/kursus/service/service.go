@@ -35,7 +35,7 @@ func (s *KursusService) AddKursus(data kursus.Kursus) error {
 		return constant.ErrKursusName
 	case data.Deskripsi == "":
 		return constant.ErrDekripsiKursus
-	case data.Harga == 0:
+	case data.Harga < 0:
 		return constant.ErrHargaKursus
 	case data.InstrukturID == "":
 		return constant.ErrInstrukturID

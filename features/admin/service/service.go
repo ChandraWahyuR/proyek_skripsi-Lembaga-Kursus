@@ -102,28 +102,19 @@ func (s *AdminService) DownloadLaporanPembelian(startDate, endDate time.Time) ([
 	return s.d.DownloadLaporanPembelian(startDate, endDate)
 }
 
-// Generate laporan CSV dan tulis langsung ke writer
 func (s *AdminService) GenerateLaporanCSV(w io.Writer, histories []map[string]interface{}, startDate, endDate time.Time) error {
 	writer := csv.NewWriter(w)
 	defer writer.Flush()
-
-	// Header laporan
 	writer.Write([]string{"Laporan Siswa Aktif \nLKP Mediakom Sidareja"})
 	writer.Write([]string{"Periode", fmt.Sprintf("%s - %s", startDate.Format("02 January 2006"), endDate.Format("02 January 2006"))})
 	writer.Write([]string{})
 	writer.Write([]string{"No", "Nomor Induk", "Transaksi ID", "User ID", "Username", "Nama", "Jenis Kelamin", "Email", "Nomor Telepon", "Alamat", "Nama Kursus", "Tanggal Masuk", "Berlaku sampai", "Total Harga"})
-
-	// Isi laporan
 	var totalUser int
 	var totalHarga float64
 	var userAktif int
-	// Formatter Uang
 	formatter := message.NewPrinter(language.Indonesian)
-
-	// Tulis data dari map ke CSV dan hitung total harga
 	for i, history := range histories {
 		var harga float64
-
 		if th, ok := history["total_harga"].(float64); ok {
 			harga = th
 		} else if th, ok := history["total_harga"].(string); ok {
@@ -135,9 +126,7 @@ func (s *AdminService) GenerateLaporanCSV(w io.Writer, histories []map[string]in
 		} else {
 			harga = 0.0
 		}
-
 		totalHargaStr := formatter.Sprintf("Rp.%d", int64(harga))
-		// Tulis baris data ke CSV
 		writer.Write([]string{
 			fmt.Sprintf("%d", i+1),
 			history["nis"].(string),
@@ -156,8 +145,6 @@ func (s *AdminService) GenerateLaporanCSV(w io.Writer, histories []map[string]in
 		})
 
 		totalUser++
-
-		// Hanya total transaksi yang statusnya sudah aktif dan pembayarannya sukses
 		if history["status"] == "Active" && history["transaksi_status"] == "Success" {
 			totalHarga += harga
 			userAktif++
@@ -165,7 +152,7 @@ func (s *AdminService) GenerateLaporanCSV(w io.Writer, histories []map[string]in
 	}
 
 	hasil := formatter.Sprintf("Rp.%d", int64(totalHarga))
-	writer.Write([]string{}) // Baris kosong sebagai pemisah
+	writer.Write([]string{})
 	writer.Write([]string{"Total Pengguna Yang Mendaftar", fmt.Sprintf("%d", totalUser)})
 	writer.Write([]string{"Total Pemasukkan", hasil})
 	return nil

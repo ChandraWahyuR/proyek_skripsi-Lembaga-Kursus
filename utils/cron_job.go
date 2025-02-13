@@ -2,6 +2,8 @@ package utils
 
 import (
 	"fmt"
+	"log"
+	"net/http"
 	"skripsi/features/transaksi"
 	"time"
 
@@ -26,4 +28,23 @@ func StartCronJob(transaksiService transaksi.TransaksiServiceInterface) {
 	}
 	c.Start()
 	fmt.Println("Cron job started")
+}
+
+func CronJobMinute() {
+	c := cron.New()
+	_, err := c.AddFunc("*/12 * * * *", func() {
+		resp, err := http.Get("https://skripsi-245802795341.asia-southeast2.run.app/ping")
+		if err != nil {
+			log.Printf("Ping failed: %v", err)
+			return
+		}
+		defer resp.Body.Close()
+		log.Println("Ping successful:", resp.Status)
+	})
+	if err != nil {
+		log.Printf("Error adding cron job: %v", err)
+		return
+	}
+
+	c.Start()
 }

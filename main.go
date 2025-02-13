@@ -43,6 +43,10 @@ import (
 	TransaksiHandler "skripsi/features/transaksi/handler"
 	TransaksiService "skripsi/features/transaksi/service"
 
+	JadwalData "skripsi/features/jadwal_mengajar/data"
+	JadwalHandler "skripsi/features/jadwal_mengajar/handler"
+	JadwalService "skripsi/features/jadwal_mengajar/service"
+
 	WebhookData "skripsi/features/webhook/data"
 	WebhookHandler "skripsi/features/webhook/handler"
 	WebhookService "skripsi/features/webhook/service"
@@ -112,6 +116,10 @@ func main() {
 	transaksiService := TransaksiService.New(transaksiData, jwt, midtransClient)
 	transaksiHandler := TransaksiHandler.New(transaksiService, jwt)
 
+	jadwalData := JadwalData.New(db)
+	jadwalService := JadwalService.NewServiceCatatan(jadwalData, jwt)
+	jadwalHandler := JadwalHandler.New(jadwalService, jwt)
+
 	webhookData := WebhookData.New(db)
 	webhookService := WebhookService.New(webhookData)
 	webhookHandler := WebhookHandler.New(webhookService)
@@ -127,11 +135,14 @@ func main() {
 	routes.RouteKursus(e, kursusHandler, *cfg)
 	routes.RouteVoucher(e, voucherHandler, *cfg)
 	routes.RouteTransaksi(e, transaksiHandler, *cfg)
+	routes.RouteJadwal(e, jadwalHandler, *cfg)
 	routes.RouteWebhook(e, webhookHandler, *cfg)
 	routes.RouteGmaps(e, gmapsHandler, *cfg)
-
+	routes.RouteSSE(e, jwt)
 	// Cron job
 	utils.StartCronJob(transaksiService)
+	utils.CronJobMinute()
+
 	// Redirect
 	// http://localhost:8080/halaman/example.html
 	e.Static("/assets", "assets")

@@ -1,5 +1,8 @@
 package constant
 
+const GetData = "Berhasil mendapatkan data"
+const PostData = "Berhasil menyimpan data"
+
 // Register
 const RegisterBerhasil = "Register Berhasil"
 const LoginBerhasil = "Login Berhasil"

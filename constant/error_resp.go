@@ -116,3 +116,7 @@ var ErrPanjangVoucher = errors.New("masukkan kode dengan 10 karakter")
 var ErrTransaksiNotFound = errors.New("data transaksi belum ada")
 var ErrValidateDokumenUser = errors.New("silahkan lengkapi dokumen terlebih dahulu, di halaman profile")
 var ErrSameKursusValid = errors.New("maaf, anda telah berlangganan di kursus ini dan masa waktunya masih aktif")
+
+//
+var ErrJamMulai = errors.New("jam mulai harap diisi")
+var ErrJamAkhir = errors.New("jam akhir harap diisi")
