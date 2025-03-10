@@ -58,7 +58,7 @@ func (h *UserHandler) Register() echo.HandlerFunc {
 		}
 
 		// Deploy nya dihapus
-		link := fmt.Sprintf("%s/verify?token=", os.Getenv("CLOUD_RUN_ENDPOINT"), token)
+		link := fmt.Sprintf("%s/verify?token=%s", os.Getenv("CLOUD_RUN_ENDPOINT"), token)
 		err = h.s.SendVerificationEmail(user.Email, link)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Failed to send verification email", nil))
