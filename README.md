@@ -19,7 +19,7 @@ curl -X POST "https://url-cloud/api/v1/register" \
      -H "Content-Type: application/json" \
      -d '{
            "username": "John Doe",
-	         "nomor_hp":"0xxxxxxxxx",
+           "nomor_hp":"0xxxxxxxxx",
            "email": "johndoe@example.com",
            "password": "johndoePassword123!",
            "confirm_password": "johndoePassword123!"
