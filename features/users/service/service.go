@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"os"
 	"skripsi/constant"
 	"skripsi/features/users"
 	"skripsi/helper"
@@ -72,7 +73,7 @@ func (s *UserService) Register(users users.User) error {
 	}
 	users.Username = isUsernameValid
 	users.NomorHP = nomorHp
-	users.ProfileUrl = "https://storage.googleapis.com/image_skripsi/gambar/users/default/Profile_User.png"
+	users.ProfileUrl = os.Getenv("CLOUD_STORAGE")
 
 	err = s.d.Register(users)
 	if err != nil {

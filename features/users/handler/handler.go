@@ -228,8 +228,9 @@ func (h *UserHandler) VerifyAccount() echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, helper.FormatResponse(false, "Failed to activate account", nil))
 		}
 		fmt.Println("Redirecting to verification success page...")
-		// return c.Redirect(http.StatusTemporaryRedirect, "assets/verification-success")
-		return c.Redirect(http.StatusTemporaryRedirect, "https://skripsi-245802795341.asia-southeast2.run.app/assets/verifikasi_berhasil.html")
+		link := os.Getenv("CLOUD_RUN_ENDPOINT")
+		res := link + "/assets/verifikasi_berhasil.html"
+		return c.Redirect(http.StatusTemporaryRedirect, res)
 
 	}
 }

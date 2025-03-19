@@ -3,8 +3,8 @@ info:
   title: Dokumentasi Admin
   version: v1
 servers:
+  - url: https://porto-online-registrartion-245802795341.asia-southeast2.run.app/api/v1
   - url: http://localhost:8080/api/v1
-  - url: https://skripsi-245802795341.asia-southeast2.run.app/api/v1
 tags:
   - name: admin
     description: admin
@@ -17,7 +17,7 @@ paths:
       tags:
         - admin
       summary: Register admin
-      description: admin register, setiap field harus terisi, kalo kosong response nya bad request
+      description: admin register, setiap field harus terisi, kalo kosong response nya bad request. Admin yang bisa registrasi admin lain adalah admin yang telah login dan terdaftar (AdminKu)
       operationId: register
       requestBody:
         content:
@@ -133,8 +133,8 @@ paths:
                 password:
                   type: string
               example:
-                username: test
-                password: test123
+                username: admin
+                password: adminKu123
       responses:
         "200":
           description: OK
